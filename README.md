@@ -6,11 +6,13 @@ Sitio de La Prima Justa Ltda. (LPJ Consultores), agencia de seguros. Se publica 
 
 | Archivo | Qué es |
 |---|---|
-| `index.html` | Página de inicio actual (agencia tradicional). |
-| `inicio-pyme.html` | **Versión de prueba** del inicio con el chat PYME arriba. El botón "Acceso" lleva a Mi cuenta. Cuando se apruebe, reemplaza a `index.html` (y se le quita la etiqueta `noindex`). |
+| `index.html` | Página de inicio: el chat PYME arriba y la información de la agencia abajo. El botón "Acceso" lleva a Mi cuenta. En producción desde el 9 de noviembre de 2026. |
+| `inicio-pyme.html` | Era la versión de prueba. Ahora solo redirige al inicio, para que los enlaces guardados sigan funcionando. |
 | `mi-cuenta.html` | Portal del cliente: solicitudes con su estado, documentos, pólizas, conversaciones y datos. |
 | `asesor.html` | Panel del asesor: atender solicitudes, cambiar estados, subir cotizaciones y pólizas, publicar el link de pago. |
 | `test-felipe.html`, `firmas/` | Material anterior (prototipo del chat para asesores y firmas de correo). |
+
+La página de inicio anterior (sin chat) quedó en el historial: es el `index.html` del commit `c20e710`. Para volver a ella basta restaurar ese archivo.
 
 ## Portal PYME (`pyme/`)
 

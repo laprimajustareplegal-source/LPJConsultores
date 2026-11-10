@@ -260,7 +260,7 @@
       return;
     }
     if (!solicitudes.length) {
-      t.innerHTML = '<div class="vacio">Aún no tiene solicitudes.<br><a class="btn btn-p" href="inicio-pyme.html#cotizar">Cotizar o mejorar mi póliza PYME</a></div>';
+      t.innerHTML = '<div class="vacio">Aún no tiene solicitudes.<br><a class="btn btn-p" href="./#cotizar">Cotizar o mejorar mi póliza PYME</a></div>';
       return;
     }
     t.innerHTML = '<div class="lista-sol">' + solicitudes.map(itemSolicitud).join('') + '</div>';
@@ -442,7 +442,7 @@
         (dias !== null && dias < 0 ? '<span class="aviso-vence">Vencida</span>' : '') +
         '<dl class="kv"><dt>Número</dt><dd>' + E(p.numero || '—') + '</dd><dt>Vigencia</dt><dd>' + L.fecha(p.vigencia_desde) + ' – ' + L.fecha(p.vigencia_hasta) + '</dd><dt>Prima anual</dt><dd>' + L.pesos(p.prima) + '</dd></dl>' +
         '<div class="acciones">' + (p.archivo_ruta ? '<button type="button" class="btn btn-s" data-ruta="' + E(p.archivo_ruta) + '">Ver póliza</button>' : '') +
-        '<a class="btn btn-s" href="inicio-pyme.html#cotizar">Renovar o mejorar</a></div></div>';
+        '<a class="btn btn-s" href="./#cotizar">Renovar o mejorar</a></div></div>';
     }).join('') + '</div>';
     t.querySelectorAll('[data-ruta]').forEach(function (b) { b.addEventListener('click', function () { L.abrirArchivo(b.getAttribute('data-ruta')); }); });
   }
