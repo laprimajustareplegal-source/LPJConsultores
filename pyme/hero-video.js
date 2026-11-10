@@ -1,6 +1,6 @@
 /* Video de fondo del titular: escoge la versión liviana en celular y no lo carga si la persona pidió
-   menos movimiento o ahorro de datos (queda la imagen fija). */
-   Clips de Mixkit (licencia gratuita de uso comercial): 42041, 36318, 34612, 2469, 24127, 47555, 31450, 42343.
+   menos movimiento o ahorro de datos (queda la imagen fija).
+   Clips de Mixkit (licencia gratuita de uso comercial): 42041, 36318, 34612, 2469, 24127, 47555, 31450, 42343. */
 (function () {
   'use strict';
   var sec = document.querySelector('.sobrio .pyme-sec');
