@@ -37,26 +37,36 @@
   var RESPUESTAS = [
     { p: ['deducible'], r: 'El deducible es la parte de cada pérdida que asume la empresa. Normalmente es un porcentaje de la pérdida con un mínimo en pesos o en salarios mínimos. Terremoto suele tener un deducible más alto. En la cotización formal le mostramos el deducible de cada aseguradora.' },
     { p: ['lucro', 'utilidad', 'cerrado', 'cierre'], r: 'El lucro cesante paga la utilidad que su negocio deja de ganar y los gastos fijos que debe seguir pagando mientras está cerrado por un daño cubierto, por ejemplo un incendio.' },
-    { p: ['responsabilidad', ' rc ', 'tercero', 'cliente se cae', 'demanda'], r: 'La responsabilidad civil extracontractual protege a su empresa cuando causa daños a terceros en desarrollo de su actividad, por ejemplo un cliente que se lesiona dentro del local. Se puede ampliar a RC de productos, contratistas, patronal o parqueaderos según su negocio.' },
+    { p: ['responsabilidad', ' rc ', 'tercero', 'se cae', 'se lesion', 'demanda'], r: 'La responsabilidad civil extracontractual protege a su empresa cuando causa daños a terceros en desarrollo de su actividad, por ejemplo un cliente que se lesiona dentro del local. Se puede ampliar a RC de productos, contratistas, patronal o parqueaderos según su negocio.' },
     { p: ['hurto', 'robo', 'roban'], r: 'La cobertura de hurto calificado paga cuando roban con violencia o forzando el acceso al local. El hurto simple, sin señales de fuerza, normalmente no está cubierto o tiene condiciones especiales.' },
     { p: ['terremoto', 'temblor', 'sismo'], r: 'El terremoto se cubre junto con incendio en la póliza PYME. Normalmente tiene un deducible específico, más alto que el de las demás coberturas.' },
     { p: ['contrato', 'me exigen', 'me piden', 'licitacion'], r: 'Si un contrato le exige ciertas pólizas o límites, cuéntenos con la opción "Mejorar mi póliza actual": puede adjuntar el contrato o escribir los requisitos. Su asesor ajusta la póliza para que cumpla exactamente lo que le piden.' },
     { p: ['arrend', 'arriendo', 'alquil', 'no soy dueno', 'no es mio'], r: 'Si el local es arrendado, usted asegura sus contenidos (muebles, equipos, mercancías), las mejoras que haya hecho al local y su responsabilidad civil. El edificio lo asegura el dueño.' },
     { p: ['mejorar', 'bajar', 'mas barat', 'pago mucho', 'renovar', 'renovacion'], r: 'Con gusto revisamos su póliza actual. Use la opción "Mejorar mi póliza actual" y su asesor la compara con otras aseguradoras para bajar la prima o mejorar las coberturas.' },
-    { p: ['costo de la asesoria', 'cobran', 'cuanto cobran', 'honorarios'], r: 'Nuestra asesoría no tiene costo adicional para usted: la aseguradora remunera a la agencia.' },
+    { p: ['costo de la asesoria', 'cobra', 'tiene costo', 'costo adicional', 'gratis', 'honorarios'], r: 'Nuestra asesoría no tiene costo adicional para usted: la aseguradora remunera a la agencia.' },
     { p: ['precio', 'cuanto cuesta', 'cuanto vale', 'cuanto pag', 'cuanto sale', 'tarifa', 'que valor', 'valor de la poliza'], r: 'El precio depende de la actividad, la ciudad, los valores asegurados y las coberturas. Complete la cotización aquí en el chat y su asesor le envía la comparación de precios de las aseguradoras en máximo 24 horas hábiles.' },
+    { p: ['necesito para cotizar', 'requisitos para cotizar', 'documentos para cotizar', 'piden para cotizar', 'papeles para cotizar'], r: 'Para cotizar no necesita documentos: basta con responder las preguntas del chat sobre su negocio. Los documentos (RUT, cámara de comercio, cédula del representante legal y formulario SARLAFT) se piden solo cuando aprueba la cotización y se va a emitir la póliza.' },
     { p: ['document', 'requisito', 'que necesito', 'emitir', 'expedir', 'emision'], r: 'Para emitir la póliza se necesita el RUT, la cámara de comercio reciente, la cédula del representante legal y el formulario de conocimiento del cliente (SARLAFT). Su asesor se los pide cuando usted aprueba la cotización.' },
     { p: ['pago', 'pagar', 'pse', 'cuotas', 'financ'], r: 'Cuando la póliza esté lista, su asesor le envía el link o la referencia de pago de la aseguradora; el pago se hace directamente a la aseguradora. Algunas permiten pagar en cuotas.' },
     { p: ['en que estado', 'estado de mi', 'como va', 'avance', 'mi solicitud', 'seguimiento'], r: 'El avance de cada solicitud se ve en Mi cuenta: en qué etapa va, las notas de su asesor y los documentos.' },
     { p: ['siniestro', 'reclam', 'me paso', 'se quemo', 'inund'], r: 'Si tuvo un siniestro: proteja los bienes para evitar más daños, guarde fotos y facturas, ponga la denuncia si fue hurto y avísenos de inmediato por WhatsApp al ' + CONFIG.whatsappVisible + '. Nosotros llevamos el trámite con la aseguradora.' },
+    { p: ['vigencia', 'cuanto dura', 'dura la poliza', 'por cuanto tiempo'], r: 'La póliza PYME normalmente tiene vigencia de un año y se renueva cada año. Antes del vencimiento, su asesor le presenta las opciones de renovación.' },
+    { p: ['se demora', 'demoran', 'tarda', 'me responde', 'me contesta', 'tiempo de respuesta', 'cuando llega la cotizacion', 'cuando tengo la cotizacion', 'cuanto tiempo', 'el tramite'], r: 'Su asesor le responde en máximo 24 horas hábiles después de recibir su solicitud. Si es urgente, escríbale por WhatsApp al ' + CONFIG.whatsappVisible + '.' },
+    { p: ['hablar con', 'un asesor', 'mi asesor', 'el asesor', 'con asesor', 'con una persona', 'persona real', 'un humano', 'me llamen', 'me pueden llamar', 'llamenme', 'llamar'], r: 'Claro. Su asesor es ' + CONFIG.nombreAsesor + ': puede escribirle por WhatsApp o llamarlo al ' + CONFIG.whatsappVisible + '. Si antes deja aquí los datos de su empresa, él llega con la cotización adelantada.' },
     { p: ['aseguradora', 'compania', 'con quien', 'trabajan con', ' sura ', ' axa ', 'allianz', 'mapfre', 'bolivar', 'liberty', ' hdi ', 'equidad', 'seguros del estado'], r: 'Trabajamos con más de 15 aseguradoras, entre ellas SURA, AXA Colpatria, Allianz, Mapfre, HDI, Liberty, Seguros Bolívar, Seguros del Estado y La Equidad. Cotizamos con las que mejor se ajustan a su actividad.' },
+    { p: ['corredor', 'agencia', 'quienes son', 'la prima justa', ' lpj ', 'confiable'], r: 'La Prima Justa (LPJ Consultores) es una agencia de seguros con sede en Bogotá que atiende empresas en toda Colombia. Analizamos los riesgos de su negocio, comparamos entre más de 15 aseguradoras y lo acompañamos en la contratación y en los siniestros.' },
     { p: ['valor asegurado', 'por cuanto aseguro', 'infraseguro'], r: 'Cada bien debe asegurarse por su valor de reposición, es decir, lo que cuesta reponerlo nuevo. Si se asegura por menos, en un siniestro la indemnización puede reducirse en proporción (infraseguro).' },
     { p: ['electr', 'computador', ' pos ', 'datafono'], r: 'La cobertura de equipo electrónico protege computadores, datáfonos, impresoras y equipos de comunicación frente a daños internos y accidentales.' },
     { p: ['maquinaria', 'maquina', 'nevera', 'horno'], r: 'La rotura de maquinaria cubre el daño súbito e imprevisto de máquinas en funcionamiento, por falla eléctrica o mecánica o por error de operación.' },
     { p: ['manejo', 'empleado roba', 'fraude', 'infidelidad'], r: 'La cobertura de manejo protege a la empresa frente a pérdidas por hurto, abuso de confianza o fraude cometido por sus empleados.' },
+    { p: ['subir mi poliza', 'subir la poliza', 'subir un archivo', 'subir archivos', 'subir documentos', 'subir el pdf', 'subir una foto', 'adjuntar', 'adjunto', 'cargar mi poliza', 'cargar la poliza', 'enviar mi poliza', 'enviar la poliza', 'mandar mi poliza', 'mandar la poliza', 'enviarles mi poliza', ' pdf '], r: LPJ.configurado
+      ? 'Sí. Con la opción "Mejorar mi póliza actual" del menú inicial puede adjuntar el PDF o fotos de su póliza, y el contrato si le exigen coberturas. Su asesor la revisa y busca bajar la prima o mejorar las coberturas.'
+      : 'Con la opción "Mejorar mi póliza actual" del menú inicial me cuenta lo básico de su póliza, y al terminar le envía el PDF a su asesor por WhatsApp al ' + CONFIG.whatsappVisible + '.' },
+    { p: ['seguro de carro', 'seguro para carro', 'seguro de auto', 'seguro para auto', 'seguro de moto', 'seguro para moto', 'seguro de vehiculo', 'seguro para vehiculo', 'todo riesgo', 'soat', 'seguro de vida', 'seguros de vida', 'poliza de vida', 'seguro de salud', 'poliza de salud', 'medicina prepagada', 'seguro de hogar', 'seguro para mi casa', 'poliza de cumplimiento', 'seguro de cumplimiento', ' arl ', 'seguro de transporte', 'seguro de viaje', 'seguro exequial', 'otros seguros', 'que seguros'], r: 'En este chat cotizo la póliza PYME, que protege los bienes y la responsabilidad de su empresa. La agencia también maneja otros seguros (autos, vida, salud, cumplimiento, transporte y ARL, entre otros): escríbale a su asesor por WhatsApp al ' + CONFIG.whatsappVisible + ' y él se los cotiza.' },
     { p: ['contrasena', 'mi cuenta', 'crear cuenta', 'una cuenta', 'usuario', 'registr'], r: 'En Mi cuenta quedan guardadas sus solicitudes, pólizas, documentos y conversaciones. Se entra con su correo y una contraseña.' },
     { p: ['donde', 'direccion', 'oficina', 'telefono', 'contacto'], r: 'Estamos en la Calle 96 # 45A-31, Oficina 200, Bogotá, y atendemos empresas en toda Colombia. WhatsApp y llamadas: ' + CONFIG.whatsappVisible + '. Correo: info@laprimajusta.co.' },
-    { p: ['poliza pyme', 'multirriesgo', 'que cubre', 'para que sirve'], r: 'La póliza PYME es un seguro empaquetado para pequeñas y medianas empresas: en una sola póliza se protegen los bienes del negocio (local, muebles, maquinaria, mercancías y equipos) y su responsabilidad frente a terceros. Cada aseguradora tiene su propia versión, por eso cotizamos con varias.' }
+    { p: ['poliza pyme', 'multirriesgo', 'que cubre', 'para que sirve'], r: 'La póliza PYME es un seguro empaquetado para pequeñas y medianas empresas: en una sola póliza se protegen los bienes del negocio (local, muebles, maquinaria, mercancías y equipos) y su responsabilidad frente a terceros. Cada aseguradora tiene su propia versión, por eso cotizamos con varias.' },
+    { p: ['como cotiz', 'como funciona', 'como hago', 'como es el proceso', 'que debo hacer', 'como empiezo', 'como inicio', 'cuales son los pasos'], r: 'Es sencillo: toque "Cotizar mi póliza PYME", responda unas preguntas sobre su negocio (actividad, ciudad, valores a asegurar y coberturas) y deje sus datos. Su asesor compara las aseguradoras y le envía la cotización en máximo 24 horas hábiles.' }
   ];
 
   var ACTIVIDAD = { id: 'actividad', texto: '¿A qué se dedica su empresa?', tipo: 'opciones', opciones: Object.keys(ACTIVIDADES).concat(['Otra actividad']) };
@@ -658,6 +668,37 @@
     return null;
   }
 
+  // Intención de cotizar o descripción del negocio, cuando todavía no ha empezado una solicitud.
+  function respuestaInicio(texto) {
+    var t = normalizar(texto);
+    var quiere = / (cotizar|cotizarme|cotizacion|cotice|coticen|cotizo) /.test(t)
+      || / (necesito|quiero|busco|requiero|me interesa) (cotizar |adquirir |comprar |tomar |sacar )?(un |el |una |la )?(seguro|poliza) /.test(t)
+      || / (asegurar|proteger) (mi|mis|el|la|un|una|nuestro|nuestra) /.test(t)
+      || / (seguro|poliza) para (mi|mis|el|la|un|una|nuestro|nuestra) /.test(t);
+    var negocio = texto.indexOf('?') < 0 && / (tengo|tenemos|somos|soy|mi|nuestro|nuestra) (un |una |el |la |dueno de |duena de )?[a-z ]{0,40}(empresa|negocio|local|tienda|restaurante|ferreteria|bodega|oficina|taller|fabrica|almacen|consultorio|panaderia|cafeteria|hotel|gimnasio|drogueria|papeleria|peluqueria|clinica|colegio|pyme) /.test(t);
+    if (!quiere && !negocio) return null;
+    return 'Con gusto. Toque "Cotizar mi póliza PYME" y en unos 3 minutos dejamos lista su solicitud. Si ya tiene póliza y quiere mejorarla, toque "Mejorar mi póliza actual".';
+  }
+
+  // Saludos, "tengo una pregunta" y agradecimientos.
+  var PALABRA_CORTES = /^(gracias|muchas|mil|muy|amable|perfecto|listo|ok|okay|vale|de|acuerdo|entendido|bueno|bien|super|genial|excelente|por|ahora|eso|es|todo|si|no|claro)$/;
+  var PALABRA_CIERRE = /^(gracias|perfecto|listo|ok|okay|vale|acuerdo|entendido|amable|genial|excelente)$/;
+  function respuestaCortesia(texto) {
+    var t = normalizar(texto).trim();
+    var palabras = t.split(' ');
+    if (palabras.length <= 4 && /^(hola|holi|buenas|buenos dias|buen dia|buenas tardes|buenas noches|hey|saludos|que tal)( |$)/.test(t)) {
+      return 'Hola. Le ayudo a cotizar o mejorar el seguro de su empresa. Elija una opción o escriba su pregunta.';
+    }
+    if (texto.indexOf('?') >= 0) return null;
+    if (palabras.length <= 7 && /(^| )(pregunta|preguntas|duda|dudas|consulta|inquietud)( |$)/.test(t)) {
+      return 'Claro, escríbala y le respondo.';
+    }
+    if (palabras.length <= 6 && palabras.every(function (w) { return PALABRA_CORTES.test(w); }) && palabras.some(function (w) { return PALABRA_CIERRE.test(w); })) {
+      return 'Con gusto. Aquí estoy si necesita algo más.';
+    }
+    return null;
+  }
+
   function contextoIA() {
     var c = {};
     ['tipo', 'actividad', 'actividadOtra', 'ciudad', 'inmueble', 'valorEdificio', 'valorContenidos', 'valorMercancias', 'valorElectronico', 'empleados', 'limiteRC', 'objetivo'].forEach(function (k) {
@@ -699,6 +740,8 @@
     var t = escribiendo();
     preguntarIA(texto, async function (resp) {
       if (!resp) resp = respuestaRapida(texto);
+      if (!resp && !pasos) resp = respuestaInicio(texto);
+      if (!resp) resp = respuestaCortesia(texto);
       if (!resp) {
         if (estado.enviado && estado.solicitudId) {
           // La solicitud ya se envió: el mensaje se le pasa al asesor.
@@ -717,7 +760,9 @@
           estado.preguntas.push(texto);
           resp = 'Buena pregunta. La dejo anotada para su asesor, que se la responde junto con la cotización.';
         } else {
-          resp = 'No tengo esa respuesta a la mano. Su asesor se la resuelve por WhatsApp al ' + CONFIG.whatsappVisible + ', o puede dejarla en su solicitud al cotizar.';
+          resp = esPregunta(texto)
+            ? 'No tengo esa respuesta a la mano. Su asesor se la resuelve por WhatsApp al ' + CONFIG.whatsappVisible + ', o puede dejarla en su solicitud al cotizar.'
+            : 'No estoy seguro de haberle entendido. Puede elegir una de las opciones, escribir su pregunta o hablar con su asesor por WhatsApp al ' + CONFIG.whatsappVisible + '.';
         }
       }
       t.remove();

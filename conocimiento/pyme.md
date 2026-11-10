@@ -14,6 +14,8 @@ Las secciones marcadas con [COMPLETAR] están pendientes de confirmar con el con
 - Trabajamos con más de 15 aseguradoras, entre ellas SURA, AXA Colpatria, Allianz, Mapfre, HDI, Liberty, Seguros Bolívar, Seguros del Estado y La Equidad.
 - Nuestro servicio de asesoría no tiene costo adicional para el cliente: la aseguradora remunera a la agencia.
 - Después de emitida la póliza acompañamos al cliente en renovaciones, modificaciones y en la reclamación de siniestros.
+- Este chat cotiza únicamente la póliza PYME. La agencia también maneja otros seguros (autos, vida, salud, cumplimiento, transporte y ARL, entre otros): para esos, el asesor atiende por WhatsApp.
+- Para cotizar no se necesitan documentos: basta con responder las preguntas del chat. Los documentos se piden al emitir.
 
 ## 2. Qué es una póliza PYME
 
