@@ -8,7 +8,7 @@ Sitio de La Prima Justa Ltda. (LPJ Consultores), agencia de seguros. Se publica 
 |---|---|
 | `index.html` | Página de inicio: el chat PYME arriba y la información de la agencia abajo. El botón "Acceso" lleva a Mi cuenta. En producción desde el 9 de noviembre de 2026; desde el 10 de noviembre lleva el estilo sobrio (`<body class="sobrio">` y la hoja `pyme/sobrio.css`): casi toda en azul profundo, con dos secciones blancas y una en azul grisáceo, y fotos en alta resolución. |
 | `inicio-pyme.html` | Era la versión de prueba. Ahora solo redirige al inicio, para que los enlaces guardados sigan funcionando. |
-| `diseno.html` | **Página de prueba** (con `noindex`): es la página de inicio más la hoja `pyme/barra.css`, que propone una barra principal flotante y translúcida. Si se aprueba, esas reglas pasan a `pyme/sobrio.css` y esta página vuelve a redirigir al inicio. |
+| `diseno.html` | Dirección que se usa para mostrar cambios de diseño antes de publicarlos. Cuando no hay nada en prueba, solo redirige al inicio. |
 | `mi-cuenta.html` | Portal del cliente: solicitudes con su estado, documentos, pólizas, conversaciones y datos. |
 | `asesor.html` | Panel del asesor: atender solicitudes, cambiar estados, subir cotizaciones y pólizas, publicar el link de pago. |
 | `test-felipe.html`, `firmas/` | Material anterior (prototipo del chat para asesores y firmas de correo). |
@@ -23,7 +23,6 @@ Las páginas de inicio anteriores quedaron en el historial: la del chat con el e
 - `mi-cuenta.js`, `asesor.js`, `cuenta.css` — portal del cliente y panel del asesor.
 - `lib/` — librería oficial de Supabase incluida en el sitio.
 - `sobrio.css` — estilo sobrio de la página de inicio: casi toda la página sobre el azul profundo de LPJ con texto blanco, titulares grandes en Archivo, líneas finas, esquinas rectas, fotos en su color natural. Solo se aplica en páginas con `<body class="sobrio">`. Cada sección tiene un tono (azul profundo, blanco o azul grisáceo) y se cambia moviéndola de lista en el bloque "Tonos por sección" del archivo: hoy van en blanco "Transformamos el riesgo…" y "Sectores que atendemos", y en azul grisáceo "¿Cómo trabajamos con usted?". Los colores del sitio (`--negro`, `--azul`…) toman el valor del tono de cada zona y dentro de `.pyme-chat` valen lo de siempre. Versiones anteriores: inicio azul con el resto en blanco, commit `dd709f1`; toda azul, commit `1d9ee53`; con las fotos teñidas de azul, commit `8a6363e`.
-- `barra.css` — propuesta de barra principal flotante; por ahora solo la carga `diseno.html`.
 - `../img/hd/` — fotos en alta resolución que usa la página de inicio: son las mismas fotos de `img/` ampliadas al doble de tamaño con un modelo de ampliación por IA y retocadas (contraste y nitidez). Cada foto viene en dos anchos (900 y 1600 px; el fondo de contacto en 1400 y 2400 px) y el navegador elige según la pantalla. Las originales siguen en `img/`. Si se consiguen las fotos originales en mayor resolución, basta reemplazar estos archivos con los mismos nombres.
 - `fuentes/` — tipografía Archivo (licencia abierta OFL, incluida) alojada en el sitio.
 
