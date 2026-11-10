@@ -316,8 +316,12 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .nav-tabs>li>a{border-bottom:0;padding:0 14px}
 
 /* Menús desplegables: separados de la barra, con el mismo redondeo */
-.sobrio .megadrop{top:calc(100% + 8px);border-radius:8px;border:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);background:rgba(20,42,115,.97)}
+.sobrio .megadrop{top:calc(100% + 8px);border-radius:8px;border:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);background:var(--campo-2)}
 .sobrio .megadrop::before{content:'';position:absolute;left:0;right:0;top:-10px;height:10px}   /* puente para no perder el menú al bajar el cursor */
+/* El menú no se cierra de inmediato al salir: da un momento para llegar con el cursor en diagonal */
+.sobrio .megadrop{display:block;visibility:hidden;opacity:0;transition:opacity .12s ease .22s,visibility 0s linear .34s}
+.sobrio .nav-tabs li:hover .megadrop{visibility:visible;opacity:1;transition-delay:0s}
+.sobrio .nav-tabs:hover li:not(:hover) .megadrop{transition:none}                  /* al pasar a otro menú, el anterior se cierra ya */
 
 /* Botones de la derecha */
 .sobrio .nav-acciones{gap:4px}
