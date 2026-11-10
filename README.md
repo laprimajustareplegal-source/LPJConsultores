@@ -6,14 +6,14 @@ Sitio de La Prima Justa Ltda. (LPJ Consultores), agencia de seguros. Se publica 
 
 | Archivo | Qué es |
 |---|---|
-| `index.html` | Página de inicio: el chat PYME arriba y la información de la agencia abajo. El botón "Acceso" lleva a Mi cuenta. En producción desde el 9 de noviembre de 2026. |
+| `index.html` | Página de inicio: el chat PYME arriba y la información de la agencia abajo. El botón "Acceso" lleva a Mi cuenta. En producción desde el 9 de noviembre de 2026; desde el 10 de noviembre lleva el estilo sobrio (`<body class="sobrio">` y la hoja `pyme/sobrio.css`): casi toda en azul profundo, con dos secciones blancas y una en azul grisáceo, y fotos en alta resolución. |
 | `inicio-pyme.html` | Era la versión de prueba. Ahora solo redirige al inicio, para que los enlaces guardados sigan funcionando. |
-| `diseno.html` | **Versión de prueba del estilo sobrio** (con `noindex`): la misma página de inicio con la hoja `pyme/sobrio.css`; casi toda en azul profundo, con dos secciones blancas y una en azul grisáceo. Cuando se apruebe, ese estilo pasa a `index.html`. |
+| `diseno.html` | Era la versión de prueba del estilo sobrio. Ahora solo redirige al inicio. |
 | `mi-cuenta.html` | Portal del cliente: solicitudes con su estado, documentos, pólizas, conversaciones y datos. |
 | `asesor.html` | Panel del asesor: atender solicitudes, cambiar estados, subir cotizaciones y pólizas, publicar el link de pago. |
 | `test-felipe.html`, `firmas/` | Material anterior (prototipo del chat para asesores y firmas de correo). |
 
-La página de inicio anterior (sin chat) quedó en el historial: es el `index.html` del commit `c20e710`. Para volver a ella basta restaurar ese archivo.
+Las páginas de inicio anteriores quedaron en el historial: la del chat con el estilo redondeado es el `index.html` del commit `98c921b`, y la de antes del chat, el del commit `c20e710`. Para volver a una de ellas basta restaurar ese archivo.
 
 ## Portal PYME (`pyme/`)
 
@@ -23,7 +23,7 @@ La página de inicio anterior (sin chat) quedó en el historial: es el `index.ht
 - `mi-cuenta.js`, `asesor.js`, `cuenta.css` — portal del cliente y panel del asesor.
 - `lib/` — librería oficial de Supabase incluida en el sitio.
 - `sobrio.css` — estilo sobrio de la página de inicio: casi toda la página sobre el azul profundo de LPJ con texto blanco, titulares grandes en Archivo, líneas finas, esquinas rectas, fotos en su color natural. Solo se aplica en páginas con `<body class="sobrio">`. Cada sección tiene un tono (azul profundo, blanco o azul grisáceo) y se cambia moviéndola de lista en el bloque "Tonos por sección" del archivo: hoy van en blanco "Transformamos el riesgo…" y "Sectores que atendemos", y en azul grisáceo "¿Cómo trabajamos con usted?". Los colores del sitio (`--negro`, `--azul`…) toman el valor del tono de cada zona y dentro de `.pyme-chat` valen lo de siempre. Versiones anteriores: inicio azul con el resto en blanco, commit `dd709f1`; toda azul, commit `1d9ee53`; con las fotos teñidas de azul, commit `8a6363e`.
-- `../img/hd/` — fotos en alta resolución que usa la versión de prueba (`diseno.html`): son las mismas fotos de `img/` ampliadas al doble de tamaño con un modelo de ampliación por IA y retocadas (contraste y nitidez). Cada foto viene en dos anchos (900 y 1600 px; el fondo de contacto en 1400 y 2400 px) y el navegador elige según la pantalla. Las originales siguen en `img/` y son las que usa hoy la página principal. Si se consiguen las fotos originales en mayor resolución, basta reemplazar estos archivos con los mismos nombres.
+- `../img/hd/` — fotos en alta resolución que usa la página de inicio: son las mismas fotos de `img/` ampliadas al doble de tamaño con un modelo de ampliación por IA y retocadas (contraste y nitidez). Cada foto viene en dos anchos (900 y 1600 px; el fondo de contacto en 1400 y 2400 px) y el navegador elige según la pantalla. Las originales siguen en `img/`. Si se consiguen las fotos originales en mayor resolución, basta reemplazar estos archivos con los mismos nombres.
 - `fuentes/` — tipografía Archivo (licencia abierta OFL, incluida) alojada en el sitio.
 
 Mientras `config.js` no tenga los datos de Supabase, el chat funciona en modo sencillo: no hay cuentas ni archivos y cada solicitud llega al correo del asesor.
