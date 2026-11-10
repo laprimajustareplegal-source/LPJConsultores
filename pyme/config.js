@@ -4,8 +4,8 @@
    NUNCA pegar aquí la clave secreta (sb_secret_...) ni la service_role. */
 window.LPJ_CONFIG = {
   // Supabase > botón "Connect" (o Settings > API Keys): "Project URL" y "Publishable key" (empieza por sb_publishable_).
-  supabaseUrl: '',
-  supabaseKey: '',
+  supabaseUrl: 'https://mdewdzeqftlnxkxmziue.supabase.co',
+  supabaseKey: 'sb_publishable_LRZFP5Z-bt3FrMYW77ynGg_kO3Rssm0',
 
   // Dirección de la función de IA en Vercel, por ejemplo 'https://lpj-consultores.vercel.app/api/chat'.
   apiChat: '',
