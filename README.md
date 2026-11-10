@@ -8,6 +8,7 @@ Sitio de La Prima Justa Ltda. (LPJ Consultores), agencia de seguros. Se publica 
 |---|---|
 | `index.html` | Página de inicio: el chat PYME arriba y la información de la agencia abajo. El botón "Acceso" lleva a Mi cuenta. En producción desde el 9 de noviembre de 2026. |
 | `inicio-pyme.html` | Era la versión de prueba. Ahora solo redirige al inicio, para que los enlaces guardados sigan funcionando. |
+| `diseno.html` | **Versión de prueba del estilo sobrio** (con `noindex`): la misma página de inicio con la hoja `pyme/sobrio.css`. Cuando se apruebe, ese estilo pasa a `index.html`. |
 | `mi-cuenta.html` | Portal del cliente: solicitudes con su estado, documentos, pólizas, conversaciones y datos. |
 | `asesor.html` | Panel del asesor: atender solicitudes, cambiar estados, subir cotizaciones y pólizas, publicar el link de pago. |
 | `test-felipe.html`, `firmas/` | Material anterior (prototipo del chat para asesores y firmas de correo). |
@@ -21,6 +22,8 @@ La página de inicio anterior (sin chat) quedó en el historial: es el `index.ht
 - `chat-pyme.js` / `chat-pyme.css` — el chat. Las preguntas de la cotización corren en la página (no usan IA). La IA solo responde preguntas libres.
 - `mi-cuenta.js`, `asesor.js`, `cuenta.css` — portal del cliente y panel del asesor.
 - `lib/` — librería oficial de Supabase incluida en el sitio.
+- `sobrio.css` — estilo sobrio de la página de inicio: titulares grandes en Archivo, líneas finas, esquinas rectas, fotos en azul. Solo se aplica en páginas con `<body class="sobrio">`.
+- `fuentes/` — tipografía Archivo (licencia abierta OFL, incluida) alojada en el sitio.
 
 Mientras `config.js` no tenga los datos de Supabase, el chat funciona en modo sencillo: no hay cuentas ni archivos y cada solicitud llega al correo del asesor.
 

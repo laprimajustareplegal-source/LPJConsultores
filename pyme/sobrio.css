@@ -1,0 +1,227 @@
+/* La Prima Justa — estilo sobrio.
+   Se aplica solo en las páginas con <body class="sobrio">; no cambia el contenido ni el funcionamiento.
+   Ideas: un solo color (el azul de LPJ) en campos planos, titulares grandes alineados a la izquierda,
+   esquinas rectas y líneas finas que ordenan la página como la carátula de una póliza. */
+
+@font-face{
+  font-family:'Archivo';font-style:normal;font-display:swap;font-weight:100 900;font-stretch:62% 125%;
+  src:url(fuentes/archivo-latin.woff2) format('woff2-variations'),url(fuentes/archivo-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+.sobrio{
+  --campo:#0f2060;                          /* azul profundo: inicio, franja y pie */
+  --linea:#d5dbe9;                          /* líneas sobre blanco */
+  --linea-campo:rgba(255,255,255,.22);      /* líneas sobre azul */
+  --papel2:#f3f5fa;
+  --ancho:1240px;
+  --margen:clamp(20px,4.2vw,64px);
+  --lado:max(var(--margen),calc((100% - var(--ancho))/2));
+  --titular:'Archivo','Inter',system-ui,sans-serif;
+  --seccion:clamp(64px,9vw,128px);
+}
+
+/* ---------- Base ---------- */
+.sobrio h1,.sobrio h2,.sobrio h3,.sobrio h4{font-family:var(--titular)}
+.sobrio .aparece{opacity:1;transform:none;transition:none}
+.sobrio a:focus-visible,.sobrio button:focus-visible,.sobrio input:focus-visible{outline:2px solid var(--azul-boton);outline-offset:2px}
+.sobrio .pyme-intro a:focus-visible,.sobrio .banner-azul a:focus-visible,.sobrio .sec-canales>h2 a:focus-visible,.sobrio footer a:focus-visible{outline-color:#fff}
+
+/* Titulares de sección: grandes, a la izquierda */
+.sobrio .titulo-seccion h2,.sobrio .sec-contenido-titulo,.sobrio .sec-proceso h2,.sobrio .sec-sectores h2,.sobrio .sec-canales h2{
+  font-family:var(--titular);font-stretch:86%;font-weight:600;font-size:clamp(2rem,4.1vw,3.4rem);line-height:1.04;letter-spacing:-.018em;
+  color:var(--azul-oscuro);text-align:left;text-wrap:balance;
+}
+
+/* ---------- Encabezado ---------- */
+.sobrio .nav-wrap{padding:0;background:var(--blanco);border-bottom:1px solid var(--linea);pointer-events:auto}
+.sobrio .nav-inner{max-width:none;height:64px;padding:0 var(--lado);border-radius:0;box-shadow:none}
+.sobrio .nav-logo img{height:40px}
+.sobrio .nav-tabs{height:64px}
+.sobrio .nav-tabs>li>a{height:64px;border-bottom-width:2px}
+.sobrio .megadrop{top:100%;border-radius:0;box-shadow:none;border:1px solid var(--linea);border-top:2px solid var(--azul-boton)}
+.sobrio .megadrop a,.sobrio .nav-btn-solicita,.sobrio .nav-search-ico{border-radius:2px}
+.sobrio .megadrop a{height:auto;padding:11px 10px;border-bottom:0}
+.sobrio .mega-badge{border-radius:2px}
+.sobrio .nav-btn-acceso{padding:9px 18px;border-radius:2px;border:1px solid #c3cbe0}
+.sobrio .nav-soat{background:var(--azul-boton);border-color:var(--azul-boton);color:#fff;font-weight:600}
+.sobrio .nav-soat:hover{background:var(--azul-oscuro);border-color:var(--azul-oscuro)}
+
+/* Menú lateral */
+.sobrio .panel-section-title,.sobrio .panel-oport-title{font-family:var(--titular);font-stretch:88%;font-weight:600;letter-spacing:-.01em}
+.sobrio .panel-oport-card{border-radius:0;background:var(--papel2)}
+.sobrio .panel-oport-card:hover{box-shadow:none;transform:none;background:#e8ecf6}
+.sobrio .panel-oport-card h4{font-family:var(--titular);font-stretch:92%;font-weight:600;font-size:.98rem}
+
+/* ---------- Inicio: titular y chat sobre azul ---------- */
+.sobrio .pyme-sec{
+  width:100%;max-width:none;margin:0;border-radius:0;background:var(--campo);
+  padding:clamp(44px,6.2vw,92px) var(--lado) clamp(44px,5.6vw,84px);
+  grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start;
+}
+.sobrio .pyme-sec::after{content:none}
+.sobrio .pyme-kicker{margin-bottom:20px;padding:0;border:0;border-radius:0;background:none;font-size:.98rem;font-weight:500;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.72)}
+.sobrio .pyme-intro h1{font-family:var(--titular);font-stretch:86%;font-weight:600;font-size:clamp(2.4rem,4.75vw,4.05rem);line-height:1.02;letter-spacing:-.016em;margin-bottom:26px;text-wrap:balance}
+.sobrio .pyme-intro p{max-width:46ch;margin-bottom:34px;font-size:1.06rem;line-height:1.6;color:rgba(255,255,255,.82)}
+.sobrio .pyme-puntos{gap:0;margin-bottom:30px;border-bottom:1px solid var(--linea-campo)}
+.sobrio .pyme-puntos li{gap:0;padding:15px 0;border-top:1px solid var(--linea-campo);font-size:.97rem;line-height:1.45;color:rgba(255,255,255,.94)}
+.sobrio .pyme-puntos li svg{display:none}
+.sobrio .pyme-contacto{gap:8px}
+.sobrio .pyme-contacto a{padding:11px 16px;border-radius:2px;border:1px solid var(--linea-campo);font-weight:500}
+.sobrio .pyme-contacto a:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.5)}
+
+.sobrio .pyme-chat{height:620px;border-radius:2px;box-shadow:none}
+.sobrio .pc-avatar{border-radius:2px;background:var(--campo)}
+.sobrio .pc-head-txt strong{font-family:var(--titular);font-stretch:92%;font-weight:600;font-size:1.02rem}
+.sobrio .pc-reiniciar,.sobrio .pc-cuenta,.sobrio .pc-badge,.sobrio .pc-precio{border-radius:2px}
+.sobrio .pc-mensajes{background:#f5f7fb}
+.sobrio .pc-msg,.sobrio .pc-escribiendo,.sobrio .pc-form,.sobrio .pc-resumen{border-radius:2px}
+.sobrio .pc-chip{padding:9px 14px;border-radius:2px;border-width:1px;border-color:#b7c3e2}
+.sobrio .pc-form input[type=text],.sobrio .pc-form input[type=tel],.sobrio .pc-form input[type=email],.sobrio .pc-form input[type=password],.sobrio .pc-entrada input{border-radius:2px;border-width:1px;border-color:#c3cbe0}
+.sobrio .pc-form input:focus,.sobrio .pc-entrada input:focus{border-color:var(--azul-boton)}
+.sobrio .pc-entrada button{border-radius:2px}
+
+/* ---------- Accesos rápidos: una fila con líneas ---------- */
+.sobrio .accesos{padding:0 var(--lado);background:var(--blanco)}
+.sobrio .accesos-grid{max-width:none;gap:0;border-left:1px solid var(--linea)}
+.sobrio .acceso-item{flex-direction:row;justify-content:flex-start;gap:12px;padding:24px 16px;border:0;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);border-radius:0;background:none;transition:background .15s}
+.sobrio .acceso-item:hover{box-shadow:none;transform:none;background:var(--papel2)}
+.sobrio .acceso-ico svg{width:22px;height:22px}
+.sobrio .acceso-item p{text-align:left;font-size:.88rem}
+
+/* ---------- Qué hacemos ---------- */
+.sobrio .titulo-seccion{padding:var(--seccion) var(--lado) 0;background:var(--blanco);text-align:left}
+.sobrio .titulo-seccion h2{max-width:24ch}
+.sobrio .card-producto{padding:clamp(28px,4vw,52px) var(--lado) var(--seccion);background:var(--blanco)}
+.sobrio .card-producto-inner{
+  max-width:none;padding:clamp(24px,3vw,40px) 0 0;border-top:1px solid var(--azul-oscuro);border-radius:0;box-shadow:none;
+  grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:start;
+}
+.sobrio .prod-img{display:block;background:var(--azul);isolation:isolate}
+.sobrio .prod-img img{display:block;width:100%;max-width:none;height:clamp(260px,29vw,400px);border-radius:0;box-shadow:none;filter:grayscale(1) contrast(1.06);mix-blend-mode:luminosity}
+.sobrio .prod-texto h3{font-stretch:88%;font-weight:600;font-size:clamp(1.5rem,2.3vw,2rem);line-height:1.1;letter-spacing:-.012em}
+.sobrio .prod-texto p{font-size:1rem}
+.sobrio .prod-bullet{padding:18px 0}
+.sobrio .prod-bullet:first-child{padding-top:0}
+.sobrio .prod-bullet h4{font-stretch:92%;font-weight:600;font-size:1.06rem;color:var(--azul-oscuro)}
+.sobrio .prod-bullet p{font-size:.93rem;line-height:1.55}
+
+/* ---------- Franja azul ---------- */
+.sobrio .banner-azul{padding:0 var(--lado);background:var(--campo)}
+.sobrio .banner-azul-inner{max-width:none;padding:clamp(36px,5vw,64px) 0;gap:clamp(20px,4vw,56px);border-radius:0;background:none}
+.sobrio .banner-azul-ico{display:none}
+.sobrio .banner-azul-txt h3{margin-bottom:10px;font-stretch:88%;font-weight:600;font-size:clamp(1.4rem,2.4vw,2rem);line-height:1.1;letter-spacing:-.012em}
+.sobrio .banner-azul-txt p{max-width:62ch;font-size:1rem}
+.sobrio .btn-blanco-outline{padding:14px 26px;border-radius:2px;font-weight:600;color:var(--azul-oscuro)}
+.sobrio .btn-blanco-outline:hover{transform:none;background:#e6ebf7}
+
+/* ---------- Tres servicios ---------- */
+.sobrio .sec-contenido{padding:var(--seccion) var(--lado);background:var(--blanco)}
+.sobrio .sec-contenido-titulo{max-width:24ch;margin:0 0 clamp(28px,4vw,56px)}
+.sobrio .contenido-grid{max-width:none;gap:clamp(20px,3vw,44px)}
+.sobrio .cont-card{padding-top:clamp(16px,2vw,24px);border:0;border-top:1px solid var(--azul-oscuro);border-radius:0;background:none}
+.sobrio .cont-card:hover{box-shadow:none;transform:none}
+.sobrio .cont-card-img-wrap{padding:0;background:var(--azul);isolation:isolate}
+.sobrio .cont-card img{height:clamp(200px,20vw,260px);border-radius:0;filter:grayscale(1) contrast(1.06);mix-blend-mode:luminosity}
+.sobrio .cont-card-body{padding:22px 0 0}
+.sobrio .cont-card-body h3{font-stretch:90%;font-weight:600;font-size:1.32rem;line-height:1.15;letter-spacing:-.008em}
+.sobrio .cont-card-body p{font-size:.96rem}
+.sobrio .cont-card-link{font-weight:600;font-size:.93rem}
+
+/* ---------- Cómo trabajamos: cuatro pasos numerados ---------- */
+.sobrio .sec-proceso{padding:var(--seccion) var(--lado);background:var(--papel2)}
+.sobrio .sec-proceso .inner{max-width:none}
+.sobrio .sec-proceso h2{margin-bottom:clamp(28px,4vw,56px)}
+.sobrio .pasos-grid{gap:0;border-top:1px solid var(--azul-oscuro)}
+.sobrio .pasos-grid::before{content:none}
+.sobrio .paso-item{padding:22px clamp(16px,2vw,28px) 0 0;text-align:left}
+.sobrio .paso-item+.paso-item{padding-left:clamp(16px,2vw,28px);border-left:1px solid var(--linea)}
+.sobrio .paso-circulo{width:auto;height:auto;margin:0 0 clamp(20px,3vw,44px);border:0;border-radius:0;background:none;justify-content:flex-start}
+.sobrio .paso-circulo svg{display:none}
+.sobrio .paso-num{position:static;width:auto;height:auto;border-radius:0;background:none;justify-content:flex-start;font-family:var(--titular);font-stretch:80%;font-weight:500;font-size:clamp(2.6rem,4.4vw,4rem);line-height:1;color:var(--azul-boton)}
+.sobrio .paso-item h4{margin-bottom:8px;font-stretch:92%;font-weight:600;font-size:1.12rem}
+.sobrio .paso-item p{font-size:.93rem;line-height:1.55}
+
+/* ---------- Sectores: tabla de celdas ---------- */
+.sobrio .sec-sectores{padding:var(--seccion) var(--lado);border:0;background:var(--blanco)}
+.sobrio .sec-sectores .inner{max-width:none;text-align:left}
+.sobrio .sec-sectores h2{margin-bottom:clamp(28px,4vw,56px)}
+.sobrio .sectores-pills{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--azul-oscuro);border-left:1px solid var(--linea)}
+.sobrio .sectores-pills .sector-pill{justify-content:flex-start;gap:10px;padding:20px 18px;border:0;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);border-radius:0;background:none;font-size:.95rem;text-align:left}
+.sobrio .sectores-pills .sector-pill:hover{background:var(--papel2)}
+
+/* ---------- Contacto sobre la foto ---------- */
+.sobrio .sec-canales{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,88px);align-items:end;
+  padding:var(--seccion) var(--lado);
+  background-image:linear-gradient(rgba(15,32,96,.6),rgba(15,32,96,.8)),linear-gradient(#1b3a8f,#1b3a8f),url('../img/fondo-canales.jpg');
+  background-blend-mode:normal,color,normal;background-size:cover;background-position:center;
+}
+.sobrio .sec-canales h2{max-width:15ch;margin:0;padding:0;color:#fff;text-shadow:none}
+.sobrio .canales-grid{max-width:none;margin:0;grid-template-columns:minmax(0,1fr);gap:0}
+.sobrio .canal-card{border:0;border-radius:2px;text-align:left}
+.sobrio .canal-card:hover{box-shadow:none;transform:none}
+.sobrio .canal-card-body{padding:clamp(24px,3vw,40px);align-items:stretch}
+.sobrio .canal-card h3{margin-bottom:8px;font-stretch:90%;font-weight:600;font-size:1.4rem}
+.sobrio .canal-card p{max-width:none;margin-bottom:22px;font-size:.98rem}
+.sobrio .canales-iconos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0!important;border-top:1px solid var(--azul-oscuro);border-left:1px solid var(--linea)}
+.sobrio .canales-iconos a{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0;padding:16px 14px;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);font-size:.9rem;font-weight:600;color:var(--azul-oscuro);text-decoration:none;transition:background .15s}
+.sobrio .canales-iconos a:hover{background:var(--papel2);color:var(--azul-oscuro)}
+
+/* ---------- Pie ---------- */
+.sobrio .prefooter{padding:clamp(48px,6vw,80px) var(--lado)}
+.sobrio .prefooter-grid{max-width:none;gap:clamp(20px,3vw,40px)}
+.sobrio .pf-col{padding-top:16px;border-top:1px solid var(--azul-oscuro)}
+.sobrio .pf-col h4{font-stretch:92%;font-weight:600;font-size:1rem;color:var(--azul-oscuro)}
+.sobrio footer{padding:28px var(--lado) 32px;background:var(--campo)}
+.sobrio .footer-top,.sobrio .footer-links,.sobrio .footer-bottom{max-width:none}
+.sobrio .soc-btn{border-radius:2px}
+
+/* ---------- Pantallas medianas ---------- */
+@media(max-width:1050px){
+  .sobrio .accesos-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sobrio .card-producto-inner{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .sobrio .prod-img{grid-column:1/-1}
+  .sobrio .prod-img img{height:clamp(220px,36vw,340px)}
+  .sobrio .pasos-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 clamp(20px,4vw,40px);border-top:0}
+  .sobrio .paso-item,.sobrio .paso-item+.paso-item{padding:20px 0 30px;border-left:0;border-top:1px solid var(--azul-oscuro)}
+  .sobrio .paso-circulo{margin-bottom:18px}
+  .sobrio .sectores-pills{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:960px){
+  .sobrio .pyme-sec{grid-template-columns:minmax(0,1fr);gap:18px;padding:36px var(--margen) 44px}
+  .sobrio .pyme-kicker{margin-bottom:0}
+  .sobrio .pyme-intro h1{margin-bottom:0}
+  .sobrio .pyme-intro p{max-width:60ch;margin-bottom:6px}
+  .sobrio .pyme-puntos{margin:14px 0 0}
+  .sobrio .sec-canales{grid-template-columns:minmax(0,1fr);align-items:start}
+  .sobrio .sec-canales h2{max-width:16ch}
+}
+@media(max-width:900px){
+  .sobrio .nav-inner{height:58px;padding:0 var(--margen)}
+  .sobrio .nav-logo img{height:36px}
+  .sobrio .nav-btn-llamar-mobile{border-radius:2px;background:none;border:1px solid #c3cbe0}
+  .sobrio .nav-btn-llamar-mobile svg path{stroke:var(--azul-oscuro)}
+}
+@media(max-width:768px){
+  .sobrio .pyme-sec{margin-top:0;padding:26px var(--margen) 36px}
+  .sobrio .pyme-intro h1{font-size:clamp(2rem,8.6vw,2.6rem)}
+  .sobrio .pyme-chat{height:560px;height:min(560px,calc(100svh - 84px));border-radius:2px}
+  .sobrio .contenido-grid{gap:36px}
+  .sobrio .sectores-pills{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .sobrio .banner-azul-inner{text-align:left;align-items:flex-start}
+  .sobrio .prefooter-grid{gap:28px}
+}
+@media(max-width:520px){
+  .sobrio .accesos-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .sobrio .acceso-item{padding:18px 12px}
+  .sobrio .card-producto-inner{grid-template-columns:minmax(0,1fr)!important;padding:24px 0 0!important;gap:22px!important}
+  .sobrio .pasos-grid{grid-template-columns:minmax(0,1fr)}
+  .sobrio .sectores-pills .sector-pill{padding:16px 12px;font-size:.86rem;justify-content:flex-start;text-align:left}
+  .sobrio .canales-iconos{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+  .sobrio .pyme-contacto a{flex:1 1 auto;justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){
+  .sobrio,.sobrio *{scroll-behavior:auto}
+  .sobrio .pc-msg,.sobrio .pc-opciones,.sobrio .pc-form,.sobrio .pc-resumen,.sobrio .pc-archivo{animation:none}
+}
