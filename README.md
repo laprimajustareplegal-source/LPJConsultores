@@ -8,7 +8,7 @@ Sitio de La Prima Justa Ltda. (LPJ Consultores), agencia de seguros. Se publica 
 |---|---|
 | `index.html` | Página de inicio: el chat PYME arriba y la información de la agencia abajo. El botón "Acceso" lleva a Mi cuenta. En producción desde el 9 de noviembre de 2026. |
 | `inicio-pyme.html` | Era la versión de prueba. Ahora solo redirige al inicio, para que los enlaces guardados sigan funcionando. |
-| `diseno.html` | **Versión de prueba del estilo sobrio, toda sobre azul** (con `noindex`): la misma página de inicio con la hoja `pyme/sobrio.css`. Cuando se apruebe, ese estilo pasa a `index.html`. |
+| `diseno.html` | **Versión de prueba del estilo sobrio** (con `noindex`): la misma página de inicio con la hoja `pyme/sobrio.css`; casi toda en azul profundo, con dos secciones blancas y una en azul grisáceo. Cuando se apruebe, ese estilo pasa a `index.html`. |
 | `mi-cuenta.html` | Portal del cliente: solicitudes con su estado, documentos, pólizas, conversaciones y datos. |
 | `asesor.html` | Panel del asesor: atender solicitudes, cambiar estados, subir cotizaciones y pólizas, publicar el link de pago. |
 | `test-felipe.html`, `firmas/` | Material anterior (prototipo del chat para asesores y firmas de correo). |
@@ -22,7 +22,7 @@ La página de inicio anterior (sin chat) quedó en el historial: es el `index.ht
 - `chat-pyme.js` / `chat-pyme.css` — el chat. Las preguntas de la cotización corren en la página (no usan IA). La IA solo responde preguntas libres.
 - `mi-cuenta.js`, `asesor.js`, `cuenta.css` — portal del cliente y panel del asesor.
 - `lib/` — librería oficial de Supabase incluida en el sitio.
-- `sobrio.css` — estilo sobrio de la página de inicio: toda la página sobre el azul profundo de LPJ con texto blanco (el chat es la única pieza blanca), titulares grandes en Archivo, líneas finas, esquinas rectas, fotos en azul. Solo se aplica en páginas con `<body class="sobrio">`; ahí los colores del sitio (`--negro`, `--azul`…) se reinterpretan para leerse sobre azul y dentro de `.pyme-chat` vuelven a su valor normal. La versión anterior (secciones blancas) está en el commit `dd709f1`.
+- `sobrio.css` — estilo sobrio de la página de inicio: casi toda la página sobre el azul profundo de LPJ con texto blanco, titulares grandes en Archivo, líneas finas, esquinas rectas, fotos en azul. Solo se aplica en páginas con `<body class="sobrio">`. Cada sección tiene un tono (azul profundo, blanco o azul grisáceo) y se cambia moviéndola de lista en el bloque "Tonos por sección" del archivo: hoy van en blanco "Transformamos el riesgo…" y "Sectores que atendemos", y en azul grisáceo "¿Cómo trabajamos con usted?". Los colores del sitio (`--negro`, `--azul`…) toman el valor del tono de cada zona y dentro de `.pyme-chat` valen lo de siempre. Versiones anteriores: inicio azul con el resto en blanco, commit `dd709f1`; toda azul, commit `1d9ee53`.
 - `fuentes/` — tipografía Archivo (licencia abierta OFL, incluida) alojada en el sitio.
 
 Mientras `config.js` no tenga los datos de Supabase, el chat funciona en modo sencillo: no hay cuentas ni archivos y cada solicitud llega al correo del asesor.

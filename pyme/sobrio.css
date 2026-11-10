@@ -1,8 +1,12 @@
-/* La Prima Justa — estilo sobrio, todo sobre azul.
+/* La Prima Justa — estilo sobrio.
    Se aplica solo en las páginas con <body class="sobrio">; no cambia el contenido ni el funcionamiento.
-   Ideas: toda la página es un solo campo de azul profundo (el de LPJ) con el texto en blanco; titulares
-   grandes a la izquierda, esquinas rectas y líneas finas que ordenan la página como la carátula de una
-   póliza. El chat es la única pieza blanca: es lo primero que debe verse. */
+   Ideas: la página es casi toda un campo de azul profundo (el de LPJ) con el texto en blanco; unas pocas
+   secciones van en blanco y una en azul grisáceo para dar respiro. Titulares grandes a la izquierda,
+   esquinas rectas y líneas finas que ordenan la página como la carátula de una póliza.
+
+   Cada sección tiene un "tono": azul profundo, blanco o azul grisáceo. Se cambia en el bloque "Tonos por
+   sección": se pasa la sección a la lista del fondo que se quiera y, si queda clara (blanca o azul
+   grisácea), se agrega a la lista "Tono claro"; si queda en azul profundo, se quita de esa lista. */
 
 @font-face{
   font-family:'Archivo';font-style:normal;font-display:swap;font-weight:100 900;font-stretch:62% 125%;
@@ -11,33 +15,50 @@
 }
 
 .sobrio{
-  --campo:#0f2060;                          /* azul profundo: el fondo de toda la página */
+  --campo:#0f2060;                          /* azul profundo: el fondo de casi toda la página */
   --campo-2:#142a73;                        /* un tono más claro: menús desplegables y menú lateral */
+  --papel:#e8edf7;                          /* azul grisáceo claro */
   --foto:#1b3a8f;                           /* azul con el que se tiñen las fotos */
-  --tinta:#fff;                             /* titulares */
-  --texto:rgba(255,255,255,.8);             /* párrafos */
-  --acento:#b3c6ff;                         /* enlaces, iconos y números: el mismo azul, aclarado */
-  --linea:rgba(255,255,255,.2);             /* líneas finas */
-  --linea-fuerte:rgba(255,255,255,.55);     /* línea que abre cada bloque */
-  --velo:rgba(255,255,255,.07);             /* fondo al pasar el cursor */
   --ancho:1240px;
   --margen:clamp(20px,4.2vw,64px);
   --lado:max(var(--margen),calc((100% - var(--ancho))/2));
   --titular:'Archivo','Inter',system-ui,sans-serif;
   --seccion:clamp(64px,9vw,128px);
 
-  /* Los colores del sitio se reinterpretan para leerse sobre azul: lo que era tinta oscura pasa a blanco
-     y lo que era azul de enlace pasa al azul aclarado. Dentro del chat vuelven a su valor de siempre. */
-  --negro:var(--tinta);
-  --azul-oscuro:var(--tinta);
-  --azul:var(--acento);
-  --azul-boton:var(--acento);
-  --gris-texto:var(--texto);
-  --gris-borde:var(--linea);
-  --gris-fondo:var(--velo);
+  /* Tono oscuro: el de la página */
+  --tinta:#fff;                             /* titulares */
+  --texto:rgba(255,255,255,.8);             /* párrafos */
+  --acento:#b3c6ff;                         /* enlaces, iconos y números: el mismo azul, aclarado */
+  --linea:rgba(255,255,255,.2);             /* líneas finas */
+  --linea-fuerte:rgba(255,255,255,.55);     /* línea que abre cada bloque */
+  --velo:rgba(255,255,255,.07);             /* fondo al pasar el cursor */
+
+  /* Los colores del sitio toman el valor del tono: lo que era tinta oscura pasa a la tinta del tono y lo
+     que era azul de enlace pasa a su acento. (Se repite en "Tono claro"; dentro del chat valen lo de siempre.) */
+  --negro:var(--tinta);--azul-oscuro:var(--tinta);--azul:var(--acento);--azul-boton:var(--acento);
+  --gris-texto:var(--texto);--gris-borde:var(--linea);--gris-fondo:var(--velo);
 
   background:var(--campo);color:var(--tinta);
 }
+
+/* ---------- Tonos por sección ---------- */
+/* Secciones blancas */
+.sobrio .titulo-seccion,.sobrio .card-producto,.sobrio .sec-sectores{background:#fff}
+/* Sección en azul grisáceo */
+.sobrio .sec-proceso{background:var(--papel)}
+/* Secciones en azul profundo: dejan ver el fondo de la página */
+.sobrio .accesos,.sobrio .banner-azul,.sobrio .sec-contenido,.sobrio .prefooter,.sobrio footer{background:none}
+
+/* Tono claro: tinta azul sobre blanco o sobre azul grisáceo. Van aquí todas las secciones de las dos primeras listas */
+.sobrio .titulo-seccion,.sobrio .card-producto,.sobrio .sec-sectores,.sobrio .sec-proceso{
+  --tinta:#0f2060;--texto:#5a6272;--acento:#1644c8;--linea:#d5dbe9;--linea-fuerte:#0f2060;--velo:rgba(15,32,96,.05);
+  --negro:var(--tinta);--azul-oscuro:var(--tinta);--azul:var(--acento);--azul-boton:var(--acento);
+  --gris-texto:var(--texto);--gris-borde:var(--linea);--gris-fondo:var(--velo);
+  color:var(--tinta);
+}
+.sobrio .sec-proceso{--linea:#c6cfe4}          /* sobre el azul grisáceo las líneas van un punto más oscuras */
+
+/* El chat es un panel blanco con sus colores de siempre */
 .sobrio .pyme-chat{
   --negro:#0f1923;--azul-oscuro:#0f2060;--azul:#1b3a8f;--azul-boton:#1644c8;--gris-texto:#5a6272;--gris-borde:#e0e3ea;--gris-fondo:#f2f4f7;
   color:#0f1923;scrollbar-color:auto;
@@ -118,7 +139,7 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .pc-entrada button{border-radius:2px}
 
 /* ---------- Accesos rápidos: una fila con líneas ---------- */
-.sobrio .accesos{padding:0 var(--lado);background:none}
+.sobrio .accesos{padding:0 var(--lado) clamp(44px,5.6vw,84px)}
 .sobrio .accesos-grid{max-width:none;gap:0;border-top:1px solid var(--linea);border-left:1px solid var(--linea)}
 .sobrio .acceso-item{flex-direction:row;justify-content:flex-start;gap:12px;padding:24px 16px;border:0;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);border-radius:0;background:none;transition:background .15s}
 .sobrio .acceso-item:hover{box-shadow:none;transform:none;background:var(--velo)}
@@ -126,9 +147,9 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .acceso-item p{text-align:left;font-size:.88rem}
 
 /* ---------- Qué hacemos ---------- */
-.sobrio .titulo-seccion{padding:var(--seccion) var(--lado) 0;background:none;text-align:left}
+.sobrio .titulo-seccion{padding:var(--seccion) var(--lado) 0;text-align:left}
 .sobrio .titulo-seccion h2{max-width:24ch}
-.sobrio .card-producto{padding:clamp(28px,4vw,52px) var(--lado) var(--seccion);background:none}
+.sobrio .card-producto{padding:clamp(28px,4vw,52px) var(--lado) var(--seccion)}
 .sobrio .card-producto-inner{
   max-width:none;padding:clamp(24px,3vw,40px) 0 0;border-top:1px solid var(--linea-fuerte);border-radius:0;box-shadow:none;background:none;
   grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:start;
@@ -142,8 +163,8 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .prod-bullet h4{font-stretch:92%;font-weight:600;font-size:1.06rem}
 .sobrio .prod-bullet p{font-size:.93rem;line-height:1.55}
 
-/* ---------- Franja de contacto rápido: entre dos líneas ---------- */
-.sobrio .banner-azul{padding:0 var(--lado);background:none;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea)}
+/* ---------- Franja de contacto rápido ---------- */
+.sobrio .banner-azul{padding:0 var(--lado);border-bottom:1px solid var(--linea)}
 .sobrio .banner-azul-inner{max-width:none;padding:clamp(36px,5vw,64px) 0;gap:clamp(20px,4vw,56px);border-radius:0;background:none}
 .sobrio .banner-azul-ico{display:none}
 .sobrio .banner-azul-txt h3{margin-bottom:10px;font-stretch:88%;font-weight:600;font-size:clamp(1.4rem,2.4vw,2rem);line-height:1.1;letter-spacing:-.012em}
@@ -152,7 +173,7 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .btn-blanco-outline:hover{transform:none;background:#dfe7ff}
 
 /* ---------- Tres servicios ---------- */
-.sobrio .sec-contenido{padding:var(--seccion) var(--lado) 0;background:none}
+.sobrio .sec-contenido{padding:var(--seccion) var(--lado)}
 .sobrio .sec-contenido-titulo{max-width:24ch;margin:0 0 clamp(28px,4vw,56px)}
 .sobrio .contenido-grid{max-width:none;gap:clamp(20px,3vw,44px)}
 .sobrio .cont-card{padding-top:clamp(16px,2vw,24px);border:0;border-top:1px solid var(--linea-fuerte);border-radius:0;background:none}
@@ -165,7 +186,7 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .cont-card-link{font-weight:600;font-size:.93rem}
 
 /* ---------- Cómo trabajamos: cuatro pasos numerados ---------- */
-.sobrio .sec-proceso{padding:var(--seccion) var(--lado) 0;background:none}
+.sobrio .sec-proceso{padding:var(--seccion) var(--lado)}
 .sobrio .sec-proceso .inner{max-width:none}
 .sobrio .sec-proceso h2{margin-bottom:clamp(28px,4vw,56px)}
 .sobrio .pasos-grid{gap:0;border-top:1px solid var(--linea-fuerte)}
@@ -179,7 +200,7 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .paso-item p{font-size:.93rem;line-height:1.55}
 
 /* ---------- Sectores: tabla de celdas ---------- */
-.sobrio .sec-sectores{padding:var(--seccion) var(--lado);border:0;background:none}
+.sobrio .sec-sectores{padding:var(--seccion) var(--lado);border:0}
 .sobrio .sec-sectores .inner{max-width:none;text-align:left}
 .sobrio .sec-sectores h2{margin-bottom:clamp(28px,4vw,56px)}
 .sobrio .sectores-pills{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--linea-fuerte);border-left:1px solid var(--linea)}
@@ -207,11 +228,11 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .canales-iconos a:hover{background:var(--velo);color:var(--tinta)}
 
 /* ---------- Pie ---------- */
-.sobrio .prefooter{padding:clamp(48px,6vw,80px) var(--lado);background:none;border-top:0}
+.sobrio .prefooter{padding:clamp(48px,6vw,80px) var(--lado);border-top:0}
 .sobrio .prefooter-grid{max-width:none;gap:clamp(20px,3vw,40px)}
 .sobrio .pf-col{padding-top:16px;border-top:1px solid var(--linea-fuerte)}
 .sobrio .pf-col h4{font-stretch:92%;font-weight:600;font-size:1rem}
-.sobrio footer{padding:28px var(--lado) 32px;background:none;border-top:1px solid var(--linea)}
+.sobrio footer{padding:28px var(--lado) 32px;border-top:1px solid var(--linea)}
 .sobrio .footer-top,.sobrio .footer-links,.sobrio .footer-bottom{max-width:none}
 .sobrio .soc-btn{border-radius:2px}
 
@@ -243,6 +264,7 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 }
 @media(max-width:768px){
   .sobrio .pyme-sec{margin-top:0;padding:26px var(--margen) 36px}
+  .sobrio .accesos{padding-bottom:36px}
   .sobrio .pyme-intro h1{font-size:clamp(2rem,8.6vw,2.6rem)}
   .sobrio .pyme-chat{height:560px;height:min(560px,calc(100svh - 84px));border-radius:2px}
   .sobrio .contenido-grid{gap:36px}
