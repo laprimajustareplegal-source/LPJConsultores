@@ -1,7 +1,8 @@
-/* La Prima Justa — estilo sobrio.
+/* La Prima Justa — estilo sobrio, todo sobre azul.
    Se aplica solo en las páginas con <body class="sobrio">; no cambia el contenido ni el funcionamiento.
-   Ideas: un solo color (el azul de LPJ) en campos planos, titulares grandes alineados a la izquierda,
-   esquinas rectas y líneas finas que ordenan la página como la carátula de una póliza. */
+   Ideas: toda la página es un solo campo de azul profundo (el de LPJ) con el texto en blanco; titulares
+   grandes a la izquierda, esquinas rectas y líneas finas que ordenan la página como la carátula de una
+   póliza. El chat es la única pieza blanca: es lo primero que debe verse. */
 
 @font-face{
   font-family:'Archivo';font-style:normal;font-display:swap;font-weight:100 900;font-stretch:62% 125%;
@@ -10,52 +11,87 @@
 }
 
 .sobrio{
-  --campo:#0f2060;                          /* azul profundo: inicio, franja y pie */
-  --linea:#d5dbe9;                          /* líneas sobre blanco */
-  --linea-campo:rgba(255,255,255,.22);      /* líneas sobre azul */
-  --papel2:#f3f5fa;
+  --campo:#0f2060;                          /* azul profundo: el fondo de toda la página */
+  --campo-2:#142a73;                        /* un tono más claro: menús desplegables y menú lateral */
+  --foto:#1b3a8f;                           /* azul con el que se tiñen las fotos */
+  --tinta:#fff;                             /* titulares */
+  --texto:rgba(255,255,255,.8);             /* párrafos */
+  --acento:#b3c6ff;                         /* enlaces, iconos y números: el mismo azul, aclarado */
+  --linea:rgba(255,255,255,.2);             /* líneas finas */
+  --linea-fuerte:rgba(255,255,255,.55);     /* línea que abre cada bloque */
+  --velo:rgba(255,255,255,.07);             /* fondo al pasar el cursor */
   --ancho:1240px;
   --margen:clamp(20px,4.2vw,64px);
   --lado:max(var(--margen),calc((100% - var(--ancho))/2));
   --titular:'Archivo','Inter',system-ui,sans-serif;
   --seccion:clamp(64px,9vw,128px);
+
+  /* Los colores del sitio se reinterpretan para leerse sobre azul: lo que era tinta oscura pasa a blanco
+     y lo que era azul de enlace pasa al azul aclarado. Dentro del chat vuelven a su valor de siempre. */
+  --negro:var(--tinta);
+  --azul-oscuro:var(--tinta);
+  --azul:var(--acento);
+  --azul-boton:var(--acento);
+  --gris-texto:var(--texto);
+  --gris-borde:var(--linea);
+  --gris-fondo:var(--velo);
+
+  background:var(--campo);color:var(--tinta);
 }
+.sobrio .pyme-chat{
+  --negro:#0f1923;--azul-oscuro:#0f2060;--azul:#1b3a8f;--azul-boton:#1644c8;--gris-texto:#5a6272;--gris-borde:#e0e3ea;--gris-fondo:#f2f4f7;
+  color:#0f1923;scrollbar-color:auto;
+}
+html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 
 /* ---------- Base ---------- */
 .sobrio h1,.sobrio h2,.sobrio h3,.sobrio h4{font-family:var(--titular)}
 .sobrio .aparece{opacity:1;transform:none;transition:none}
 .sobrio a:focus-visible,.sobrio button:focus-visible,.sobrio input:focus-visible{outline:2px solid var(--azul-boton);outline-offset:2px}
-.sobrio .pyme-intro a:focus-visible,.sobrio .banner-azul a:focus-visible,.sobrio .sec-canales>h2 a:focus-visible,.sobrio footer a:focus-visible{outline-color:#fff}
+
+/* Los iconos traen el azul escrito en el dibujo; aquí toman el color que corresponde a cada zona */
+.sobrio [stroke="#1b3a8f"]{stroke:var(--azul)}
+.sobrio [fill="#1b3a8f"]{fill:var(--azul)}
+.sobrio [stroke="#1a1a1a"]{stroke:currentColor}
 
 /* Titulares de sección: grandes, a la izquierda */
 .sobrio .titulo-seccion h2,.sobrio .sec-contenido-titulo,.sobrio .sec-proceso h2,.sobrio .sec-sectores h2,.sobrio .sec-canales h2{
   font-family:var(--titular);font-stretch:86%;font-weight:600;font-size:clamp(2rem,4.1vw,3.4rem);line-height:1.04;letter-spacing:-.018em;
-  color:var(--azul-oscuro);text-align:left;text-wrap:balance;
+  color:var(--tinta);text-align:left;text-wrap:balance;
 }
 
 /* ---------- Encabezado ---------- */
-.sobrio .nav-wrap{padding:0;background:var(--blanco);border-bottom:1px solid var(--linea);pointer-events:auto}
-.sobrio .nav-inner{max-width:none;height:64px;padding:0 var(--lado);border-radius:0;box-shadow:none}
+.sobrio .nav-wrap{padding:0;background:var(--campo);border-bottom:1px solid var(--linea);pointer-events:auto}
+.sobrio .nav-inner{max-width:none;height:64px;padding:0 var(--lado);border-radius:0;box-shadow:none;background:none}
+.sobrio .nav-logo img,.sobrio .panel-header-logo img{filter:brightness(0) invert(1)}
 .sobrio .nav-logo img{height:40px}
 .sobrio .nav-tabs{height:64px}
 .sobrio .nav-tabs>li>a{height:64px;border-bottom-width:2px}
-.sobrio .megadrop{top:100%;border-radius:0;box-shadow:none;border:1px solid var(--linea);border-top:2px solid var(--azul-boton)}
+.sobrio .nav-tabs>li>a:focus-visible{outline-offset:-8px}
+.sobrio .megadrop{top:100%;border-radius:0;box-shadow:none;background:var(--campo-2);border:1px solid var(--linea);border-top:2px solid var(--acento)}
 .sobrio .megadrop a,.sobrio .nav-btn-solicita,.sobrio .nav-search-ico{border-radius:2px}
 .sobrio .megadrop a{height:auto;padding:11px 10px;border-bottom:0}
-.sobrio .mega-badge{border-radius:2px}
-.sobrio .nav-btn-acceso{padding:9px 18px;border-radius:2px;border:1px solid #c3cbe0}
-.sobrio .nav-soat{background:var(--azul-boton);border-color:var(--azul-boton);color:#fff;font-weight:600}
-.sobrio .nav-soat:hover{background:var(--azul-oscuro);border-color:var(--azul-oscuro)}
+.sobrio .megadrop a:hover{color:var(--tinta)}
+.sobrio .mega-badge{border-radius:2px;background:rgba(255,255,255,.12)}
+.sobrio .nav-btn-acceso{padding:9px 18px;border-radius:2px;border:1px solid rgba(255,255,255,.42);background:none}
+.sobrio .nav-btn-acceso:hover{background:var(--velo);border-color:#fff}
+.sobrio .nav-soat{background:#fff;border-color:#fff;color:var(--campo);font-weight:600}
+.sobrio .nav-soat:hover{background:#dfe7ff;border-color:#dfe7ff}
 
 /* Menú lateral */
+.sobrio .menu-panel{background:var(--campo-2);border-left:1px solid var(--linea)}
+.sobrio .panel-header{background:var(--campo-2)}
 .sobrio .panel-section-title,.sobrio .panel-oport-title{font-family:var(--titular);font-stretch:88%;font-weight:600;letter-spacing:-.01em}
-.sobrio .panel-oport-card{border-radius:0;background:var(--papel2)}
-.sobrio .panel-oport-card:hover{box-shadow:none;transform:none;background:#e8ecf6}
+.sobrio .panel-oport-card{border-radius:0;background:var(--velo)}
+.sobrio .panel-oport-card:hover{box-shadow:none;transform:none;background:rgba(255,255,255,.11)}
 .sobrio .panel-oport-card h4{font-family:var(--titular);font-stretch:92%;font-weight:600;font-size:.98rem}
+.sobrio .panel-cat-list li a{color:var(--tinta)}
+.sobrio .panel-cat-list li a:hover{color:var(--acento)}
+.sobrio .panel-sectores-sublist span{border-bottom-color:var(--linea)!important}
 
-/* ---------- Inicio: titular y chat sobre azul ---------- */
+/* ---------- Inicio: titular y chat ---------- */
 .sobrio .pyme-sec{
-  width:100%;max-width:none;margin:0;border-radius:0;background:var(--campo);
+  width:100%;max-width:none;margin:0;border-radius:0;background:none;
   padding:clamp(44px,6.2vw,92px) var(--lado) clamp(44px,5.6vw,84px);
   grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(32px,5vw,80px);align-items:start;
 }
@@ -63,11 +99,11 @@
 .sobrio .pyme-kicker{margin-bottom:20px;padding:0;border:0;border-radius:0;background:none;font-size:.98rem;font-weight:500;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.72)}
 .sobrio .pyme-intro h1{font-family:var(--titular);font-stretch:86%;font-weight:600;font-size:clamp(2.4rem,4.75vw,4.05rem);line-height:1.02;letter-spacing:-.016em;margin-bottom:26px;text-wrap:balance}
 .sobrio .pyme-intro p{max-width:46ch;margin-bottom:34px;font-size:1.06rem;line-height:1.6;color:rgba(255,255,255,.82)}
-.sobrio .pyme-puntos{gap:0;margin-bottom:30px;border-bottom:1px solid var(--linea-campo)}
-.sobrio .pyme-puntos li{gap:0;padding:15px 0;border-top:1px solid var(--linea-campo);font-size:.97rem;line-height:1.45;color:rgba(255,255,255,.94)}
+.sobrio .pyme-puntos{gap:0;margin-bottom:30px;border-bottom:1px solid var(--linea)}
+.sobrio .pyme-puntos li{gap:0;padding:15px 0;border-top:1px solid var(--linea);font-size:.97rem;line-height:1.45;color:rgba(255,255,255,.94)}
 .sobrio .pyme-puntos li svg{display:none}
 .sobrio .pyme-contacto{gap:8px}
-.sobrio .pyme-contacto a{padding:11px 16px;border-radius:2px;border:1px solid var(--linea-campo);font-weight:500}
+.sobrio .pyme-contacto a{padding:11px 16px;border-radius:2px;border:1px solid var(--linea);font-weight:500}
 .sobrio .pyme-contacto a:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.5)}
 
 .sobrio .pyme-chat{height:620px;border-radius:2px;box-shadow:none}
@@ -82,46 +118,46 @@
 .sobrio .pc-entrada button{border-radius:2px}
 
 /* ---------- Accesos rápidos: una fila con líneas ---------- */
-.sobrio .accesos{padding:0 var(--lado);background:var(--blanco)}
-.sobrio .accesos-grid{max-width:none;gap:0;border-left:1px solid var(--linea)}
+.sobrio .accesos{padding:0 var(--lado);background:none}
+.sobrio .accesos-grid{max-width:none;gap:0;border-top:1px solid var(--linea);border-left:1px solid var(--linea)}
 .sobrio .acceso-item{flex-direction:row;justify-content:flex-start;gap:12px;padding:24px 16px;border:0;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);border-radius:0;background:none;transition:background .15s}
-.sobrio .acceso-item:hover{box-shadow:none;transform:none;background:var(--papel2)}
+.sobrio .acceso-item:hover{box-shadow:none;transform:none;background:var(--velo)}
 .sobrio .acceso-ico svg{width:22px;height:22px}
 .sobrio .acceso-item p{text-align:left;font-size:.88rem}
 
 /* ---------- Qué hacemos ---------- */
-.sobrio .titulo-seccion{padding:var(--seccion) var(--lado) 0;background:var(--blanco);text-align:left}
+.sobrio .titulo-seccion{padding:var(--seccion) var(--lado) 0;background:none;text-align:left}
 .sobrio .titulo-seccion h2{max-width:24ch}
-.sobrio .card-producto{padding:clamp(28px,4vw,52px) var(--lado) var(--seccion);background:var(--blanco)}
+.sobrio .card-producto{padding:clamp(28px,4vw,52px) var(--lado) var(--seccion);background:none}
 .sobrio .card-producto-inner{
-  max-width:none;padding:clamp(24px,3vw,40px) 0 0;border-top:1px solid var(--azul-oscuro);border-radius:0;box-shadow:none;
+  max-width:none;padding:clamp(24px,3vw,40px) 0 0;border-top:1px solid var(--linea-fuerte);border-radius:0;box-shadow:none;background:none;
   grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:start;
 }
-.sobrio .prod-img{display:block;background:var(--azul);isolation:isolate}
+.sobrio .prod-img{display:block;background:var(--foto);isolation:isolate}
 .sobrio .prod-img img{display:block;width:100%;max-width:none;height:clamp(260px,29vw,400px);border-radius:0;box-shadow:none;filter:grayscale(1) contrast(1.06);mix-blend-mode:luminosity}
 .sobrio .prod-texto h3{font-stretch:88%;font-weight:600;font-size:clamp(1.5rem,2.3vw,2rem);line-height:1.1;letter-spacing:-.012em}
 .sobrio .prod-texto p{font-size:1rem}
 .sobrio .prod-bullet{padding:18px 0}
 .sobrio .prod-bullet:first-child{padding-top:0}
-.sobrio .prod-bullet h4{font-stretch:92%;font-weight:600;font-size:1.06rem;color:var(--azul-oscuro)}
+.sobrio .prod-bullet h4{font-stretch:92%;font-weight:600;font-size:1.06rem}
 .sobrio .prod-bullet p{font-size:.93rem;line-height:1.55}
 
-/* ---------- Franja azul ---------- */
-.sobrio .banner-azul{padding:0 var(--lado);background:var(--campo)}
+/* ---------- Franja de contacto rápido: entre dos líneas ---------- */
+.sobrio .banner-azul{padding:0 var(--lado);background:none;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea)}
 .sobrio .banner-azul-inner{max-width:none;padding:clamp(36px,5vw,64px) 0;gap:clamp(20px,4vw,56px);border-radius:0;background:none}
 .sobrio .banner-azul-ico{display:none}
 .sobrio .banner-azul-txt h3{margin-bottom:10px;font-stretch:88%;font-weight:600;font-size:clamp(1.4rem,2.4vw,2rem);line-height:1.1;letter-spacing:-.012em}
 .sobrio .banner-azul-txt p{max-width:62ch;font-size:1rem}
-.sobrio .btn-blanco-outline{padding:14px 26px;border-radius:2px;font-weight:600;color:var(--azul-oscuro)}
-.sobrio .btn-blanco-outline:hover{transform:none;background:#e6ebf7}
+.sobrio .btn-blanco-outline{padding:14px 26px;border-radius:2px;font-weight:600;color:var(--campo)}
+.sobrio .btn-blanco-outline:hover{transform:none;background:#dfe7ff}
 
 /* ---------- Tres servicios ---------- */
-.sobrio .sec-contenido{padding:var(--seccion) var(--lado);background:var(--blanco)}
+.sobrio .sec-contenido{padding:var(--seccion) var(--lado) 0;background:none}
 .sobrio .sec-contenido-titulo{max-width:24ch;margin:0 0 clamp(28px,4vw,56px)}
 .sobrio .contenido-grid{max-width:none;gap:clamp(20px,3vw,44px)}
-.sobrio .cont-card{padding-top:clamp(16px,2vw,24px);border:0;border-top:1px solid var(--azul-oscuro);border-radius:0;background:none}
+.sobrio .cont-card{padding-top:clamp(16px,2vw,24px);border:0;border-top:1px solid var(--linea-fuerte);border-radius:0;background:none}
 .sobrio .cont-card:hover{box-shadow:none;transform:none}
-.sobrio .cont-card-img-wrap{padding:0;background:var(--azul);isolation:isolate}
+.sobrio .cont-card-img-wrap{padding:0;background:var(--foto);isolation:isolate}
 .sobrio .cont-card img{height:clamp(200px,20vw,260px);border-radius:0;filter:grayscale(1) contrast(1.06);mix-blend-mode:luminosity}
 .sobrio .cont-card-body{padding:22px 0 0}
 .sobrio .cont-card-body h3{font-stretch:90%;font-weight:600;font-size:1.32rem;line-height:1.15;letter-spacing:-.008em}
@@ -129,51 +165,53 @@
 .sobrio .cont-card-link{font-weight:600;font-size:.93rem}
 
 /* ---------- Cómo trabajamos: cuatro pasos numerados ---------- */
-.sobrio .sec-proceso{padding:var(--seccion) var(--lado);background:var(--papel2)}
+.sobrio .sec-proceso{padding:var(--seccion) var(--lado) 0;background:none}
 .sobrio .sec-proceso .inner{max-width:none}
 .sobrio .sec-proceso h2{margin-bottom:clamp(28px,4vw,56px)}
-.sobrio .pasos-grid{gap:0;border-top:1px solid var(--azul-oscuro)}
+.sobrio .pasos-grid{gap:0;border-top:1px solid var(--linea-fuerte)}
 .sobrio .pasos-grid::before{content:none}
 .sobrio .paso-item{padding:22px clamp(16px,2vw,28px) 0 0;text-align:left}
 .sobrio .paso-item+.paso-item{padding-left:clamp(16px,2vw,28px);border-left:1px solid var(--linea)}
 .sobrio .paso-circulo{width:auto;height:auto;margin:0 0 clamp(20px,3vw,44px);border:0;border-radius:0;background:none;justify-content:flex-start}
 .sobrio .paso-circulo svg{display:none}
-.sobrio .paso-num{position:static;width:auto;height:auto;border-radius:0;background:none;justify-content:flex-start;font-family:var(--titular);font-stretch:80%;font-weight:500;font-size:clamp(2.6rem,4.4vw,4rem);line-height:1;color:var(--azul-boton)}
+.sobrio .paso-num{position:static;width:auto;height:auto;border-radius:0;background:none;justify-content:flex-start;font-family:var(--titular);font-stretch:80%;font-weight:500;font-size:clamp(2.6rem,4.4vw,4rem);line-height:1;color:var(--acento)}
 .sobrio .paso-item h4{margin-bottom:8px;font-stretch:92%;font-weight:600;font-size:1.12rem}
 .sobrio .paso-item p{font-size:.93rem;line-height:1.55}
 
 /* ---------- Sectores: tabla de celdas ---------- */
-.sobrio .sec-sectores{padding:var(--seccion) var(--lado);border:0;background:var(--blanco)}
+.sobrio .sec-sectores{padding:var(--seccion) var(--lado);border:0;background:none}
 .sobrio .sec-sectores .inner{max-width:none;text-align:left}
 .sobrio .sec-sectores h2{margin-bottom:clamp(28px,4vw,56px)}
-.sobrio .sectores-pills{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--azul-oscuro);border-left:1px solid var(--linea)}
+.sobrio .sectores-pills{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--linea-fuerte);border-left:1px solid var(--linea)}
 .sobrio .sectores-pills .sector-pill{justify-content:flex-start;gap:10px;padding:20px 18px;border:0;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);border-radius:0;background:none;font-size:.95rem;text-align:left}
-.sobrio .sectores-pills .sector-pill:hover{background:var(--papel2)}
+.sobrio .sectores-pills .sector-pill:hover{background:var(--velo)}
 
-/* ---------- Contacto sobre la foto ---------- */
+/* ---------- Contacto: la foto asoma dentro del mismo azul, sin bordes ---------- */
 .sobrio .sec-canales{
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,88px);align-items:end;
   padding:var(--seccion) var(--lado);
-  background-image:linear-gradient(rgba(15,32,96,.6),rgba(15,32,96,.8)),linear-gradient(#1b3a8f,#1b3a8f),url('../img/fondo-canales.jpg');
+  background-image:linear-gradient(#0f2060 0%,rgba(15,32,96,.7) 34%,rgba(15,32,96,.7) 62%,#0f2060 100%),linear-gradient(#1b3a8f,#1b3a8f),url('../img/fondo-canales.jpg');
   background-blend-mode:normal,color,normal;background-size:cover;background-position:center;
+  /* la foto puede asomar una fila de píxeles por debajo del degradado; estas dos franjas la tapan */
+  box-shadow:inset 0 2px 0 var(--campo),inset 0 -2px 0 var(--campo);
 }
-.sobrio .sec-canales h2{max-width:15ch;margin:0;padding:0;color:#fff;text-shadow:none}
+.sobrio .sec-canales h2{max-width:15ch;margin:0;padding:0;text-shadow:none}
 .sobrio .canales-grid{max-width:none;margin:0;grid-template-columns:minmax(0,1fr);gap:0}
-.sobrio .canal-card{border:0;border-radius:2px;text-align:left}
+.sobrio .canal-card{border:1px solid var(--linea);border-radius:2px;background:var(--campo);text-align:left}
 .sobrio .canal-card:hover{box-shadow:none;transform:none}
 .sobrio .canal-card-body{padding:clamp(24px,3vw,40px);align-items:stretch}
 .sobrio .canal-card h3{margin-bottom:8px;font-stretch:90%;font-weight:600;font-size:1.4rem}
 .sobrio .canal-card p{max-width:none;margin-bottom:22px;font-size:.98rem}
-.sobrio .canales-iconos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0!important;border-top:1px solid var(--azul-oscuro);border-left:1px solid var(--linea)}
-.sobrio .canales-iconos a{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0;padding:16px 14px;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);font-size:.9rem;font-weight:600;color:var(--azul-oscuro);text-decoration:none;transition:background .15s}
-.sobrio .canales-iconos a:hover{background:var(--papel2);color:var(--azul-oscuro)}
+.sobrio .canales-iconos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0!important;border-top:1px solid var(--linea-fuerte);border-left:1px solid var(--linea)}
+.sobrio .canales-iconos a{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0;padding:16px 14px;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);font-size:.9rem;font-weight:600;color:var(--tinta);text-decoration:none;transition:background .15s}
+.sobrio .canales-iconos a:hover{background:var(--velo);color:var(--tinta)}
 
 /* ---------- Pie ---------- */
-.sobrio .prefooter{padding:clamp(48px,6vw,80px) var(--lado)}
+.sobrio .prefooter{padding:clamp(48px,6vw,80px) var(--lado);background:none;border-top:0}
 .sobrio .prefooter-grid{max-width:none;gap:clamp(20px,3vw,40px)}
-.sobrio .pf-col{padding-top:16px;border-top:1px solid var(--azul-oscuro)}
-.sobrio .pf-col h4{font-stretch:92%;font-weight:600;font-size:1rem;color:var(--azul-oscuro)}
-.sobrio footer{padding:28px var(--lado) 32px;background:var(--campo)}
+.sobrio .pf-col{padding-top:16px;border-top:1px solid var(--linea-fuerte)}
+.sobrio .pf-col h4{font-stretch:92%;font-weight:600;font-size:1rem}
+.sobrio footer{padding:28px var(--lado) 32px;background:none;border-top:1px solid var(--linea)}
 .sobrio .footer-top,.sobrio .footer-links,.sobrio .footer-bottom{max-width:none}
 .sobrio .soc-btn{border-radius:2px}
 
@@ -184,7 +222,7 @@
   .sobrio .prod-img{grid-column:1/-1}
   .sobrio .prod-img img{height:clamp(220px,36vw,340px)}
   .sobrio .pasos-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 clamp(20px,4vw,40px);border-top:0}
-  .sobrio .paso-item,.sobrio .paso-item+.paso-item{padding:20px 0 30px;border-left:0;border-top:1px solid var(--azul-oscuro)}
+  .sobrio .paso-item,.sobrio .paso-item+.paso-item{padding:20px 0 30px;border-left:0;border-top:1px solid var(--linea-fuerte)}
   .sobrio .paso-circulo{margin-bottom:18px}
   .sobrio .sectores-pills{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
@@ -200,8 +238,8 @@
 @media(max-width:900px){
   .sobrio .nav-inner{height:58px;padding:0 var(--margen)}
   .sobrio .nav-logo img{height:36px}
-  .sobrio .nav-btn-llamar-mobile{border-radius:2px;background:none;border:1px solid #c3cbe0}
-  .sobrio .nav-btn-llamar-mobile svg path{stroke:var(--azul-oscuro)}
+  .sobrio .nav-btn-llamar-mobile{border-radius:2px;background:none;border:1px solid rgba(255,255,255,.42)}
+  .sobrio .nav-btn-llamar-mobile svg path{stroke:var(--tinta)}
 }
 @media(max-width:768px){
   .sobrio .pyme-sec{margin-top:0;padding:26px var(--margen) 36px}
