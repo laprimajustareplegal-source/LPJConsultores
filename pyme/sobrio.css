@@ -265,6 +265,10 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
     --base-foto:linear-gradient(180deg,rgba(15,32,96,.62) 0%,rgba(15,32,96,.2) 46%,rgba(15,32,96,.6) 76%,#0f2060 100%)}
   .sobrio .sec-canales h2{max-width:16ch}
 }
+@media(min-width:901px) and (max-width:1040px){
+  /* en este ancho no cabe todo el encabezado: "Llamar" queda en el menú y en el inicio */
+  .sobrio .nav-btn-solicita[href^="tel:"]{display:none}
+}
 @media(max-width:900px){
   .sobrio .nav-inner{height:58px;padding:0 var(--margen)}
   .sobrio .nav-logo img{height:36px}
