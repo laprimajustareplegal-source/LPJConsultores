@@ -1,0 +1,5 @@
+/* Fondo animado (en prueba; solo lo carga diseno.html). El azul pasa a la raíz y el lienzo queda entre
+   ese azul y el contenido: las secciones sin fondo propio lo dejan ver. */
+html:has(body.sobrio){background:#0f2060}
+body.sobrio{background:transparent}
+.sobrio .fondo-ia{position:fixed;inset:0;z-index:-1;pointer-events:none;display:block}
