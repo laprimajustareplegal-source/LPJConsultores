@@ -118,19 +118,19 @@
     $('fCrear').addEventListener('submit', async function (ev) {
       ev.preventDefault();
       var f = ev.target, b = f.querySelector('[type=submit]');
-      var d = { empresa: f.empresa.value.trim(), nombre: f.nombre.value.trim(), celular: f.celular.value.trim(), correo: f.correo.value.trim().toLowerCase() };
-      if (!d.empresa || !d.nombre) return mensaje(f, 'Escriba la empresa y su nombre.');
+      var d = { nombre: f.nombre.value.trim(), celular: f.celular.value.trim(), correo: f.correo.value.trim().toLowerCase() };
+      if (!d.nombre) return mensaje(f, 'Escriba su nombre.');
       if (d.celular.replace(/\D/g, '').length < 7) return mensaje(f, 'Revise el celular.');
       if (!correoValido(d.correo)) return mensaje(f, 'Revise el correo.');
       if (f.clave.value.length < 8) return mensaje(f, 'La contraseña debe tener al menos 8 caracteres.');
       if (!f.autoriza.checked) return mensaje(f, 'Debe autorizar el tratamiento de datos.');
       b.disabled = true; mensaje(f, '');
       try {
-        var r = await L.registrar(d.correo, f.clave.value, { empresa: d.empresa, nombre: d.nombre, celular: d.celular, autoriza: 'true' });
+        var r = await L.registrar(d.correo, f.clave.value, { nombre: d.nombre, celular: d.celular, autoriza: 'true' });
         if (r.requiereConfirmar) { f.reset(); mensaje(f, 'Le enviamos un correo para confirmar su cuenta. Ábralo y luego ingrese aquí.', true); }
         else {
           usuario = r.usuario;
-          try { await L.completarPerfil({ empresa: d.empresa, nombre: d.nombre, celular: d.celular }); } catch (e) { /* se completa después en Mis datos */ }
+          try { await L.completarPerfil({ nombre: d.nombre, celular: d.celular }); } catch (e) { /* se completa después en Mis datos */ }
           f.reset();
           await mostrarPortal();
         }
