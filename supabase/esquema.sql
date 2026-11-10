@@ -372,6 +372,8 @@ $$;
 -- por defecto: aquí se concede solo lo necesario a los usuarios con sesión.
 -- Los visitantes sin sesión (anon) no tienen acceso a nada.
 -- =====================================================================
+grant usage on schema public to authenticated;
+
 revoke all on public.asesores, public.perfiles, public.solicitudes, public.eventos,
               public.archivos, public.mensajes, public.polizas
   from anon, authenticated;
@@ -428,3 +430,6 @@ create policy documentos_subir on storage.objects for insert to authenticated
 drop policy if exists documentos_borrar on storage.objects;
 create policy documentos_borrar on storage.objects for delete to authenticated
   using (bucket_id = 'documentos' and public.es_asesor());
+
+-- Avisa a la API de Supabase que hay tablas y funciones nuevas, para que las use de inmediato.
+notify pgrst, 'reload schema';
