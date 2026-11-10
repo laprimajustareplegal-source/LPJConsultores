@@ -2,7 +2,8 @@
    Se aplica solo en las páginas con <body class="sobrio">; no cambia el contenido ni el funcionamiento.
    Ideas: la página es casi toda un campo de azul profundo (el de LPJ) con el texto en blanco; unas pocas
    secciones van en blanco y una en azul grisáceo para dar respiro. Titulares grandes a la izquierda,
-   esquinas rectas y líneas finas que ordenan la página como la carátula de una póliza.
+   esquinas rectas y líneas finas que ordenan la página como la carátula de una póliza. Las fotos van
+   en su color natural, sin capas encima, en alta resolución (img/hd/).
 
    Cada sección tiene un "tono": azul profundo, blanco o azul grisáceo. Se cambia en el bloque "Tonos por
    sección": se pasa la sección a la lista del fondo que se quiera y, si queda clara (blanca o azul
@@ -18,7 +19,6 @@
   --campo:#0f2060;                          /* azul profundo: el fondo de casi toda la página */
   --campo-2:#142a73;                        /* un tono más claro: menús desplegables y menú lateral */
   --papel:#e8edf7;                          /* azul grisáceo claro */
-  --foto:#1b3a8f;                           /* azul con el que se tiñen las fotos */
   --ancho:1240px;
   --margen:clamp(20px,4.2vw,64px);
   --lado:max(var(--margen),calc((100% - var(--ancho))/2));
@@ -154,8 +154,8 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
   max-width:none;padding:clamp(24px,3vw,40px) 0 0;border-top:1px solid var(--linea-fuerte);border-radius:0;box-shadow:none;background:none;
   grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:start;
 }
-.sobrio .prod-img{display:block;background:var(--foto);isolation:isolate}
-.sobrio .prod-img img{display:block;width:100%;max-width:none;height:clamp(260px,29vw,400px);border-radius:0;box-shadow:none;filter:grayscale(1) contrast(1.06);mix-blend-mode:luminosity}
+.sobrio .prod-img{display:block;background:var(--velo)}                 /* color de espera mientras carga la foto */
+.sobrio .prod-img img{display:block;width:100%;max-width:none;height:clamp(260px,29vw,400px);border-radius:0;box-shadow:none}
 .sobrio .prod-texto h3{font-stretch:88%;font-weight:600;font-size:clamp(1.5rem,2.3vw,2rem);line-height:1.1;letter-spacing:-.012em}
 .sobrio .prod-texto p{font-size:1rem}
 .sobrio .prod-bullet{padding:18px 0}
@@ -178,8 +178,8 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .contenido-grid{max-width:none;gap:clamp(20px,3vw,44px)}
 .sobrio .cont-card{padding-top:clamp(16px,2vw,24px);border:0;border-top:1px solid var(--linea-fuerte);border-radius:0;background:none}
 .sobrio .cont-card:hover{box-shadow:none;transform:none}
-.sobrio .cont-card-img-wrap{padding:0;background:var(--foto);isolation:isolate}
-.sobrio .cont-card img{height:clamp(200px,20vw,260px);border-radius:0;filter:grayscale(1) contrast(1.06);mix-blend-mode:luminosity}
+.sobrio .cont-card-img-wrap{padding:0;background:var(--velo)}
+.sobrio .cont-card img{height:clamp(200px,20vw,260px);border-radius:0}
 .sobrio .cont-card-body{padding:22px 0 0}
 .sobrio .cont-card-body h3{font-stretch:90%;font-weight:600;font-size:1.32rem;line-height:1.15;letter-spacing:-.008em}
 .sobrio .cont-card-body p{font-size:.96rem}
@@ -207,16 +207,23 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
 .sobrio .sectores-pills .sector-pill{justify-content:flex-start;gap:10px;padding:20px 18px;border:0;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);border-radius:0;background:none;font-size:.95rem;text-align:left}
 .sobrio .sectores-pills .sector-pill:hover{background:var(--velo)}
 
-/* ---------- Contacto: la foto asoma dentro del mismo azul, sin bordes ---------- */
+/* ---------- Contacto: la foto de la ciudad en su color; solo la base se funde con el azul de la página ---------- */
 .sobrio .sec-canales{
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,88px);align-items:end;
-  padding:var(--seccion) var(--lado);
-  background-image:linear-gradient(#0f2060 0%,rgba(15,32,96,.7) 34%,rgba(15,32,96,.7) 62%,#0f2060 100%),linear-gradient(#1b3a8f,#1b3a8f),url('../img/fondo-canales.jpg');
-  background-blend-mode:normal,color,normal;background-size:cover;background-position:center;
-  /* la foto puede asomar una fila de píxeles por debajo del degradado; estas dos franjas la tapan */
-  box-shadow:inset 0 2px 0 var(--campo),inset 0 -2px 0 var(--campo);
+  min-height:clamp(440px,44vw,640px);padding:var(--seccion) var(--lado) clamp(48px,6vw,88px);
+  --base-foto:linear-gradient(180deg,rgba(15,32,96,0) 0%,rgba(15,32,96,0) 42%,rgba(15,32,96,.6) 74%,#0f2060 100%);
+  background-image:var(--base-foto),url('../img/hd/fondo-canales-1400.jpg');
+  background-size:cover;background-position:center 58%;
+  /* la foto puede asomar una fila de píxeles por debajo del degradado; esta franja la tapa */
+  box-shadow:inset 0 -2px 0 var(--campo);
 }
-.sobrio .sec-canales h2{max-width:15ch;margin:0;padding:0;text-shadow:none}
+@media(min-width:1100px),(min-resolution:1.5dppx){
+  .sobrio .sec-canales{background-image:var(--base-foto),url('../img/hd/fondo-canales-2400.jpg')}   /* pantallas grandes o de alta densidad */
+}
+@media(min-width:1200px){
+  .sobrio .sec-canales{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}   /* la tarjeta no tapa la torre */
+}
+.sobrio .sec-canales h2{max-width:15ch;margin:0;padding:0;text-shadow:0 1px 22px rgba(8,18,56,.5)}
 .sobrio .canales-grid{max-width:none;margin:0;grid-template-columns:minmax(0,1fr);gap:0}
 .sobrio .canal-card{border:1px solid var(--linea);border-radius:2px;background:var(--campo);text-align:left}
 .sobrio .canal-card:hover{box-shadow:none;transform:none}
@@ -253,7 +260,9 @@ html:has(body.sobrio){scrollbar-color:rgba(255,255,255,.38) #0f2060}
   .sobrio .pyme-intro h1{margin-bottom:0}
   .sobrio .pyme-intro p{max-width:60ch;margin-bottom:6px}
   .sobrio .pyme-puntos{margin:14px 0 0}
-  .sobrio .sec-canales{grid-template-columns:minmax(0,1fr);align-items:start}
+  /* en una columna el titular queda arriba, sobre el cielo: se oscurece un poco esa parte para que se lea */
+  .sobrio .sec-canales{grid-template-columns:minmax(0,1fr);align-items:start;
+    --base-foto:linear-gradient(180deg,rgba(15,32,96,.62) 0%,rgba(15,32,96,.2) 46%,rgba(15,32,96,.6) 76%,#0f2060 100%)}
   .sobrio .sec-canales h2{max-width:16ch}
 }
 @media(max-width:900px){
