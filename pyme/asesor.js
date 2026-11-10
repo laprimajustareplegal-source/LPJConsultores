@@ -211,7 +211,7 @@
       '<label>Nota para el cliente (la verá en su cuenta)<textarea name="nota" maxlength="2000" placeholder="Ej.: Le enviamos 3 opciones; la de AXA Colpatria mejora la RC y baja la prima."></textarea></label>' +
       '<div class="fila2"><label>Link de pago de la aseguradora<input type="url" name="link" placeholder="https://…" value="' + E(s.link_pago || '') + '"></label>' +
       '<label>Referencia de pago<input type="text" name="ref" maxlength="120" value="' + E(s.referencia_pago || '') + '"></label></div>' +
-      '<div class="fila2"><label>Adjuntar archivos<input type="file" name="archivo" multiple accept="' + L.ACEPTA + '"></label>' +
+      '<div class="fila2"><label>Adjuntar archivos' + L.campoArchivo(true) + '</label>' +
       '<label>Tipo de archivo<select name="tipo"><option value="cotizacion">Cotización</option><option value="poliza_emitida">Póliza emitida</option><option value="recibo_pago">Recibo de pago</option><option value="otro">Otro</option></select></label></div>' +
       '<div class="msg" role="alert"></div><button class="btn btn-p" type="submit">Guardar</button></form>' +
       '<div id="avisar" class="acciones oculto"></div></div>' +
@@ -224,7 +224,7 @@
       '<div class="tarjeta"><h3>Registrar póliza emitida</h3><form class="form" id="fPoliza" novalidate>' +
       '<div class="fila2"><label>Aseguradora<input type="text" name="aseguradora" list="aseguradoras" maxlength="80"></label><label>Número de póliza<input type="text" name="numero" maxlength="60"></label></div>' +
       '<div class="fila2"><label>Vigencia desde<input type="date" name="desde"></label><label>Vigencia hasta<input type="date" name="hasta"></label></div>' +
-      '<div class="fila2"><label>Prima anual (COP)<input type="text" name="prima" inputmode="numeric" maxlength="20"></label><label>PDF de la póliza<input type="file" name="archivo" accept="' + L.ACEPTA + '"></label></div>' +
+      '<div class="fila2"><label>Prima anual (COP)<input type="text" name="prima" inputmode="numeric" maxlength="20"></label><label>PDF de la póliza' + L.campoArchivo(false) + '</label></div>' +
       '<label class="check"><input type="checkbox" name="vigente" checked> Marcar la solicitud como Póliza vigente</label>' +
       '<datalist id="aseguradoras"><option>AXA Colpatria</option><option>SURA</option><option>Allianz</option><option>Mapfre</option><option>HDI</option><option>Liberty</option><option>Seguros Bolívar</option><option>Seguros del Estado</option><option>La Equidad</option></datalist>' +
       '<div class="msg" role="alert"></div><button class="btn btn-s" type="submit">Registrar póliza</button></form>' +

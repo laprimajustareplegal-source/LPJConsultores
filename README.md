@@ -7,7 +7,7 @@ Sitio de La Prima Justa Ltda. (LPJ Consultores), agencia de seguros. Se publica 
 | Archivo | Qué es |
 |---|---|
 | `index.html` | Página de inicio actual (agencia tradicional). |
-| `inicio-pyme.html` | **Versión de prueba** del inicio con el chat PYME arriba. Cuando se apruebe, reemplaza a `index.html`. |
+| `inicio-pyme.html` | **Versión de prueba** del inicio con el chat PYME arriba. El botón "Acceso" lleva a Mi cuenta. Cuando se apruebe, reemplaza a `index.html` (y se le quita la etiqueta `noindex`). |
 | `mi-cuenta.html` | Portal del cliente: solicitudes con su estado, documentos, pólizas, conversaciones y datos. |
 | `asesor.html` | Panel del asesor: atender solicitudes, cambiar estados, subir cotizaciones y pólizas, publicar el link de pago. |
 | `test-felipe.html`, `firmas/` | Material anterior (prototipo del chat para asesores y firmas de correo). |
@@ -35,7 +35,7 @@ Si Supabase no responde, la solicitud no se pierde: sale por correo al asesor y 
 
 ## Base de datos (`supabase/esquema.sql`)
 
-Se pega completo en Supabase > SQL Editor y se ejecuta. Se puede volver a ejecutar sin perder datos. Crea las tablas, las reglas de seguridad (cada cliente ve solo lo suyo; el asesor ve todo) y el almacenamiento privado de documentos.
+Se pega completo en Supabase > SQL Editor y se ejecuta. Se puede volver a ejecutar sin perder datos. Crea las tablas, las reglas de seguridad (cada cliente ve solo lo suyo; el asesor ve todo) y el almacenamiento privado de documentos. Si Supabase muestra una advertencia antes de ejecutarlo, es normal en este archivo: se confirma y se ejecuta.
 
 Configuración en Supabase después de ejecutar el esquema:
 
@@ -46,8 +46,11 @@ Configuración en Supabase después de ejecutar el esquema:
 ```sql
 insert into public.asesores (usuario_id, nombre)
 select id, 'Luis Felipe Pinilla' from auth.users where email = 'luis.pinilla@laprimajusta.co'
-on conflict do nothing;
+on conflict do nothing
+returning nombre;
 ```
+
+Debe devolver una fila con el nombre. Si no devuelve nada, el usuario todavía no existe (o ya era asesor). Esto se hace antes de poner las claves en `config.js`, es decir, antes de que el portal quede abierto al público.
 
 4. Copiar en `pyme/config.js` el Project URL y la Publishable key.
 

@@ -83,6 +83,20 @@
     return (n || 'archivo').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+/, '').slice(-80) || 'archivo';
   }
 
+  var ACEPTA = '.pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,.doc,.docx,.xls,.xlsx';
+  var SIN_ARCHIVO = 'Ningún archivo elegido';
+  // Muestra junto al botón los nombres de los archivos elegidos.
+  document.addEventListener('change', function (ev) {
+    var inp = ev.target;
+    var caja = inp && inp.type === 'file' ? inp.parentNode : null;
+    if (!caja || !caja.classList || !caja.classList.contains('arch')) return;
+    var nom = caja.querySelector('.arch-nom');
+    if (!nom) return;
+    var lista = Array.prototype.slice.call(inp.files || []).map(function (f) { return f.name; });
+    nom.textContent = !lista.length ? SIN_ARCHIVO : lista.length === 1 ? lista[0] : lista.length + ' archivos: ' + lista.join(', ');
+    caja.classList.toggle('con', lista.length > 0);
+  });
+
   var LPJ = {
     configurado: !!sb,
     cliente: sb,
@@ -91,8 +105,15 @@
     ETAPAS: ETAPAS,
     TIPOS_ARCHIVO: TIPOS_ARCHIVO,
     TIPOS_SOLICITUD: TIPOS_SOLICITUD,
-    ACEPTA: '.pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,.doc,.docx,.xls,.xlsx',
+    ACEPTA: ACEPTA,
     error: error,
+
+    // Campo para elegir archivos con los textos en español (el control del navegador sale en el idioma del equipo).
+    campoArchivo: function (varios) {
+      return '<span class="arch"><input type="file" name="archivo" title=""' + (varios ? ' multiple' : '') + ' accept="' + ACEPTA + '">' +
+        '<span class="arch-btn">' + (varios ? 'Elegir archivos' : 'Elegir archivo') + '</span>' +
+        '<span class="arch-nom">' + SIN_ARCHIVO + '</span></span>';
+    },
 
     // Devuelve un texto con el problema del archivo, o '' si se puede subir.
     problemaArchivo: function (archivo) {

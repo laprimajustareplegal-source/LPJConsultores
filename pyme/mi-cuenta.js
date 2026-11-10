@@ -389,7 +389,7 @@
     var z = $('zonaAccion');
     z.innerHTML = '<form class="form subform" id="fAccion" novalidate>' +
       (conf.texto ? '<label>' + E(conf.etiqueta) + '<textarea name="texto" maxlength="2000"></textarea></label>' : '') +
-      '<label>' + (conf.texto ? 'Adjuntar archivos (opcional)' : E(conf.etiqueta)) + '<input type="file" name="archivo" multiple accept="' + L.ACEPTA + '"></label>' +
+      '<label>' + (conf.texto ? 'Adjuntar archivos (opcional)' : E(conf.etiqueta)) + L.campoArchivo(true) + '</label>' +
       (conf.ayuda ? '<p class="ayuda">' + E(conf.ayuda) + '</p>' : '') +
       '<div class="msg" role="alert"></div><div class="acciones"><button class="btn btn-p" type="submit">' + E(conf.boton) + '</button>' +
       '<button class="btn btn-t" type="button" id="cerrarAccion">Cerrar</button></div></form>';
