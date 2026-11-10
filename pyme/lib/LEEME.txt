@@ -1,0 +1,4 @@
+supabase-2.119.0.js
+Librería oficial @supabase/supabase-js, versión 2.119.0 (archivo dist/umd/supabase.js del paquete de npm).
+Licencia MIT — https://github.com/supabase/supabase-js
+Se incluye aquí para no depender de servidores de terceros al cargar el portal.

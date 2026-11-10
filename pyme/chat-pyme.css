@@ -18,7 +18,8 @@
 .pc-head-txt strong{display:block;font-size:.95rem;color:var(--negro)}
 .pc-head-txt span{display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--gris-texto)}
 .pc-head-txt span::before{content:'';width:7px;height:7px;border-radius:50%;background:#16a34a}
-.pc-reiniciar{margin-left:auto;font-family:inherit;font-size:.76rem;color:var(--gris-texto);background:none;border:1px solid var(--gris-borde);border-radius:8px;padding:6px 10px;cursor:pointer}
+.pc-head-acc{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pc-reiniciar{font-family:inherit;font-size:.76rem;color:var(--gris-texto);background:none;border:1px solid var(--gris-borde);border-radius:8px;padding:6px 10px;cursor:pointer}
 .pc-reiniciar:hover{color:var(--azul);border-color:var(--azul)}
 .pc-mensajes{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;background:#f7f8fb;scroll-behavior:smooth}
 .pc-msg{max-width:86%;padding:11px 15px;border-radius:16px;font-size:.9rem;line-height:1.5;white-space:pre-line;word-wrap:break-word;animation:pcEntra .25s ease}
@@ -37,7 +38,7 @@
 .pc-chip.principal{background:var(--azul-boton);border-color:var(--azul-boton);color:#fff;font-weight:600}
 .pc-chip.principal:hover{background:var(--azul-oscuro)}
 .pc-chip:disabled{opacity:.5;cursor:default}
-.pc-form{align-self:stretch;background:#fff;border:1px solid var(--gris-borde);border-radius:16px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;animation:pcEntra .25s ease}
+.pc-form{align-self:stretch;background:#fff;border:1px solid var(--gris-borde);border-radius:16px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px 10px;animation:pcEntra .25s ease}
 .pc-form label{display:flex;flex-direction:column;gap:4px;font-size:.74rem;font-weight:600;color:var(--gris-texto)}
 .pc-form label.ancho{grid-column:1/-1}
 .pc-form input[type=text],.pc-form input[type=tel],.pc-form input[type=email]{font-family:inherit;font-size:.9rem;padding:10px 12px;border:1.5px solid var(--gris-borde);border-radius:10px;outline:none;color:var(--negro)}
@@ -61,5 +62,43 @@
 .pc-entrada button:disabled{opacity:.5;cursor:default}
 .pc-nota{font-size:.7rem;color:var(--gris-texto);text-align:center;padding:0 14px 10px;background:#fff}
 
-@media(max-width:960px){.pyme-sec{grid-template-columns:1fr;padding:36px 24px;gap:28px}.pyme-intro p{margin-bottom:18px}.pyme-puntos{margin-bottom:20px}}
-@media(max-width:768px){.pyme-sec{width:100%;border-radius:0;margin-top:8px;padding:28px 16px}.pyme-chat{height:560px;border-radius:16px}.pc-form{grid-template-columns:1fr}.pc-msg{max-width:92%}}
+/* En pantallas angostas el chat sube: título, chat y, debajo, los puntos y el contacto. */
+@media(max-width:960px){
+  .pyme-sec{grid-template-columns:minmax(0,1fr);padding:32px 24px;gap:16px}
+  .pyme-intro{display:contents}
+  .pyme-sec>*,.pyme-intro>*{position:relative;z-index:1}
+  .pyme-kicker{order:1;justify-self:start;margin-bottom:0}
+  .pyme-intro h1{order:2;margin-bottom:0;color:#fff}
+  .pyme-intro p{order:3;margin-bottom:4px;max-width:none;color:rgba(255,255,255,.82)}
+  .pyme-chat{order:4}
+  .pyme-puntos{order:5;margin:12px 0 0}
+  .pyme-contacto{order:6}
+}
+@media(max-width:768px){
+  .pyme-sec{width:100%;border-radius:0;margin-top:8px;padding:24px 14px 28px}
+  .pyme-intro p{display:none}
+  .pyme-chat{height:560px;height:min(560px,calc(100svh - 96px));border-radius:16px}
+  .pc-form{grid-template-columns:minmax(0,1fr)}
+  .pc-msg{max-width:92%}
+  .pc-mensajes{padding:16px 14px}
+}
+
+/* Cuenta, archivos y estados */
+.pc-cuenta{font-size:.76rem;font-weight:600;color:var(--azul-boton);text-decoration:none;border:1px solid #c9d3ee;border-radius:8px;padding:6px 10px;white-space:nowrap}
+.pc-cuenta:hover{background:#eef2fb}
+a.pc-chip{text-decoration:none;display:inline-block}
+.pc-archivo{display:flex;flex-wrap:wrap;align-items:center;gap:8px;align-self:flex-start;max-width:100%;animation:pcEntra .25s ease}
+.pc-archivo label.pc-chip{cursor:pointer}
+.pc-archivo-nota{flex-basis:100%;font-size:.74rem;color:var(--gris-texto)}
+.pc-archivo-nota.error{color:#b42318}
+.pc-form-titulo{grid-column:1/-1;font-size:.86rem;font-weight:600;color:var(--azul-oscuro)}
+.pc-link{grid-column:1/-1;font-family:inherit;font-size:.8rem;color:var(--azul-boton);background:none;border:none;cursor:pointer;text-decoration:underline;padding:2px}
+.pc-form input[type=password]{font-family:inherit;font-size:.9rem;padding:10px 12px;border:1.5px solid var(--gris-borde);border-radius:10px;outline:none;color:var(--negro)}
+.pc-resumen-ajustes{margin-top:10px;font-size:.84rem;color:var(--azul-oscuro)}
+.pc-estado{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--gris-borde);color:var(--negro);text-decoration:none;font-size:.84rem}
+.pc-estado:hover{color:var(--azul-boton)}
+.pc-badge{flex-shrink:0;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px;background:#eef2fb;color:var(--azul-oscuro);white-space:nowrap}
+.est-cotizada,.est-pago_pendiente{background:#fff4e5;color:#9a5b00}
+.est-ajustes_solicitados,.est-emision_solicitada,.est-pago_reportado{background:#f1ecff;color:#5b3fb5}
+.est-vigente{background:#e7f6ec;color:#17693a}
+.est-cancelada{background:#f2f4f7;color:#5a6272}

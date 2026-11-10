@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel del asesor — La Prima Justa</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pyme/cuenta.css?v=20261109">
+</head>
+<body>
+<header class="cab"><div class="cab-in">
+  <a href="index.html"><img src="img/logo.png" alt="LPJ Consultores"></a>
+  <span class="cab-tit">Panel del asesor</span>
+  <div class="cab-acc">
+    <button class="btn btn-s oculto" id="btnRecargar" type="button">Actualizar</button>
+    <button class="btn btn-t oculto" id="btnSalir" type="button">Salir</button>
+  </div>
+</div></header>
+
+<main class="cont">
+  <p class="nada" id="cargando">Cargando…</p>
+  <div class="vacio oculto" id="sinConfig">El panel necesita la conexión con Supabase. Llene pyme/config.js.</div>
+
+  <section class="ingreso oculto" id="vIngreso">
+    <h1>Panel del asesor</h1>
+    <p>Ingrese con su cuenta de asesor.</p>
+    <form class="form" id="fIngresar" novalidate>
+      <label>Correo<input type="email" name="correo" autocomplete="email"></label>
+      <label>Contraseña<input type="password" name="clave" autocomplete="current-password"></label>
+      <div class="msg"></div>
+      <button class="btn btn-p" type="submit">Ingresar</button>
+    </form>
+  </section>
+
+  <section class="vacio oculto" id="vSinPermiso">Esta cuenta no tiene permisos de asesor.<br><button class="btn btn-s" type="button" id="btnSalir2">Salir</button></section>
+
+  <section class="oculto" id="vPanel">
+    <div class="contadores" id="contadores"></div>
+    <div class="panel">
+      <div>
+        <input class="buscar" id="buscar" type="search" placeholder="Buscar por empresa, número o correo">
+        <div class="filtros" id="filtros"></div>
+        <div class="lista-sol" id="lista"></div>
+      </div>
+      <div id="detalle"><div class="vacio">Elija una solicitud.</div></div>
+    </div>
+  </section>
+</main>
+
+<script src="pyme/config.js?v=20261109"></script>
+<script src="pyme/lib/supabase-2.119.0.js"></script>
+<script src="pyme/datos.js?v=20261109"></script>
+<script src="pyme/asesor.js?v=20261109"></script>
+</body>
+</html>

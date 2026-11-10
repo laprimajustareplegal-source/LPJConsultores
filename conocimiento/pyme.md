@@ -64,14 +64,22 @@ Las coberturas exactas, sublímites y exclusiones las define el condicionado de 
 
 [COMPLETAR] Exclusiones y actividades no asegurables de cada aseguradora.
 
-## 6. Cómo funciona la cotización con nosotros
+## 6. Cómo funciona el proceso con nosotros (chat y Mi cuenta)
 
-1. El cliente responde en el chat las preguntas básicas de su negocio (actividad, ciudad, valores, coberturas).
-2. La solicitud llega al asesor, que cotiza con las aseguradoras adecuadas para esa actividad.
-3. En máximo 24 horas hábiles el cliente recibe la comparación de opciones con precio, coberturas y deducibles.
-4. Si quiere cambiar coberturas o límites, el asesor ajusta la cotización.
-5. Para emitir se necesita: RUT, cámara de comercio reciente, cédula del representante legal, formulario de conocimiento del cliente (SARLAFT) y, según el valor, fotos o inspección del predio.
-6. La póliza se emite cuando el cliente aprueba y se coordina el pago.
+El chat ofrece dos caminos: "Cotizar mi póliza PYME" (póliza nueva) y "Mejorar mi póliza actual" (el cliente adjunta su póliza y, si aplica, el contrato que le exige seguros).
+
+1. Cotizar: el cliente responde en el chat las preguntas básicas de su negocio (actividad, ciudad, valores, coberturas).
+2. Mejorar: el cliente adjunta su póliza actual (PDF o fotos) y dice qué busca: bajar el precio, mejorar coberturas o cumplir lo que pide un contrato. El asesor la revisa y la compara con otras aseguradoras.
+3. Antes de enviar, el cliente puede pedir cambios escribiéndolos en el chat (límites, coberturas, deducibles, requisitos de un contrato). Quedan en la solicitud para el asesor.
+4. Al enviar, el cliente crea su cuenta con correo y contraseña. La solicitud le llega al asesor.
+5. En máximo 24 horas hábiles el asesor responde con la comparación de opciones (precio, coberturas y deducibles).
+6. En "Mi cuenta" el cliente ve en qué etapa va cada solicitud: Recibida, En análisis, Cotización, Emisión, Pago y Vigente. Allí también ve los documentos, las notas del asesor y sus conversaciones.
+7. Desde "Mi cuenta" el cliente puede: pedir ajustes a la cotización, subir documentos, escribirle al asesor, solicitar la emisión indicando la opción elegida y reportar el pago.
+8. Para emitir se necesita: RUT, cámara de comercio reciente, cédula del representante legal, formulario de conocimiento del cliente (SARLAFT) y, según el valor, fotos o inspección del predio.
+9. Cuando la póliza está emitida, el asesor publica en "Mi cuenta" el link o la referencia de pago de la aseguradora. El pago se hace directamente a la aseguradora, no a la agencia.
+10. Con el pago confirmado, la póliza queda vigente y se puede consultar en la pestaña "Pólizas".
+
+Límites del asistente: no puede leer los archivos que el cliente adjunta (los revisa el asesor), no da precios exactos, no emite pólizas ni recibe pagos, y no puede consultar el estado de una solicitud: para eso está "Mi cuenta".
 
 ## 7. Siniestros
 
