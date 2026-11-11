@@ -19,12 +19,9 @@
 .sobrio .fa-fila{display:flex;align-items:center;justify-content:space-between;gap:clamp(12px,1.5vw,24px);max-width:1600px;margin:0 auto}
 .sobrio .fa-fila img{display:block;width:auto;height:var(--h,28px);max-width:100%;filter:brightness(0) invert(1);opacity:1}
 .sobrio .fa-fila img.fa-propio{filter:none}   /* ya viene en blanco con detalles oscuros */
-.sobrio .fa-fila .fa-txt{flex:0 0 auto;margin:0;padding-left:clamp(14px,1.6vw,26px);border-left:1px solid rgba(255,255,255,.18);font-size:1.02rem;line-height:1.2;font-weight:500;color:#fff;white-space:nowrap}
-@media (min-width:1321px){.sobrio .fa-fila .fa-txt{display:none}}
 @media (max-width:1320px){
   .sobrio .fa-fila{display:grid;grid-template-columns:repeat(3,1fr);justify-items:center;row-gap:30px}
-  .sobrio .fa-fila .fa-txt{grid-column:1/-1;border-left:0;padding:0;text-align:center;white-space:normal;color:rgba(255,255,255,.8)}
-  .sobrio .fa-fila img{height:calc(var(--h,28px) * .9)}
+    .sobrio .fa-fila img{height:calc(var(--h,28px) * .9)}
 }
 
 /* ---------- Barra: gris oscuro translúcido como el resto del sitio oscuro; azul y más sólida sobre fondo blanco ---------- */

@@ -50,7 +50,7 @@
   logos.forEach(function (l) {
     fila += '<img src="img/aseguradoras/' + l[0] + '" alt="' + l[1] + '"' + (l[3] ? ' class="' + l[3] + '"' : '') + ' style="--h:' + l[2] + 'px" loading="lazy" decoding="async">';
   });
-  fila += '<p class="fa-txt">Comparamos más de<br>15 aseguradoras</p></div>';
+  fila += '</div>';
   f.innerHTML = fila;
   sec.parentNode.insertBefore(f, sec.nextSibling);
 })();
