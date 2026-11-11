@@ -40,9 +40,9 @@
   var sec = document.querySelector('.sobrio .pyme-sec');
   if (!sec || document.querySelector('.franja-aseg')) return;
   var logos = [
-    ['sura.svg', 'SURA', 27], ['allianz.svg', 'Allianz', 23], ['bolivar.svg', 'Seguros Bolívar', 32],
-    ['mapfre.svg', 'MAPFRE', 19], ['hdi.svg', 'HDI Seguros', 25], ['bbva.svg', 'BBVA Seguros', 21],
-    ['estado.svg', 'Seguros del Estado', 40, 'fa-propio'], ['equidad.png', 'La Equidad Seguros', 33], ['solidaria.svg', 'Aseguradora Solidaria de Colombia', 31]
+    ['sura.svg', 'SURA', 31], ['allianz.svg', 'Allianz', 26], ['bolivar.svg', 'Seguros Bolívar', 37],
+    ['mapfre.svg', 'MAPFRE', 22], ['hdi.svg', 'HDI Seguros', 29], ['bbva.svg', 'BBVA Seguros', 24],
+    ['estado.svg', 'Seguros del Estado', 46, 'fa-propio'], ['equidad.svg', 'La Equidad Seguros', 38], ['solidaria.svg', 'Aseguradora Solidaria de Colombia', 36]
   ];
   var f = document.createElement('section');
   f.className = 'franja-aseg'; f.setAttribute('aria-label', 'Aseguradoras con las que trabajamos');
