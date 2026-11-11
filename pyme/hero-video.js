@@ -41,7 +41,7 @@
   if (!sec || document.querySelector('.franja-aseg')) return;
   var logos = [
     ['sura.svg', 'SURA', 31], ['allianz.svg', 'Allianz', 26], ['bolivar.svg', 'Seguros Bolívar', 40, 'fa-propio'],
-    ['mapfre.svg', 'MAPFRE', 22], ['hdi.svg', 'HDI Seguros', 29], ['bbva.svg', 'BBVA Seguros', 24],
+    ['mapfre.svg', 'MAPFRE', 25], ['hdi.svg', 'HDI Seguros', 29], ['bbva.svg', 'BBVA Seguros', 24],
     ['estado.svg', 'Seguros del Estado', 46, 'fa-propio'], ['equidad.svg', 'La Equidad Seguros', 38], ['solidaria.svg', 'Aseguradora Solidaria de Colombia', 38]
   ];
   var f = document.createElement('section');
