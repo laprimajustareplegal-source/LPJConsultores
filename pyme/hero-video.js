@@ -1,6 +1,6 @@
 /* Video de fondo del titular: escoge la versión liviana en celular y no lo carga si la persona pidió
    menos movimiento o ahorro de datos (queda la imagen fija).
-   Clips de Mixkit (licencia gratuita de uso comercial): 42041, 1674, 2233, 4359, 4982, 4678, 4012, 3971, 42343. */
+   Clips de Pexels y Mixkit (licencias gratuitas de uso comercial): Pexels 27072824, 12511385, 4186967, 3365440, 8986894, 4622328, 6509158, 20042803; Mixkit 2233, 4012. */
 (function () {
   'use strict';
   var sec = document.querySelector('.sobrio .pyme-sec');
@@ -11,7 +11,7 @@
 
   var capa = document.createElement('div');
   capa.className = 'hero-video'; capa.setAttribute('aria-hidden', 'true');
-  capa.style.backgroundImage = 'url(video/hero-poster.jpg)';
+  capa.style.backgroundImage = 'url(video/hero-poster.jpg?v=3)';
   sec.insertBefore(capa, sec.firstChild); sec.classList.add('con-video');
 
   var quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -23,7 +23,7 @@
   v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('preload', 'auto');
   var base = window.innerWidth <= 900 ? 'video/hero-720' : 'video/hero-1080';
   [['.mp4', 'video/mp4'], ['.webm', 'video/webm']].forEach(function (f) {
-    var s = document.createElement('source'); s.src = base + f[0]; s.type = f[1]; v.appendChild(s);
+    var s = document.createElement('source'); s.src = base + f[0] + '?v=3'; s.type = f[1]; v.appendChild(s);
   });
   v.addEventListener('playing', function () { v.classList.add('listo'); });
   capa.appendChild(v);

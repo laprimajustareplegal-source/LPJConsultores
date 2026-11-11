@@ -6,11 +6,11 @@
 .sobrio .hero-video video.listo{opacity:1}
 .sobrio .hero-video::after{content:'';position:absolute;inset:0;
   background:
-    linear-gradient(180deg,rgba(0,0,0,.38) 0%,rgba(0,0,0,0) 20%,rgba(0,0,0,0) 72%,#05070d 100%),
-    linear-gradient(90deg,rgba(0,0,0,.64) 0%,rgba(0,0,0,.36) 45%,rgba(0,0,0,.06) 100%)}
+    linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 18%,rgba(0,0,0,0) 80%,#05070d 100%),
+    linear-gradient(90deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,.22) 42%,rgba(0,0,0,0) 70%)}
 .sobrio .pyme-sec.con-video>*:not(.hero-video){position:relative;z-index:1}
 @media (max-width:900px){
-  .sobrio .hero-video::after{background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,rgba(0,0,0,.5) 40%,rgba(0,0,0,.6) 80%,#05070d 100%)}
+  .sobrio .hero-video::after{background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,rgba(0,0,0,.38) 40%,rgba(0,0,0,.5) 82%,#05070d 100%)}
 }
 
 /* ---------- Franja de aseguradoras (debajo del video) ---------- */
@@ -32,3 +32,5 @@
 .sobrio .nav-wrap.sobre-claro .nav-inner{background:rgba(20,42,115,.96);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 10px 30px rgba(10,20,60,.18)}
 .sobrio .megadrop{background:#1d1f23;box-shadow:inset 0 0 0 1px rgba(255,255,255,.09)}
 .sobrio .nav-wrap.sobre-claro .megadrop{background:var(--campo-2)}
+
+.sobrio .pyme-sec.con-video .pyme-intro{text-shadow:0 1px 18px rgba(0,0,0,.45)}
