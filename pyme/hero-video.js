@@ -33,3 +33,46 @@
     if (e[0].isIntersecting) { var q = v.play(); if (q && q.catch) q.catch(function () {}); } else v.pause();
   }).observe(sec);
 })();
+
+// ---- Franja de aseguradoras justo debajo del titular ----
+(function () {
+  'use strict';
+  var sec = document.querySelector('.sobrio .pyme-sec');
+  if (!sec || document.querySelector('.franja-aseg')) return;
+  var logos = [
+    ['sura.svg', 'SURA', 27], ['allianz.svg', 'Allianz', 23], ['bolivar.svg', 'Seguros Bolívar', 32],
+    ['mapfre.svg', 'MAPFRE', 19], ['hdi.svg', 'HDI Seguros', 25], ['bbva.svg', 'BBVA Seguros', 21],
+    ['estado.svg', 'Seguros del Estado', 40, 'fa-propio'], ['equidad.png', 'La Equidad Seguros', 33], ['solidaria.svg', 'Aseguradora Solidaria de Colombia', 31]
+  ];
+  var f = document.createElement('section');
+  f.className = 'franja-aseg'; f.setAttribute('aria-label', 'Aseguradoras con las que trabajamos');
+  var fila = '<div class="fa-fila">';
+  logos.forEach(function (l) {
+    fila += '<img src="img/aseguradoras/' + l[0] + '" alt="' + l[1] + '"' + (l[3] ? ' class="' + l[3] + '"' : '') + ' style="--h:' + l[2] + 'px" loading="lazy" decoding="async">';
+  });
+  fila += '<p class="fa-txt">Comparamos más de<br>15 aseguradoras</p></div>';
+  f.innerHTML = fila;
+  sec.parentNode.insertBefore(f, sec.nextSibling);
+})();
+
+// ---- La barra se vuelve azul cuando pasa sobre una sección blanca ----
+(function () {
+  'use strict';
+  var nav = document.querySelector('.sobrio .nav-wrap'), inner = nav && nav.querySelector('.nav-inner');
+  if (!inner) return;
+  var claras = [].slice.call(document.querySelectorAll('.titulo-seccion, .card-producto, .sec-sectores, .sec-proceso'));
+  var pendiente = false;
+  function revisar() {
+    pendiente = false;
+    var r = inner.getBoundingClientRect(), y = r.top + r.height / 2, sobre = false;
+    for (var i = 0; i < claras.length; i++) {
+      var c = claras[i].getBoundingClientRect();
+      if (c.top <= y && c.bottom >= y) { sobre = true; break; }
+    }
+    nav.classList.toggle('sobre-claro', sobre);
+  }
+  function pedir() { if (!pendiente) { pendiente = true; requestAnimationFrame(revisar); } }
+  window.addEventListener('scroll', pedir, { passive: true });
+  window.addEventListener('resize', pedir);
+  revisar();
+})();
