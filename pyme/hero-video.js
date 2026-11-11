@@ -1,6 +1,6 @@
 /* Video de fondo del titular: escoge la versión liviana en celular y no lo carga si la persona pidió
    menos movimiento o ahorro de datos (queda la imagen fija).
-   Clips de Mixkit (licencia gratuita de uso comercial): 42041, 36318, 34612, 2469, 24127, 47555, 31450, 42343. */
+   Clips de Mixkit (licencia gratuita de uso comercial): 42041, 1674, 2233, 4359, 4982, 4678, 4012, 3971, 42343. */
 (function () {
   'use strict';
   var sec = document.querySelector('.sobrio .pyme-sec');
@@ -21,7 +21,7 @@
   var v = document.createElement('video');
   v.muted = true; v.defaultMuted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
   v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('preload', 'auto');
-  var base = window.innerWidth <= 900 ? 'video/hero-960' : 'video/hero-1600';
+  var base = window.innerWidth <= 900 ? 'video/hero-720' : 'video/hero-1080';
   [['.mp4', 'video/mp4'], ['.webm', 'video/webm']].forEach(function (f) {
     var s = document.createElement('source'); s.src = base + f[0]; s.type = f[1]; v.appendChild(s);
   });

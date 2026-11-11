@@ -1,17 +1,14 @@
 /* Video de fondo del titular (en prueba; solo lo carga diseno.html).
    El video sube por detrás de la barra flotante y se funde con el azul de la página al final. */
 .sobrio .pyme-sec.con-video{margin-top:calc(-1 * var(--alto-nav,0px));padding-top:calc(var(--alto-nav,0px) + clamp(44px,6.2vw,92px));isolation:isolate}
-.sobrio .hero-video{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#0f2060 center/cover no-repeat}
+.sobrio .hero-video{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#05070d center/cover no-repeat}
 .sobrio .hero-video video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
 .sobrio .hero-video video.listo{opacity:1}
 .sobrio .hero-video::after{content:'';position:absolute;inset:0;
   background:
-    linear-gradient(180deg,rgba(15,32,96,.5) 0%,rgba(15,32,96,0) 20%,rgba(15,32,96,0) 74%,#0f2060 100%),
-    linear-gradient(90deg,rgba(10,24,74,.78) 0%,rgba(12,28,84,.46) 42%,rgba(15,32,96,.18) 100%),
-    rgba(22,60,190,.10)}
+    linear-gradient(180deg,rgba(0,0,0,.38) 0%,rgba(0,0,0,0) 20%,rgba(0,0,0,0) 80%,#0f2060 100%),
+    linear-gradient(90deg,rgba(0,0,0,.64) 0%,rgba(0,0,0,.36) 45%,rgba(0,0,0,.06) 100%)}
 .sobrio .pyme-sec.con-video>*:not(.hero-video){position:relative;z-index:1}
 @media (max-width:900px){
-  .sobrio .hero-video::after{background:
-    linear-gradient(180deg,rgba(15,32,96,.5) 0%,rgba(10,24,74,.6) 35%,rgba(15,32,96,.86) 75%,#0f2060 100%),
-    rgba(22,60,190,.14)}
+  .sobrio .hero-video::after{background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,rgba(0,0,0,.5) 40%,rgba(0,0,0,.55) 78%,#0f2060 100%)}
 }
