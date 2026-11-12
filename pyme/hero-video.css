@@ -35,10 +35,12 @@
 
 .sobrio .pyme-sec.con-video .pyme-intro{text-shadow:0 1px 18px rgba(0,0,0,.45)}
 
-/* ---------- Barra más ancha, estilo Palantir (vista previa) ---------- */
+/* ---------- Barra más alta, estilo Palantir (vista previa); el ancho sigue igual ---------- */
 @media (min-width:901px){
-  .sobrio .nav-wrap{padding:12px 14px 0}
-  .sobrio .nav-inner{height:66px;padding:0 14px 0 20px;border-radius:6px}
+  .sobrio .nav-inner{height:80px;padding:0 16px 0 22px}
+}
+@media (max-width:900px){
+  .sobrio .nav-inner{height:64px}
 }
 /* Buscar y menú: sin caja blanca, íconos blancos sobre la barra oscura (y sobre la azul) */
 .sobrio .nav-search-ico,.sobrio .nav-menu-btn,.sobrio .nav-btn-llamar-mobile{background:transparent!important;color:#fff;border:0!important;border-radius:4px!important}
