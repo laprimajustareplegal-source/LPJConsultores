@@ -35,7 +35,7 @@
 
   function brillo(x, y, rad, color) {
     var g = ctx.createRadialGradient(x, y, 0, x, y, rad);
-    g.addColorStop(0, color); g.addColorStop(1, 'rgba(15,32,96,0)');
+    g.addColorStop(0, color); g.addColorStop(1, 'rgba(11,18,34,0)');
     ctx.fillStyle = g; ctx.fillRect(x - rad, y - rad, rad * 2, rad * 2);
   }
 
@@ -44,8 +44,8 @@
     ctx.clearRect(0, 0, W, H);
 
     // brillos lentos que se desplazan (dan profundidad)
-    brillo(W * (0.22 + 0.10 * Math.sin(t * 0.07)), H * (0.30 + 0.12 * Math.cos(t * 0.05)), Math.max(W, H) * 0.55, 'rgba(22,68,200,0.30)');
-    brillo(W * (0.82 + 0.08 * Math.cos(t * 0.06)), H * (0.72 + 0.10 * Math.sin(t * 0.08)), Math.max(W, H) * 0.45, 'rgba(64,140,255,0.16)');
+    brillo(W * (0.22 + 0.10 * Math.sin(t * 0.07)), H * (0.30 + 0.12 * Math.cos(t * 0.05)), Math.max(W, H) * 0.55, 'rgba(40,80,190,0.16)');
+    brillo(W * (0.82 + 0.08 * Math.cos(t * 0.06)), H * (0.72 + 0.10 * Math.sin(t * 0.08)), Math.max(W, H) * 0.45, 'rgba(90,140,255,0.08)');
 
     // mover puntos
     for (var i = 0; i < puntos.length; i++) {

@@ -1,0 +1,103 @@
+/* Vista previa (solo diseno.html): una sola paleta oscura continua y el chat como protagonista,
+   centrado y amplio, al estilo de un asistente de IA. Se carga después de sobrio.css y hero-video.css. */
+
+/* ---------- Paleta: un único oscuro azul-negro para todas las secciones oscuras ---------- */
+body.sobrio{--campo:#0b1222;--campo-2:#131c33;--fondo:#0b1222}
+html:has(body.sobrio){background:#0b1222;scrollbar-color:rgba(255,255,255,.3) #0b1222}
+.sobrio .sec-canales{--base-foto:linear-gradient(180deg,rgba(11,18,34,0) 0%,rgba(11,18,34,0) 42%,rgba(11,18,34,.62) 74%,#0b1222 100%)}
+@media (max-width:900px){
+  .sobrio .sec-canales{--base-foto:linear-gradient(180deg,rgba(11,18,34,.62) 0%,rgba(11,18,34,.2) 46%,rgba(11,18,34,.62) 76%,#0b1222 100%)}
+}
+.sobrio .franja-aseg{background:#0b1222}
+.sobrio .accesos{border-top:1px solid rgba(255,255,255,.08)}
+
+/* ---------- Titular: todo centrado sobre el video ---------- */
+.sobrio .pyme-sec{
+  display:flex!important;flex-direction:column;align-items:center;text-align:center;
+  min-height:min(100svh,980px);padding-bottom:clamp(36px,5vw,64px);gap:0;justify-content:center;
+}
+.sobrio .pyme-intro{display:contents}
+.sobrio .pyme-kicker{order:1;position:relative;z-index:1;margin-bottom:14px;font-size:.92rem;color:rgba(255,255,255,.7)}
+.sobrio .pyme-intro h1{order:2;position:relative;z-index:1;max-width:20ch;margin:0 auto 26px;font-size:clamp(2rem,3.7vw,3.3rem);line-height:1.06;transition:opacity .3s,margin .3s,max-height .3s;max-height:3em;overflow:hidden}
+.sobrio .pyme-intro>p,.sobrio .pyme-puntos{display:none}
+.sobrio .pyme-chat{order:3}
+.sobrio .pyme-contacto{order:4;position:relative;z-index:1;justify-content:center;margin-top:16px;gap:4px}
+.sobrio .pyme-contacto a{border:0;padding:6px 10px;font-size:.86rem;font-weight:400;color:rgba(255,255,255,.62)}
+.sobrio .pyme-contacto a:hover{background:none;color:#fff}
+/* el video se oscurece parejo (el texto ya no va a la izquierda) */
+.sobrio .hero-video::after{background:
+  linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.42) 50%,rgba(0,0,0,.55) 82%,#0b1222 100%)!important}
+
+/* Al empezar a conversar, el titular se recoge y la conversación gana espacio */
+.sobrio .pyme-sec.conversando .pyme-intro h1{opacity:0;max-height:0;margin-bottom:0}
+.sobrio .pyme-sec.conversando .pyme-kicker{margin-bottom:10px}
+
+/* ---------- Chat estilo asistente de IA ---------- */
+.sobrio .pyme-chat{
+  --negro:#e7ebf4;--azul-oscuro:#fff;--azul:#cfdaff;--azul-boton:#ffffff;--gris-texto:rgba(255,255,255,.62);
+  --gris-borde:rgba(255,255,255,.16);--gris-fondo:rgba(255,255,255,.05);
+  position:relative;z-index:1;width:min(820px,100%);height:auto!important;text-align:left;color:#e7ebf4;
+  background:none;border:0;border-radius:0;box-shadow:none;overflow:visible;
+}
+/* sin cabecera: un solo acceso a la cuenta (el de la barra); solo queda "Nueva conversación" */
+.sobrio .pc-head{background:none;border:0;padding:0 0 4px;min-height:0;justify-content:flex-end}
+.sobrio .pc-avatar,.sobrio .pc-head-txt{display:none}
+.sobrio .pc-cuenta{display:none!important}
+.sobrio .pc-reiniciar{background:none;border:0;color:rgba(255,255,255,.5);font-size:.8rem;padding:4px 2px;cursor:pointer}
+.sobrio .pc-reiniciar:hover{color:#fff;background:none}
+.sobrio .pyme-sec:not(.conversando) .pc-reiniciar{visibility:hidden}
+
+.sobrio .pc-mensajes{
+  background:none;padding:6px 2px 14px;gap:14px;
+  height:clamp(220px,34vh,380px);transition:height .35s ease;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22px);mask-image:linear-gradient(180deg,transparent 0,#000 22px);
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;
+}
+.sobrio .pyme-sec.conversando .pc-mensajes{height:clamp(320px,56vh,640px)}
+
+.sobrio .pc-msg{font-size:1rem;line-height:1.62;border-radius:0}
+.sobrio .pc-bot{background:none;border:0;color:#e7ebf4;padding:0;max-width:100%}
+.sobrio .pc-user{background:rgba(255,255,255,.1);color:#fff;border-radius:14px;padding:10px 15px;max-width:80%}
+.sobrio .pc-msg a{color:#a9bfff}
+.sobrio .pc-escribiendo{background:none;border:0;padding:6px 0}
+.sobrio .pc-escribiendo i{background:rgba(255,255,255,.55)}
+
+.sobrio .pc-chip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:999px;padding:9px 16px;font-weight:450}
+.sobrio .pc-chip:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4)}
+.sobrio .pc-chip.principal,.sobrio .pc-chip.sel{background:#fff;border-color:#fff;color:#0b1222}
+.sobrio .pc-chip.principal:hover{background:#dfe6f7}
+
+.sobrio .pc-form,.sobrio .pc-resumen,.sobrio .pc-archivo{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:12px;color:#e7ebf4}
+.sobrio .pc-form label{color:rgba(255,255,255,.68)}
+.sobrio .pc-form input[type=text],.sobrio .pc-form input[type=tel],.sobrio .pc-form input[type=email],.sobrio .pc-form input[type=password]{
+  background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff}
+.sobrio .pc-form input:focus{border-color:rgba(255,255,255,.6)}
+.sobrio .pc-resumen h4{color:#fff}
+.sobrio .pc-resumen dt{color:rgba(255,255,255,.6)}
+.sobrio .pc-resumen dd{color:#fff}
+.sobrio .pc-precio{background:rgba(160,185,255,.12);color:#fff;border-radius:8px}
+.sobrio .pc-form .pc-error{color:#ff9b8f}
+
+/* Caja para escribir: amplia, redondeada, flotando sobre el video */
+.sobrio .pc-entrada{
+  border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:8px 8px 8px 20px;gap:10px;align-items:center;
+  background:rgba(16,24,44,.72);box-shadow:0 18px 50px rgba(0,0,0,.35);
+}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .sobrio .pc-entrada{background:rgba(16,24,44,.55);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+}
+.sobrio .pc-entrada:focus-within{border-color:rgba(255,255,255,.4)}
+.sobrio .pc-entrada input{background:none!important;border:0!important;color:#fff;font-size:1.04rem;padding:14px 0!important;border-radius:0!important}
+.sobrio .pc-entrada input::placeholder{color:rgba(255,255,255,.5)}
+.sobrio .pc-entrada button{width:44px;height:44px;border-radius:50%!important;background:#fff!important}
+.sobrio .pc-entrada button svg path{stroke:#0b1222}
+.sobrio .pc-entrada button:hover{background:#dfe6f7!important}
+.sobrio .pc-nota{background:none;border:0;text-align:center;color:rgba(255,255,255,.45);font-size:.76rem;padding:10px 0 0}
+
+@media (max-width:900px){
+  .sobrio .pyme-sec{min-height:auto;padding-left:var(--margen);padding-right:var(--margen)}
+  .sobrio .pyme-intro h1{font-size:clamp(1.8rem,7.4vw,2.4rem);margin-bottom:18px}
+  .sobrio .pc-mensajes{height:clamp(220px,40svh,360px)}
+  .sobrio .pyme-sec.conversando .pc-mensajes{height:calc(100svh - 230px)}
+  .sobrio .pc-entrada{border-radius:16px;padding-left:16px}
+}

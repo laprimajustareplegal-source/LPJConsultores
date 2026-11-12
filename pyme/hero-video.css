@@ -1,20 +1,20 @@
 /* Video de fondo del titular (en prueba; solo lo carga diseno.html).
    El video sube por detrás de la barra flotante y se funde abajo con la franja oscura de aseguradoras. */
 .sobrio .pyme-sec.con-video{margin-top:calc(-1 * var(--alto-nav,0px));padding-top:calc(var(--alto-nav,0px) + clamp(44px,6.2vw,92px));isolation:isolate}
-.sobrio .hero-video{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#05070d center/cover no-repeat}
+.sobrio .hero-video{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:var(--fondo,#0b1222) center/cover no-repeat}
 .sobrio .hero-video video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
 .sobrio .hero-video video.listo{opacity:1}
 .sobrio .hero-video::after{content:'';position:absolute;inset:0;
   background:
-    linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 18%,rgba(0,0,0,0) 80%,#05070d 100%),
+    linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 18%,rgba(0,0,0,0) 80%,var(--fondo,#0b1222) 100%),
     linear-gradient(90deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,.22) 42%,rgba(0,0,0,0) 70%)}
 .sobrio .pyme-sec.con-video>*:not(.hero-video){position:relative;z-index:1}
 @media (max-width:900px){
-  .sobrio .hero-video::after{background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,rgba(0,0,0,.38) 40%,rgba(0,0,0,.5) 82%,#05070d 100%)}
+  .sobrio .hero-video::after{background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,rgba(0,0,0,.38) 40%,rgba(0,0,0,.5) 82%,var(--fondo,#0b1222) 100%)}
 }
 
 /* ---------- Franja de aseguradoras (debajo del video) ---------- */
-.sobrio .franja-aseg{margin-top:-1px;position:relative;overflow:hidden;background:#05070d;padding:clamp(34px,4.4vw,58px) var(--lado) clamp(38px,4.8vw,64px);isolation:isolate}
+.sobrio .franja-aseg{margin-top:-1px;position:relative;overflow:hidden;background:var(--fondo,#0b1222);padding:clamp(34px,4.4vw,58px) var(--lado) clamp(38px,4.8vw,64px);isolation:isolate}
 .sobrio .franja-aseg::after{content:'';position:absolute;inset:auto 0 0;height:1px;background:rgba(255,255,255,.08)}
 .sobrio .fa-fila{display:flex;align-items:center;justify-content:space-between;gap:clamp(12px,1.5vw,24px);max-width:1600px;margin:0 auto}
 .sobrio .fa-fila img{display:block;width:auto;height:var(--h,28px);max-width:100%;filter:brightness(0) invert(1);opacity:1}
