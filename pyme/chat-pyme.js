@@ -137,7 +137,7 @@
     el.input = $('pcInput');
     el.enviar = $('pcEnviar');
     el.cuenta = $('pcCuenta');
-    if (CONFIG.apiChat && $('pcNota')) $('pcNota').textContent = 'Asistente con IA. La cotización formal la confirma su asesor.';
+    if (CONFIG.apiChat && !window.LPJ_MULTIRAMO && $('pcNota')) $('pcNota').textContent = 'Asistente con IA. La cotización formal la confirma su asesor.';
     if (!el.mensajes) return;
     $('pcForm').addEventListener('submit', function (ev) { ev.preventDefault(); alEscribir(); });
     $('pcReiniciar').addEventListener('click', reiniciar);
