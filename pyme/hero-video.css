@@ -34,3 +34,24 @@
 .sobrio .nav-wrap.sobre-claro .megadrop{background:var(--campo-2)}
 
 .sobrio .pyme-sec.con-video .pyme-intro{text-shadow:0 1px 18px rgba(0,0,0,.45)}
+
+/* ---------- Barra más ancha, estilo Palantir (vista previa) ---------- */
+@media (min-width:901px){
+  .sobrio .nav-wrap{padding:12px 14px 0}
+  .sobrio .nav-inner{height:66px;padding:0 14px 0 20px;border-radius:6px}
+}
+/* Buscar y menú: sin caja blanca, íconos blancos sobre la barra oscura (y sobre la azul) */
+.sobrio .nav-search-ico,.sobrio .nav-menu-btn,.sobrio .nav-btn-llamar-mobile{background:transparent!important;color:#fff;border:0!important;border-radius:4px!important}
+.sobrio .nav-search-ico{margin-left:8px}
+.sobrio .nav-search-ico svg *{stroke:#fff!important}
+.sobrio .nav-btn-llamar-mobile svg path{stroke:#fff!important}
+.sobrio .nav-menu-btn .hamburger span{background:#fff!important}
+.sobrio .nav-search-ico:hover,.sobrio .nav-menu-btn:hover,.sobrio .nav-btn-llamar-mobile:hover{background:rgba(255,255,255,.1)!important}
+.sobrio .nav-acciones .nav-btn-solicita svg *{stroke:#fff!important}
+
+/* ---------- Menús desplegables: íconos finos y monocromos ---------- */
+.sobrio .megadrop .ico-mega{flex:0 0 auto;width:20px;height:20px;color:rgba(255,255,255,.62);transition:color .15s}
+.sobrio .megadrop a:hover .ico-mega{color:#fff}
+.sobrio .megadrop a{gap:14px;font-weight:450}
+.sobrio .megadrop .mega-col-titulo{color:rgba(255,255,255,.5)!important;letter-spacing:.08em}
+.sobrio .megadrop .megadrop-titulo{color:rgba(255,255,255,.42)!important}
