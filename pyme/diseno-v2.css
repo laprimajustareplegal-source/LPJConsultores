@@ -9,7 +9,6 @@ html:has(body.sobrio){background:#0b1222;scrollbar-color:rgba(255,255,255,.3) #0
   .sobrio .sec-canales{--base-foto:linear-gradient(180deg,rgba(11,18,34,.62) 0%,rgba(11,18,34,.2) 46%,rgba(11,18,34,.62) 76%,#0b1222 100%)}
 }
 .sobrio .franja-aseg{background:#0b1222}
-.sobrio .accesos{border-top:1px solid rgba(255,255,255,.08)}
 
 /* ---------- Titular: todo centrado sobre el video ---------- */
 .sobrio .pyme-sec{
@@ -101,3 +100,16 @@ html:has(body.sobrio){background:#0b1222;scrollbar-color:rgba(255,255,255,.3) #0
   .sobrio .pyme-sec.conversando .pc-mensajes{height:calc(100svh - 230px)}
   .sobrio .pc-entrada{border-radius:16px;padding-left:16px}
 }
+
+/* ---------- Aseguradoras + accesos rápidos: un solo bloque ---------- */
+.sobrio .franja-aseg{padding-bottom:clamp(30px,3.6vw,48px)}
+.sobrio .franja-aseg::after{content:none}
+.sobrio .fa-fila{max-width:none}
+.sobrio .accesos{background:#0b1222;position:relative;z-index:1;padding-top:0}
+.sobrio .accesos-grid{border-color:rgba(255,255,255,.12)}
+.sobrio .acceso-item{border-color:rgba(255,255,255,.12)!important;padding:22px 18px}
+.sobrio .acceso-item:hover{background:rgba(255,255,255,.05)}
+.sobrio .acceso-ico svg{width:20px;height:20px}
+.sobrio .acceso-ico svg [stroke]{stroke:rgba(255,255,255,.62)!important;stroke-width:1.3}
+.sobrio .acceso-item:hover .acceso-ico svg [stroke]{stroke:#fff!important}
+.sobrio .acceso-item p{font-weight:450;color:#fff}
