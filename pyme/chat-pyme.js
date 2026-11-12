@@ -164,7 +164,7 @@
     el.enviar.disabled = false;
     el.mensajes.innerHTML = '';
     var nombre = perfil && perfil.nombre ? ', ' + perfil.nombre.split(' ')[0] : '';
-    var saludo = 'Hola' + nombre + '. Soy el asistente PYME de La Prima Justa. Le ayudo a cotizar o mejorar el seguro de su empresa y resuelvo sus dudas.';
+    var saludo = 'Hola' + nombre + '. ' + (window.LPJ_SALUDO || 'Soy el asistente PYME de La Prima Justa. Le ayudo a cotizar o mejorar el seguro de su empresa y resuelvo sus dudas.');
     var mias = usuario ? abiertas : [];
     bot(saludo, function () {
       if (!mias.length) return menuInicio();
