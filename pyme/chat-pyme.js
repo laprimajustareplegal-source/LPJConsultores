@@ -88,6 +88,32 @@
     { id: 'contacto', texto: 'Ya casi. ¿A quién le enviamos la cotización?', tipo: 'contacto' }
   ];
 
+  // Ramos corporativos: la póliza PYME sigue su flujo detallado; los demás usan un flujo corto
+  // con una pregunta propia del ramo. Se activa con window.LPJ_MULTIRAMO.
+  var RAMO_PYME = 'Póliza PYME (local, oficina o negocio)';
+  var RAMOS = {
+    'Responsabilidad civil': '¿Qué necesita cubrir? Por ejemplo: daños a terceros en su operación, RC profesional, o una póliza que le exige un cliente o contrato. Si sabe el límite que necesita, inclúyalo.',
+    'Cumplimiento (contratos y licitaciones)': '¿Para qué contrato o licitación la necesita? Cuénteme la entidad o cliente, el valor del contrato y las garantías que le piden (cumplimiento, anticipo, salarios, estabilidad).',
+    'ARL': '¿Cuántos trabajadores afiliaría y en qué nivel de riesgo trabajan? Si ya tiene ARL, dígame con cuál y por qué quiere cambiar.',
+    'Vida grupo': '¿A cuántas personas quiere asegurar y con qué valor asegurado por persona? Si es por un crédito o un requisito, cuéntemelo.',
+    'Salud colectiva': '¿A cuántas personas quiere cubrir (empleados y familiares)? Si ya tiene un plan, dígame con quién y qué quiere mejorar.',
+    'Flota de vehículos': '¿Cuántos vehículos son, de qué tipo (particulares, camiones, motos) y para qué los usa?',
+    'Transporte de mercancías': '¿Qué mercancía mueve, entre qué ciudades o países, y cuánto vale un despacho o lo que mueve en un año?',
+    'Directores y administradores (D&O)': '¿Cuántos ingresos tuvo la empresa el último año y qué límite busca? Si lo pide un inversionista o la junta, cuéntemelo.',
+    'Ciberseguridad': '¿Cuántos ingresos tuvo la empresa el último año y qué maneja en línea (datos de clientes, pagos, tienda virtual)?',
+    'Todo riesgo construcción o montaje': '¿Qué obra o montaje es, dónde, cuánto vale y cuánto dura?',
+    'Otro seguro': 'Cuénteme qué seguro necesita y para qué. Su asesor le busca la mejor opción.'
+  };
+  var RAMO = { id: 'ramo', texto: '¿Qué seguro necesita para su empresa?', tipo: 'opciones', opciones: [RAMO_PYME].concat(Object.keys(RAMOS)) };
+  var PASOS_RAMO = [
+    { id: 'empresaQue', texto: '¿A qué se dedica su empresa?', tipo: 'texto', opciones: Object.keys(ACTIVIDADES) },
+    { id: 'ciudad', texto: '¿En qué ciudad está la empresa?', tipo: 'texto', opciones: ['Bogotá', 'Medellín', 'Cali', 'Barranquilla'] },
+    { id: 'empleados', texto: '¿Cuántas personas trabajan en la empresa?', tipo: 'opciones', opciones: ['1 a 5', '6 a 20', '21 a 50', '51 a 200', 'Más de 200'] },
+    { id: 'detalle', texto: '', tipo: 'texto', libre: true },
+    { id: 'polizaActual', texto: '¿Hoy tiene este seguro con alguna aseguradora?', tipo: 'opciones', opciones: ['No, sería nuevo', 'Sí, quiero mejorarlo'] },
+    { id: 'contacto', texto: 'Ya casi. ¿A quién le enviamos la cotización?', tipo: 'contacto' }
+  ];
+
   var PASOS_MEJORA = [
     { id: 'polizaArchivo', texto: 'Adjunte su póliza actual: el PDF o fotos de la carátula y las condiciones. Su asesor la revisa y busca bajarle la prima o mejorar las coberturas con otras aseguradoras.', textoSinArchivos: 'Cuénteme de su póliza actual: ¿con qué aseguradora la tiene, cuánto paga al año y cuándo vence? Al final podrá enviarnos el PDF por WhatsApp.', tipo: 'archivo', tipoArchivo: 'poliza_actual', opciones: ['No la tengo a mano'] },
     { id: 'polizaDetalle', texto: 'No hay problema. ¿Con qué aseguradora la tiene, cuánto paga al año y cuándo vence? Lo que sepa.', tipo: 'texto', opciones: ['No lo sé'], si: function (e) { return !e.archivos.some(function (a) { return a.tipo === 'poliza_actual'; }) && !e.polizaArchivoTexto; } },
@@ -179,7 +205,7 @@
   }
 
   function menuInicio() {
-    var ops = ['Cotizar mi póliza PYME', 'Mejorar mi póliza actual', 'Tengo una pregunta'];
+    var ops = [window.LPJ_MULTIRAMO ? 'Cotizar un seguro para mi empresa' : 'Cotizar mi póliza PYME', 'Mejorar mi póliza actual', 'Tengo una pregunta'];
     if (LPJ.configurado) ops.push('Ver mis solicitudes');
     opciones(ops, function (v) {
       if (v === 'Tengo una pregunta') {
@@ -187,11 +213,29 @@
         el.input.focus();
       } else if (v === 'Ver mis solicitudes') {
         window.location.href = 'mi-cuenta.html';
+      } else if (v === 'Cotizar un seguro para mi empresa') {
+        elegirRamo();
       } else {
         empezar(v === 'Mejorar mi póliza actual' ? 'mejora' : 'cotizacion');
       }
     });
   }
+
+  function elegirRamo() {
+    bot(RAMO.texto, function () {
+      opciones(RAMO.opciones, function (v) {
+        estado.ramo = v;
+        if (v === RAMO_PYME) return empezar('cotizacion');
+        estado.tipo = 'cotizacion';
+        PASOS_RAMO[3].texto = RAMOS[v];
+        pasos = PASOS_RAMO;
+        paso = -1;
+        siguiente();
+      });
+    });
+  }
+
+  function esRamo() { return estado.ramo && estado.ramo !== RAMO_PYME; }
 
   function empezar(tipo) {
     estado.tipo = tipo;
@@ -796,7 +840,7 @@
 
   function precioOrientativo() {
     var t = CONFIG.tarifas;
-    if (!t || !t.tasas || estado.tipo !== 'cotizacion') return null;
+    if (!t || !t.tasas || estado.tipo !== 'cotizacion' || esRamo()) return null;
     var base = 0;
     var valores = {
       incendio: num(estado.valorEdificio) + num(estado.valorContenidos) + num(estado.valorMercancias),
@@ -816,6 +860,11 @@
   function filasResumen() {
     var e = estado;
     var f = [['Solicitud', e.tipo === 'mejora' ? 'Mejorar póliza actual' : 'Cotización nueva']];
+    if (esRamo()) {
+      f.push(['Seguro', e.ramo], ['Actividad', e.empresaQue], ['Ciudad', e.ciudad], ['Empleados', e.empleados], ['Detalle', e.detalle], ['Tiene el seguro hoy', e.polizaActual]);
+      return f;
+    }
+    if (e.ramo) f.push(['Seguro', 'Póliza PYME']);
     if (e.objetivo) f.push(['Objetivo', e.objetivo]);
     f.push(['Actividad', e.actividadOtra && e.actividad !== 'Otra actividad' ? e.actividad + ' (' + e.actividadOtra + ')' : (e.actividadOtra || e.actividad)]);
     f.push(['Ciudad', e.ciudad]);
@@ -918,7 +967,7 @@
 
   function textoSolicitud() {
     var c = estado.contacto;
-    var l = ['Solicitud PYME' + (estado.numero ? ' #' + estado.numero : '') + ' — laprimajusta.co', '',
+    var l = [(esRamo() ? 'Solicitud ' + estado.ramo : 'Solicitud PYME') + (estado.numero ? ' #' + estado.numero : '') + ' — laprimajusta.co', '',
       'Empresa: ' + c.empresa + (c.nit ? ' (NIT ' + c.nit + ')' : ''),
       'Contacto: ' + c.nombre, 'Celular: ' + c.celular, 'Correo: ' + c.correo, ''];
     filasResumen().forEach(function (r) { l.push(r[0] + ': ' + (r[1] || '—')); });
@@ -979,7 +1028,7 @@
     if (!guardada && n) campos['Archivos pendientes'] = 'El cliente quiso adjuntar ' + n + ' archivo(s) que no quedaron guardados: pídale que los envíe por WhatsApp.';
     if (errorArchivos.length) campos['Archivos que no subieron'] = errorArchivos.join(' | ');
     campos['Conversación'] = conversacionTexto();
-    var avisado = await LPJ.avisarAsesor((estado.tipo === 'mejora' ? 'Mejora de póliza PYME' : 'Cotización PYME') + (estado.numero ? ' #' + estado.numero : '') + ' — ' + c.empresa, campos);
+    var avisado = await LPJ.avisarAsesor((estado.tipo === 'mejora' ? 'Mejora de póliza PYME' : esRamo() ? 'Cotización ' + estado.ramo : 'Cotización PYME') + (estado.numero ? ' #' + estado.numero : '') + ' — ' + c.empresa, campos);
 
     t.remove();
     ocupado = false;
