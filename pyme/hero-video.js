@@ -11,7 +11,7 @@
 
   var capa = document.createElement('div');
   capa.className = 'hero-video'; capa.setAttribute('aria-hidden', 'true');
-  capa.style.backgroundImage = 'url(video/hero-poster.jpg?v=3)';
+  capa.style.backgroundImage = 'url(' + (window.LPJ_POSTER || 'video/hero-poster.jpg?v=3') + ')';
   sec.insertBefore(capa, sec.firstChild); sec.classList.add('con-video');
 
   var quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -21,10 +21,15 @@
   var v = document.createElement('video');
   v.muted = true; v.defaultMuted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
   v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.setAttribute('preload', 'auto');
-  var base = window.innerWidth <= 900 ? 'video/hero-720' : 'video/hero-1080';
-  [['.mp4', 'video/mp4'], ['.webm', 'video/webm']].forEach(function (f) {
-    var s = document.createElement('source'); s.src = base + f[0] + '?v=3'; s.type = f[1]; v.appendChild(s);
-  });
+  // Una página de prueba puede fijar su propio video con window.LPJ_VIDEO = 'video/archivo.mp4'
+  if (window.LPJ_VIDEO) {
+    var s0 = document.createElement('source'); s0.src = window.LPJ_VIDEO; s0.type = 'video/mp4'; v.appendChild(s0);
+  } else {
+    var base = window.innerWidth <= 900 ? 'video/hero-720' : 'video/hero-1080';
+    [['.mp4', 'video/mp4'], ['.webm', 'video/webm']].forEach(function (f) {
+      var s = document.createElement('source'); s.src = base + f[0] + '?v=3'; s.type = f[1]; v.appendChild(s);
+    });
+  }
   v.addEventListener('playing', function () { v.classList.add('listo'); });
   capa.appendChild(v);
   var p = v.play(); if (p && p.catch) p.catch(function () {});
