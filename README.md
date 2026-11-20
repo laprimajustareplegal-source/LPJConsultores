@@ -64,7 +64,7 @@ Pendiente recomendado: conectar un correo propio (SMTP) en Supabase para que fun
 
 ## IA del chat (`api/chat.js`, `conocimiento/pyme.md`, `vercel.json`)
 
-Función para Vercel que responde preguntas libres con Claude Haiku. Lee únicamente `conocimiento/pyme.md`: para que responda mejor se edita ese archivo. La clave de Anthropic se guarda en Vercel como variable `ANTHROPIC_API_KEY`, nunca en el código. Tiene topes de mensajes por conversación y por hora.
+Función para Vercel que responde preguntas libres con Claude Haiku. Lee todos los archivos `.md` de la carpeta `conocimiento/` (base general `seguros.md`, guía `pyme.md` y fichas de producto como `producto-allianz-mipyme.md`). Para que responda mejor se editan o agregan archivos ahí; no poner datos de clientes porque el repositorio es público. La clave de Anthropic se guarda en Vercel como variable `ANTHROPIC_API_KEY`, nunca en el código. Tiene topes de mensajes por conversación y por hora.
 
 ## Avisos por correo
 
