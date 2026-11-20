@@ -118,7 +118,8 @@ module.exports = async function handler(req, res) {
       return res.status(502).json({ error: 'La IA no respondió' });
     }
     const texto = (datos.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
-    return res.status(200).json({ respuesta: texto || 'No tengo esa información; su asesor se la confirma.' });
+    if (!texto) console.error('Respuesta sin texto', datos.stop_reason, JSON.stringify(datos.content || []).slice(0, 300));
+    return res.status(200).json({ respuesta: texto || 'No tengo esa información; su asesor se la confirma.', motivo: texto ? undefined : datos.stop_reason });
   } catch (e) {
     console.error(e);
     return res.status(502).json({ error: 'La IA no respondió' });
