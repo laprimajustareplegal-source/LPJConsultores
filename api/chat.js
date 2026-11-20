@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const MODELO = process.env.ANTHROPIC_MODEL || 'claude-haiku-5-5';
-const MAX_TOKENS_RESPUESTA = 700;
+const MAX_TOKENS_RESPUESTA = 1200;
 const MAX_MENSAJES_HISTORIAL = 12;   // solo se envían los últimos mensajes
 const MAX_PREGUNTAS_CONVERSACION = 20;
 const MAX_CARACTERES_MENSAJE = 1000;
@@ -104,6 +104,7 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({
         model: MODELO,
         max_tokens: MAX_TOKENS_RESPUESTA,
+        thinking: { type: 'disabled' }, // respuestas cortas: sin razonamiento extendido que consuma los tokens
         system: [
           // Bloque fijo y en caché: se cobra al precio reducido en cada pregunta.
           { type: 'text', text: INSTRUCCIONES + conocimiento, cache_control: { type: 'ephemeral' } },
