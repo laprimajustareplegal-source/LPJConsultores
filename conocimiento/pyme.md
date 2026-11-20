@@ -11,10 +11,10 @@ Las secciones marcadas con [COMPLETAR] están pendientes de confirmar con el con
 - WhatsApp y llamadas: 314 422 0945.
 - Correo general: info@laprimajusta.co.
 - Asesor PYME: Luis Felipe Pinilla, luis.pinilla@laprimajusta.co.
-- Trabajamos con más de 15 aseguradoras, entre ellas SURA, AXA Colpatria, Allianz, Mapfre, HDI, Liberty, Seguros Bolívar, Seguros del Estado y La Equidad.
+- Trabajamos con varias aseguradoras, entre ellas SURA, AXA Colpatria, Allianz, Mapfre, HDI, Liberty, Seguros Bolívar, Seguros del Estado y La Equidad.
 - Nuestro servicio de asesoría no tiene costo adicional para el cliente: la aseguradora remunera a la agencia.
 - Después de emitida la póliza acompañamos al cliente en renovaciones, modificaciones y en la reclamación de siniestros.
-- Este chat cotiza únicamente la póliza PYME. La agencia también maneja otros seguros (autos, vida, salud, cumplimiento, transporte y ARL, entre otros): para esos, el asesor atiende por WhatsApp.
+- Este archivo detalla la póliza PYME. Los demás seguros (cumplimiento, responsabilidad civil, ciber, transporte, crédito, vida grupo, salud, ARL, autos, hogar, arrendamiento) están en la base general de seguros.
 - Para cotizar no se necesitan documentos: basta con responder las preguntas del chat. Los documentos se piden al emitir.
 
 ## 2. Qué es una póliza PYME
