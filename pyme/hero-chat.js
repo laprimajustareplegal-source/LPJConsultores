@@ -17,4 +17,13 @@
   }
   new MutationObserver(revisar).observe(msgs, { childList: true });
   revisar();
+
+  // Preguntas por rol: al tocar una, se escribe en el chat y se envía.
+  var casos = document.getElementById('heroCasos'), input = document.getElementById('pcInput'), form = document.getElementById('pcForm');
+  if (casos && input && form) casos.addEventListener('click', function (ev) {
+    var b = ev.target.closest('.hero-caso');
+    if (!b) return;
+    input.value = b.getAttribute('data-q');
+    if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event('submit', { cancelable: true }));
+  });
 })();

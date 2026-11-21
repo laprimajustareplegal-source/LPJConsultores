@@ -206,7 +206,7 @@
 
   function menuInicio() {
     var ops = [window.LPJ_MULTIRAMO ? 'Cotizar un seguro para mi empresa' : 'Cotizar mi póliza PYME', 'Mejorar mi póliza actual', 'Tengo una pregunta'];
-    if (LPJ.configurado) ops.push('Ver mis solicitudes');
+    if (LPJ.configurado && usuario) ops.push('Ver mis solicitudes');
     opciones(ops, function (v) {
       if (v === 'Tengo una pregunta') {
         bot('Claro, escríbala abajo. Por ejemplo: "¿qué cubre el lucro cesante?" o "mi cliente me exige una póliza de RC, ¿qué hago?"');

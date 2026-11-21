@@ -133,3 +133,51 @@ html:has(body.sobrio){background:#0b1222;scrollbar-color:rgba(255,255,255,.3) #0
 @media (max-width:900px){
   .sobrio .pyme-chat{padding:10px 12px 12px;border-radius:16px}
 }
+
+/* ---------- Titular para decisores + preguntas por rol bajo el chat ---------- */
+.sobrio .pyme-intro>p.hero-sub{display:block}
+.sobrio .hero-sub{order:2;position:relative;z-index:1;max-width:56ch;margin:-14px auto 22px;font-size:clamp(1rem,1.25vw,1.12rem);line-height:1.55;color:rgba(255,255,255,.78);transition:opacity .3s,max-height .3s,margin .3s;max-height:6em;overflow:hidden}
+.sobrio .pyme-sec.conversando .hero-sub{opacity:0;max-height:0;margin:0}
+.sobrio .pyme-sec:not(.conversando) .pc-mensajes{height:clamp(200px,28vh,300px)}
+
+.sobrio .hero-casos{order:4;position:relative;z-index:1;width:min(980px,100%);margin-top:18px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:left}
+.sobrio .hero-caso{font:inherit;font-size:.9rem;line-height:1.4;color:#fff;text-align:left;cursor:pointer;
+  background:rgba(11,18,34,.55);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:14px 16px 15px;
+  transition:background .2s,border-color .2s,transform .2s}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .sobrio .hero-caso{-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+}
+.sobrio .hero-caso span{display:block;font-size:.78rem;font-weight:600;color:#a9bfff;margin-bottom:6px}
+.sobrio .hero-caso:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.42);transform:translateY(-2px)}
+.sobrio .hero-caso:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.sobrio .pyme-sec.conversando .hero-casos{display:none}
+
+.sobrio .hero-confianza{order:5;position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;margin:18px 0 0;font-size:.82rem;color:rgba(255,255,255,.66)}
+.sobrio .hero-confianza span::before{content:'';display:inline-block;width:6px;height:10px;border:solid #3ddc84;border-width:0 2px 2px 0;transform:rotate(45deg);margin-right:8px;vertical-align:2px}
+.sobrio .pyme-contacto{order:6}
+
+@media (max-width:900px){
+  .sobrio .hero-casos{grid-template-columns:1fr 1fr}
+  .sobrio .hero-sub{margin-top:-6px;margin-bottom:18px}
+}
+@media (max-width:520px){
+  .sobrio .hero-casos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:8px;padding-bottom:4px;scrollbar-width:none}
+  .sobrio .hero-caso{flex:0 0 78%;scroll-snap-align:start}
+  .sobrio .hero-confianza{font-size:.76rem}
+}
+@media (prefers-reduced-motion:reduce){.sobrio .hero-caso{transition:none}.sobrio .hero-caso:hover{transform:none}}
+/* ajuste de alto: que las preguntas por rol se vean sin bajar en un portátil */
+.sobrio .hero-sub{max-width:66ch}
+@media (min-width:901px){
+  .sobrio .pyme-sec:not(.conversando){justify-content:flex-start;padding-top:clamp(110px,15vh,150px)}
+  .sobrio .pyme-intro h1{font-size:clamp(2rem,3.3vw,3rem);margin-bottom:22px}
+  .sobrio .pyme-kicker{margin-bottom:10px}
+}
+@media (max-width:520px){
+  .sobrio .pyme-kicker{display:none}
+  .sobrio .hero-sub{font-size:.95rem;max-height:none;margin:-8px auto 16px}
+}
+.sobrio .hero-sub{max-width:660px}
+.sobrio .pyme-sec:not(.conversando) .pc-mensajes{height:clamp(160px,21vh,260px)}
+.sobrio .pyme-intro>p.hero-sub{max-width:680px}
