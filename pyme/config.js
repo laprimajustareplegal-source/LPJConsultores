@@ -8,7 +8,7 @@ window.LPJ_CONFIG = {
   supabaseKey: 'sb_publishable_LRZFP5Z-bt3FrMYW77ynGg_kO3Rssm0',
 
   // Dirección de la función de IA en Vercel, por ejemplo 'https://lpj-consultores.vercel.app/api/chat'.
-  apiChat: '',
+  apiChat: 'https://lpj-consultores.vercel.app/api/chat',
 
   // Cambiar a true cuando Supabase tenga configurado un correo propio (SMTP).
   // Mientras sea false, "Olvidé mi contraseña" remite al cliente a WhatsApp.
