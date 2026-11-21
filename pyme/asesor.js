@@ -193,6 +193,14 @@
     var p = perfiles[s.usuario_id] || {};
     var cel = celularWa(p.celular);
     try { polizas = await L.polizasDe(s.usuario_id); } catch (e) { polizas = []; }
+    var estadoDocs = [];
+    try { estadoDocs = L.estadoDocumentos(await L.documentosDe(s.usuario_id), { conSarlaft: true, solicitudId: s.id }); } catch (e) { estadoDocs = []; }
+    var etq = { al_dia: 'Al día', vencido: 'Vencido', falta: 'Falta' };
+    var tarjetaDocs = '<div class="tarjeta"><h3>Documentos para emitir</h3>' + (estadoDocs.length ? '<ul class="docs docs-estado">' + estadoDocs.map(function (x) {
+      var det = x.estado === 'falta' ? x.nota : (x.vence ? (x.estado === 'al_dia' ? 'Sirve hasta el ' : 'Venció el ') + L.fecha(x.vence.toISOString()) : 'Subido el ' + L.fecha(x.archivo.creado));
+      return '<li><span>' + E(x.nombre) + ' <b class="doc-' + x.estado + '">' + etq[x.estado] + '</b><small>' + E(det) + '</small></span>' +
+        (x.archivo ? '<button type="button" class="btn btn-s" data-ruta="' + E(x.archivo.ruta) + '">Ver</button>' : '') + '</li>';
+    }).join('') + '</ul><p class="ayuda">Para cargar un documento del cliente use "Adjuntar archivos" y elija su tipo. El SARLAFT cuenta solo si se subió en esta solicitud.</p>' : '<p class="nada">No se pudieron leer.</p>') + '</div>';
 
     z.innerHTML =
       '<div class="det-cab"><div><h2>#' + E(s.numero) + ' · ' + E(s.empresa || p.empresa || '—') + '</h2><p>' + E(L.TIPOS_SOLICITUD[s.tipo] || s.tipo) + ' · Creada el ' + L.fecha(s.creado, true) + ' · Actualizada el ' + L.fecha(s.actualizado, true) + '</p></div>' +
@@ -212,7 +220,9 @@
       '<div class="fila2"><label>Link de pago de la aseguradora<input type="url" name="link" placeholder="https://…" value="' + E(s.link_pago || '') + '"></label>' +
       '<label>Referencia de pago<input type="text" name="ref" maxlength="120" value="' + E(s.referencia_pago || '') + '"></label></div>' +
       '<div class="fila2"><label>Adjuntar archivos' + L.campoArchivo(true) + '</label>' +
-      '<label>Tipo de archivo<select name="tipo"><option value="cotizacion">Cotización</option><option value="poliza_emitida">Póliza emitida</option><option value="recibo_pago">Recibo de pago</option><option value="otro">Otro</option></select></label></div>' +
+      '<label>Tipo de archivo<select name="tipo"><option value="cotizacion">Cotización</option><option value="poliza_emitida">Póliza emitida</option><option value="recibo_pago">Recibo de pago</option>' +
+      L.DOCUMENTOS.map(function (x) { return '<option value="' + x.tipo + '">' + E(x.nombre) + ' (del cliente)</option>'; }).join('') +
+      '<option value="otro">Otro</option></select></label></div>' +
       '<div class="msg" role="alert"></div><button class="btn btn-p" type="submit">Guardar</button></form>' +
       '<div id="avisar" class="acciones oculto"></div></div>' +
 
@@ -220,7 +230,8 @@
       '<div class="tarjeta"><h3>Datos de la solicitud</h3><dl class="kv">' + L.filasDatos(s.datos).map(function (r) { return '<dt>' + E(r[0]) + '</dt><dd>' + E(r[1]) + '</dd>'; }).join('') + '</dl>' +
       (s.ajustes && s.ajustes.length ? '<h3 class="sub">Ajustes pedidos</h3><ul class="hist">' + s.ajustes.map(function (a) { return '<li><small>' + L.fecha(a.fecha, true) + '</small><p>' + E(a.texto) + '</p></li>'; }).join('') + '</ul>' : '') +
       (s.opcion_elegida ? '<p class="elegida">Opción elegida para emitir: <b>' + E(s.opcion_elegida) + '</b></p>' : '') + '</div>' +
-      '<div class="tarjeta"><h3>Documentos</h3>' + docs(d.archivos) + '</div>' +
+      tarjetaDocs +
+      '<div class="tarjeta"><h3>Archivos de esta solicitud</h3>' + docs(d.archivos) + '</div>' +
       '<div class="tarjeta"><h3>Registrar póliza emitida</h3><form class="form" id="fPoliza" novalidate>' +
       '<div class="fila2"><label>Aseguradora<input type="text" name="aseguradora" list="aseguradoras" maxlength="80"></label><label>Número de póliza<input type="text" name="numero" maxlength="60"></label></div>' +
       '<div class="fila2"><label>Vigencia desde<input type="date" name="desde"></label><label>Vigencia hasta<input type="date" name="hasta"></label></div>' +

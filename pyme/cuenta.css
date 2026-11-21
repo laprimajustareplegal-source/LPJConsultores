@@ -154,3 +154,14 @@ h3.sub{margin-top:18px}
 
 @media(max-width:900px){.panel{grid-template-columns:minmax(0,1fr)}.panel .lista-sol{max-height:none}.grid2{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:560px){.tabs button{padding:12px 9px;font-size:.84rem}.fila2{grid-template-columns:1fr}.cab-tit{display:none}.avance div{font-size:.62rem}.ingreso{padding:22px 18px;margin:12px auto}.cont{padding:20px 14px 48px}}
+/* Documentos para emitir */
+.docs-estado li span:first-child{white-space:normal}
+.docs-estado .acciones{display:flex;gap:6px;flex:0 0 auto;margin:0}
+.docs-estado label.btn{cursor:pointer}
+.doc-al_dia,.doc-vencido,.doc-falta{display:inline-block;font-size:.68rem;font-weight:600;padding:1px 8px;border-radius:10px;margin-left:6px;vertical-align:middle}
+.doc-al_dia{background:#e3f4ea;color:#17663a}
+.doc-vencido{background:#fdeee0;color:#9a4a00}
+.doc-falta{background:#eef1f6;color:#4a5466}
+.docs-req{border:1px solid var(--gris-borde);border-radius:10px;padding:12px 14px;margin:6px 0 10px;display:flex;flex-direction:column;gap:10px}
+.docs-req p{font-size:.84rem;margin:0}
+.doc-req small{color:var(--gris-texto);font-weight:400}

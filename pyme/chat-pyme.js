@@ -45,7 +45,7 @@
     { p: ['mejorar', 'bajar', 'mas barat', 'pago mucho', 'renovar', 'renovacion'], r: 'Con gusto revisamos su póliza actual. Use la opción "Mejorar mi póliza actual" y su asesor la compara con otras aseguradoras para bajar la prima o mejorar las coberturas.' },
     { p: ['costo de la asesoria', 'cobra', 'tiene costo', 'costo adicional', 'gratis', 'honorarios'], r: 'Nuestra asesoría no tiene costo adicional para usted: la aseguradora remunera a la agencia.' },
     { p: ['precio', 'cuanto cuesta', 'cuanto vale', 'cuanto pag', 'cuanto sale', 'tarifa', 'que valor', 'valor de la poliza'], r: 'El precio depende de la actividad, la ciudad, los valores asegurados y las coberturas. Complete la cotización aquí en el chat y su asesor le envía la comparación de precios de las aseguradoras en máximo 24 horas hábiles.' },
-    { p: ['necesito para cotizar', 'requisitos para cotizar', 'documentos para cotizar', 'piden para cotizar', 'papeles para cotizar'], r: 'Para cotizar no necesita documentos: basta con responder las preguntas del chat sobre su negocio. Los documentos (RUT, cámara de comercio, cédula del representante legal y formulario SARLAFT) se piden solo cuando aprueba la cotización y se va a emitir la póliza.' },
+    { p: ['necesito para cotizar', 'requisitos para cotizar', 'documentos para cotizar', 'piden para cotizar', 'papeles para cotizar'], r: 'Para cotizar no necesita documentos: basta con responder las preguntas del chat sobre su negocio. Si quiere adelantar, al final puede subir RUT, cámara de comercio, cédula del representante legal y estados financieros; son obligatorios cuando aprueba la cotización, junto con el SARLAFT de la aseguradora elegida. Si ya nos los entregó y están al día, no se los volvemos a pedir.' },
     { p: ['document', 'requisito', 'que necesito', 'emitir', 'expedir', 'emision'], r: 'Para emitir la póliza se necesita el RUT, la cámara de comercio reciente, la cédula del representante legal y el formulario de conocimiento del cliente (SARLAFT). Su asesor se los pide cuando usted aprueba la cotización.' },
     { p: ['pago', 'pagar', 'pse', 'cuotas', 'financ'], r: 'Cuando la póliza esté lista, su asesor le envía el link o la referencia de pago de la aseguradora; el pago se hace directamente a la aseguradora. Algunas permiten pagar en cuotas.' },
     { p: ['en que estado', 'estado de mi', 'como va', 'avance', 'mi solicitud', 'seguimiento'], r: 'El avance de cada solicitud se ve en Mi cuenta: en qué etapa va, las notas de su asesor y los documentos.' },
@@ -1051,7 +1051,97 @@
           : LPJ.configurado ? '\n\nEn este momento no pudimos registrarla en su cuenta, pero su asesor ya la tiene.' : '') +
         (n ? '\n\nSus archivos no quedaron guardados: envíelos por WhatsApp con el botón de abajo.' : '\n\nSi quiere agilizar, envíele también el resumen por WhatsApp.'), 'pc-bot');
     }
-    opcionesFinales();
+    if (guardada && pedirDocumentos()) ofrecerDocumentos();
+    else opcionesFinales();
+  }
+
+  // ---------- Documentos para emitir (opcionales al cotizar) ----------
+  // Por ahora solo en la página de prueba (diseno.html) o si config.js trae pedirDocumentos: true.
+  function pedirDocumentos() {
+    return !!(CONFIG.pedirDocumentos || /diseno\.html$/.test(window.location.pathname));
+  }
+
+  async function ofrecerDocumentos() {
+    var lista;
+    try { lista = LPJ.estadoDocumentos(await LPJ.documentosDe()); }
+    catch (e) { opcionesFinales(); return; }
+    var tiene = lista.filter(function (d) { return d.estado === 'al_dia'; });
+    var faltan = lista.filter(function (d) { return d.estado !== 'al_dia'; });
+    var nombres = function (l) { return l.map(function (d) { return d.nombre; }).join(', '); };
+    if (!faltan.length) {
+      bot('Sus documentos están al día con nosotros (' + nombres(tiene) + '). Cuando apruebe la cotización solo le pediremos el SARLAFT de la aseguradora que elija.', opcionesFinales);
+      return;
+    }
+    var t = 'Para que su póliza salga más rápido cuando apruebe la cotización, puede adelantar de una vez los documentos que piden las aseguradoras. Es opcional: si no los tiene a mano, los sube después en Mi cuenta.';
+    if (tiene.length) t += '\n\nYa tenemos al día: ' + nombres(tiene) + '. Esos no se los vuelvo a pedir.';
+    t += '\n\nNos faltarían: ' + faltan.map(function (d) { return d.nombre + (d.estado === 'vencido' ? ' (el que tenemos ya venció)' : ''); }).join(', ') + '.';
+    bot(t, function () { pedirDocumento(faltan, 0, []); });
+  }
+
+  function pedirDocumento(faltan, i, subidos) {
+    if (i >= faltan.length) { cerrarDocumentos(subidos, faltan.length); return; }
+    var d = faltan[i];
+    bot(d.nombre + (d.nota ? ' (' + d.nota + ')' : '') + ':', function () {
+      quitarOpciones();
+      var c = document.createElement('div');
+      c.className = 'pc-archivo';
+      var nota = document.createElement('span');
+      nota.className = 'pc-archivo-nota';
+      var lab = document.createElement('label');
+      lab.className = 'pc-chip principal';
+      lab.textContent = 'Subir ' + d.nombre;
+      var inp = document.createElement('input');
+      inp.type = 'file';
+      inp.multiple = true;
+      inp.accept = LPJ.ACEPTA;
+      inp.hidden = true;
+      lab.appendChild(inp);
+      c.appendChild(lab);
+      inp.addEventListener('change', async function () {
+        var archivos = Array.prototype.slice.call(inp.files || []);
+        if (!archivos.length) return;
+        var problema = archivos.map(LPJ.problemaArchivo).filter(Boolean)[0] || (archivos.length > 4 ? 'Máximo 4 archivos por documento.' : '');
+        if (problema) { nota.textContent = problema; nota.classList.add('error'); inp.value = ''; return; }
+        c.remove();
+        usuarioDice('Archivo: ' + archivos.map(function (f) { return f.name; }).join(', '));
+        var libre = ocupar();
+        var fallo = false;
+        for (var k = 0; k < archivos.length; k++) {
+          try { await LPJ.subirArchivo(archivos[k], { solicitudId: estado.solicitudId, tipo: d.tipo }); subidos.push(d.nombre); }
+          catch (e) { fallo = true; }
+        }
+        libre();
+        if (fallo) burbuja('No pude subir ese archivo. Puede intentarlo después desde Mi cuenta.', 'pc-bot');
+        pedirDocumento(faltan, i + 1, subidos);
+      });
+      [['No aplica o no lo tengo', function () { pedirDocumento(faltan, i + 1, subidos); }],
+       ['Los subo después', function () { cerrarDocumentos(subidos, faltan.length); }]].forEach(function (o) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'pc-chip';
+        b.textContent = o[0];
+        b.addEventListener('click', function () { c.remove(); usuarioDice(o[0]); o[1](); });
+        c.appendChild(b);
+      });
+      nota.textContent = 'PDF, foto, Word o Excel. Máximo 15 MB por archivo.';
+      c.appendChild(nota);
+      agregar(c);
+    });
+  }
+
+  async function cerrarDocumentos(subidos, total) {
+    var unicos = subidos.filter(function (v, k, a) { return a.indexOf(v) === k; });
+    if (unicos.length) {
+      try { await LPJ.accionCliente(estado.solicitudId, 'documento', unicos.join(', ')); } catch (e) { /* no bloquea */ }
+      LPJ.avisarAsesor('Documentos subidos — solicitud #' + estado.numero + ' ' + ((estado.contacto && estado.contacto.empresa) || ''), {
+        Solicitud: '#' + estado.numero, Documentos: unicos.join(', '),
+        'Gestionar en el panel': CONFIG.sitio + '/asesor.html#s=' + estado.solicitudId
+      });
+    }
+    var t = unicos.length === total ? 'Recibimos todos los documentos. Cuando apruebe la cotización solo faltará el SARLAFT de la aseguradora que elija.'
+      : unicos.length ? 'Recibimos: ' + unicos.join(', ') + '. Lo que falte lo puede subir cuando quiera en Mi cuenta; se lo pediremos al aprobar la cotización.'
+      : 'Listo. Los documentos se los pediremos cuando apruebe la cotización; también los puede subir en Mi cuenta cuando quiera.';
+    bot(t, opcionesFinales);
   }
 
   function enlaceWhatsApp() {

@@ -148,10 +148,19 @@ create table if not exists public.archivos (
   nombre text not null check (char_length(nombre) <= 300),
   tipo text not null default 'otro'
     check (tipo in ('poliza_actual', 'contrato', 'cotizacion', 'poliza_emitida',
-                    'recibo_pago', 'comprobante_pago', 'documento_cliente', 'otro')),
+                    'recibo_pago', 'comprobante_pago', 'documento_cliente',
+                    'rut', 'camara_comercio', 'cedula_rl', 'estados_financieros',
+                    'declaracion_renta', 'sarlaft', 'otro')),
   subido_por text not null default 'cliente' check (subido_por in ('cliente', 'asesor')),
   creado timestamptz not null default now()
 );
+-- Documentos para emitir (RUT, cámara, cédula, estados financieros, renta, SARLAFT): se agregan a bases ya creadas.
+alter table public.archivos drop constraint if exists archivos_tipo_check;
+alter table public.archivos add constraint archivos_tipo_check
+  check (tipo in ('poliza_actual', 'contrato', 'cotizacion', 'poliza_emitida',
+                  'recibo_pago', 'comprobante_pago', 'documento_cliente',
+                  'rut', 'camara_comercio', 'cedula_rl', 'estados_financieros',
+                  'declaracion_renta', 'sarlaft', 'otro'));
 create index if not exists archivos_solicitud_idx on public.archivos (solicitud_id);
 create index if not exists archivos_usuario_idx on public.archivos (usuario_id);
 
@@ -241,7 +250,9 @@ create policy archivos_crear on public.archivos for insert to authenticated
     public.es_asesor()
     or (usuario_id = (select auth.uid()) and subido_por = 'cliente'
         and ruta like (select auth.uid())::text || '/%'
-        and tipo in ('poliza_actual', 'contrato', 'comprobante_pago', 'documento_cliente', 'otro')
+        and tipo in ('poliza_actual', 'contrato', 'comprobante_pago', 'documento_cliente',
+                    'rut', 'camara_comercio', 'cedula_rl', 'estados_financieros',
+                    'declaracion_renta', 'sarlaft', 'otro')
         and (solicitud_id is null or exists (
           select 1 from public.solicitudes s where s.id = solicitud_id and s.usuario_id = (select auth.uid())))));
 

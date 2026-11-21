@@ -42,8 +42,24 @@
     recibo_pago: 'Recibo de pago',
     comprobante_pago: 'Comprobante de pago',
     documento_cliente: 'Documento del cliente',
+    rut: 'RUT',
+    camara_comercio: 'Cámara de Comercio',
+    cedula_rl: 'Cédula del representante legal',
+    estados_financieros: 'Estados financieros',
+    declaracion_renta: 'Declaración de renta',
+    sarlaft: 'Formulario SARLAFT',
     otro: 'Otro'
   };
+  // Documentos que piden las aseguradoras para emitir. dias = cuánto tiempo sirve desde que se subió (null = no vence).
+  // El SARLAFT es de cada aseguradora: se pide por solicitud, cuando el cliente elige la opción a emitir.
+  var DOCUMENTOS = [
+    { tipo: 'rut', nombre: 'RUT', dias: 365, nota: 'actualizado' },
+    { tipo: 'camara_comercio', nombre: 'Cámara de Comercio', dias: 30, nota: 'no mayor a 30 días' },
+    { tipo: 'cedula_rl', nombre: 'Cédula del representante legal', dias: null, nota: 'por ambas caras' },
+    { tipo: 'estados_financieros', nombre: 'Estados financieros', dias: 365, nota: 'del último cierre' },
+    { tipo: 'declaracion_renta', nombre: 'Declaración de renta', dias: 365, nota: 'la última presentada' },
+    { tipo: 'sarlaft', nombre: 'Formulario SARLAFT', dias: 365, nota: 'de la aseguradora elegida; su asesor se lo envía', porSolicitud: true }
+  ];
   var TIPOS_SOLICITUD = { cotizacion: 'Cotización PYME', mejora: 'Mejora de póliza', renovacion: 'Renovación', otra: 'Otra' };
   var MIME = {
     pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp',
@@ -104,6 +120,7 @@
     ESTADOS: ESTADOS,
     ETAPAS: ETAPAS,
     TIPOS_ARCHIVO: TIPOS_ARCHIVO,
+    DOCUMENTOS: DOCUMENTOS,
     TIPOS_SOLICITUD: TIPOS_SOLICITUD,
     ACEPTA: ACEPTA,
     error: error,
@@ -240,6 +257,34 @@
         usuario_id: duenio, solicitud_id: opciones.solicitudId || null, ruta: ruta,
         nombre: String(archivo.name).slice(0, 300), tipo: opciones.tipo || 'otro', subido_por: opciones.subidoPor || 'cliente'
       }).select().single());
+    },
+    // Documentos para emitir que el cliente ya tiene en su cuenta (de cualquier solicitud).
+    documentosDe: async function (usuarioId) {
+      exigir();
+      var id = usuarioId || (await LPJ.usuario() || {}).id;
+      if (!id) return [];
+      return revisar(await sb.from('archivos').select('*').eq('usuario_id', id)
+        .in('tipo', DOCUMENTOS.map(function (d) { return d.tipo; })).order('creado', { ascending: false }));
+    },
+    // Estado de cada documento: 'al_dia', 'vencido' o 'falta'. Con solicitudId, el SARLAFT cuenta solo si es de esa solicitud.
+    estadoDocumentos: function (archivos, opciones) {
+      opciones = opciones || {};
+      var ahora = Date.now();
+      return DOCUMENTOS.filter(function (d) { return !d.porSolicitud || opciones.conSarlaft; }).map(function (d) {
+        var suyos = (archivos || []).filter(function (a) {
+          return a.tipo === d.tipo && (!d.porSolicitud || a.solicitud_id === opciones.solicitudId);
+        }).sort(function (a, b) { return a.creado < b.creado ? 1 : -1; });
+        var ult = suyos[0] || null;
+        var estado = 'falta', vence = null;
+        if (ult) {
+          if (d.dias === null) estado = 'al_dia';
+          else {
+            vence = new Date(new Date(ult.creado).getTime() + d.dias * 86400000);
+            estado = vence.getTime() >= ahora ? 'al_dia' : 'vencido';
+          }
+        }
+        return { tipo: d.tipo, nombre: d.nombre, nota: d.nota, estado: estado, archivo: ult, vence: vence };
+      });
     },
     enlaceArchivo: async function (ruta) {
       exigir();

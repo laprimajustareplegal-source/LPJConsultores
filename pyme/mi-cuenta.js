@@ -20,7 +20,7 @@
     en_analisis: ['Estamos analizando su solicitud', 'Su asesor está revisando sus riesgos y cotizando con las aseguradoras. Aquí verá la cotización cuando esté lista.'],
     cotizada: ['Su cotización está lista', 'Revísela en Documentos. Si está de acuerdo, solicite la emisión indicando la opción que eligió. Si quiere cambios (coberturas, límites, lo que pida un contrato), pida ajustes.'],
     ajustes_solicitados: ['Estamos ajustando su cotización', 'Su asesor está aplicando los cambios que pidió. Aquí verá la cotización ajustada cuando esté lista.'],
-    emision_solicitada: ['Recibimos su solicitud de emisión', 'Para emitir necesitamos: RUT, cámara de comercio reciente, cédula del representante legal y el formulario de conocimiento del cliente (SARLAFT). Súbalos aquí si aún no lo ha hecho.'],
+    emision_solicitada: ['Recibimos su solicitud de emisión', 'Su asesor le enviará el formulario SARLAFT de la aseguradora elegida. Cuando lo diligencie, súbalo aquí con "Subir documentos" y el tipo "Formulario SARLAFT".'],
     en_emision: ['Estamos emitiendo su póliza', 'La aseguradora está expidiendo la póliza. Aquí verá la información de pago en cuanto esté lista.'],
     pago_pendiente: ['Su póliza está lista para pago', 'Pague con el link o la referencia que aparece arriba y luego repórtelo aquí.'],
     pago_reportado: ['Pago reportado', 'Estamos confirmando su pago con la aseguradora. Cuando quede confirmado, su póliza aparecerá como vigente.'],
@@ -30,9 +30,9 @@
 
   var ACCIONES = {
     ajuste: { etiqueta: '¿Qué quiere cambiar? (coberturas, límites, deducibles, lo que le pide un contrato…)', boton: 'Enviar ajuste', texto: 'obligatorio', archivo: 'contrato', titulo: 'Ajuste pedido' },
-    emision: { etiqueta: '¿Qué opción o aseguradora eligió? Agregue cualquier indicación para la emisión.', boton: 'Solicitar emisión', texto: 'obligatorio', archivo: 'documento_cliente', titulo: 'Solicitud de emisión', ayuda: 'Si los tiene a mano, adjunte RUT, cámara de comercio, cédula del representante legal y SARLAFT.' },
+    emision: { etiqueta: '¿Qué opción o aseguradora eligió? Agregue cualquier indicación para la emisión.', boton: 'Solicitar emisión', texto: 'obligatorio', archivo: 'documento_cliente', titulo: 'Solicitud de emisión', ayuda: 'El formulario SARLAFT de la aseguradora elegida se lo envía su asesor; lo sube aquí cuando lo tenga diligenciado.' },
     pago: { etiqueta: '¿Cómo y cuándo pagó? (PSE, transferencia…)', boton: 'Reportar pago', texto: 'opcional', archivo: 'comprobante_pago', titulo: 'Pago reportado', ayuda: 'Adjunte el comprobante si lo tiene.' },
-    documento: { etiqueta: 'Elija los documentos (RUT, cámara de comercio, cédula, SARLAFT, póliza, contrato…)', boton: 'Subir', texto: false, archivo: 'documento_cliente', titulo: 'Documentos nuevos' },
+    documento: { etiqueta: 'Elija los documentos', boton: 'Subir', texto: false, archivo: 'documento_cliente', titulo: 'Documentos nuevos', conTipo: true },
     mensaje: { etiqueta: 'Escriba su mensaje o pregunta para su asesor', boton: 'Enviar mensaje', texto: 'obligatorio', archivo: 'documento_cliente', titulo: 'Mensaje del cliente' }
   };
 
@@ -88,7 +88,7 @@
 
   function limpiarPortal() {
     usuario = null; perfil = null; solicitudes = [];
-    ['tSolicitudes', 'tPolizas', 'tConversaciones'].forEach(function (i) { $(i).innerHTML = ''; });
+    ['tSolicitudes', 'tPolizas', 'tDocumentos', 'tConversaciones'].forEach(function (i) { $(i).innerHTML = ''; });
     ['fDatos', 'fClave'].forEach(function (i) { $(i).reset(); });
   }
 
@@ -209,9 +209,10 @@
 
   function pestanaPortal(t) {
     document.querySelectorAll('.tabs button').forEach(function (b) { b.classList.toggle('act', b.getAttribute('data-t') === t); });
-    ver('tSolicitudes', t === 'solicitudes'); ver('tPolizas', t === 'polizas');
+    ver('tSolicitudes', t === 'solicitudes'); ver('tPolizas', t === 'polizas'); ver('tDocumentos', t === 'documentos');
     ver('tConversaciones', t === 'conversaciones'); ver('tDatos', t === 'datos');
     if (t === 'polizas') pintarPolizas();
+    if (t === 'documentos') pintarDocumentos();
     if (t === 'conversaciones') pintarConversaciones();
     if (t === 'datos') llenarDatos();
   }
@@ -384,12 +385,41 @@
     });
   }
 
-  function prepararAccion(s, acc) {
+  // Documentos para emitir que faltan o vencieron (sin el SARLAFT, que llega después por la aseguradora).
+  async function documentosFaltantes() {
+    var lista = L.estadoDocumentos(await L.documentosDe());
+    return lista.filter(function (d) { return d.estado !== 'al_dia'; });
+  }
+  var PUEDE_NO_APLICAR = ['camara_comercio', 'estados_financieros', 'declaracion_renta'];
+
+  function opcionesTipo() {
+    var ops = L.DOCUMENTOS.map(function (d) { return [d.tipo, d.nombre]; })
+      .concat([['poliza_actual', 'Póliza actual'], ['contrato', 'Contrato o requisitos'], ['documento_cliente', 'Otro documento']]);
+    return '<label>¿Qué documento es?<select name="tipoDoc">' + ops.map(function (o) { return '<option value="' + o[0] + '">' + E(o[1]) + '</option>'; }).join('') + '</select></label>';
+  }
+
+  async function prepararAccion(s, acc) {
     var conf = ACCIONES[acc];
     var z = $('zonaAccion');
+    var faltan = [];
+    if (acc === 'emision') {
+      z.innerHTML = '<p class="nada">Revisando sus documentos…</p>';
+      try { faltan = await documentosFaltantes(); } catch (e) { faltan = []; }
+    }
+    var bloqueDocs = '';
+    if (faltan.length) {
+      bloqueDocs = '<div class="docs-req"><p><b>Para emitir necesitamos estos documentos.</b> Los que ya tenemos al día no se los volvemos a pedir.</p>' +
+        faltan.map(function (d) {
+          return '<div class="doc-req"><label>' + E(d.nombre) + ' <small>(' + E(d.nota) + (d.estado === 'vencido' ? '; el que tenemos ya venció' : '') + ')</small>' +
+            L.campoArchivo(true).replace('name="archivo"', 'name="doc_' + d.tipo + '"') + '</label>' +
+            (PUEDE_NO_APLICAR.indexOf(d.tipo) >= 0 ? '<label class="check"><input type="checkbox" name="na_' + d.tipo + '"> No aplica para mí</label>' : '') + '</div>';
+        }).join('') + '</div>';
+    }
     z.innerHTML = '<form class="form subform" id="fAccion" novalidate>' +
       (conf.texto ? '<label>' + E(conf.etiqueta) + '<textarea name="texto" maxlength="2000"></textarea></label>' : '') +
-      '<label>' + (conf.texto ? 'Adjuntar archivos (opcional)' : E(conf.etiqueta)) + L.campoArchivo(true) + '</label>' +
+      bloqueDocs +
+      (conf.conTipo ? opcionesTipo() : '') +
+      '<label>' + (conf.texto ? (faltan.length ? 'Otros archivos (opcional)' : 'Adjuntar archivos (opcional)') : E(conf.etiqueta)) + L.campoArchivo(true) + '</label>' +
       (conf.ayuda ? '<p class="ayuda">' + E(conf.ayuda) + '</p>' : '') +
       '<div class="msg" role="alert"></div><div class="acciones"><button class="btn btn-p" type="submit">' + E(conf.boton) + '</button>' +
       '<button class="btn btn-t" type="button" id="cerrarAccion">Cerrar</button></div></form>';
@@ -404,15 +434,26 @@
       var archivos = Array.prototype.slice.call(f.archivo.files || []);
       if (conf.texto === 'obligatorio' && !texto) return mensaje(f, acc === 'emision' ? 'Escriba qué opción eligió.' : 'Escriba el texto antes de enviar.');
       if (acc === 'documento' && !archivos.length) return mensaje(f, 'Elija al menos un archivo.');
-      if (archivos.length > 8) return mensaje(f, 'Puede adjuntar máximo 8 archivos a la vez.');
-      var problema = archivos.map(L.problemaArchivo).filter(Boolean)[0];
+      // Documentos obligatorios para emitir: cada uno con archivo o marcado "No aplica".
+      var porDoc = [], sinDoc = [];
+      faltan.forEach(function (d) {
+        var inp = f['doc_' + d.tipo], na = f['na_' + d.tipo];
+        var fs = Array.prototype.slice.call((inp && inp.files) || []);
+        if (fs.length) fs.forEach(function (x) { porDoc.push({ archivo: x, tipo: d.tipo }); });
+        else if (!(na && na.checked)) sinDoc.push(d.nombre);
+      });
+      if (sinDoc.length) return mensaje(f, 'Para solicitar la emisión falta: ' + sinDoc.join(', ') + '. Si alguno no aplica para usted, márquelo.');
+      var tipoOtros = conf.conTipo && f.tipoDoc ? f.tipoDoc.value : conf.archivo;
+      var todos = porDoc.concat(archivos.map(function (x) { return { archivo: x, tipo: tipoOtros }; }));
+      if (todos.length > 12) return mensaje(f, 'Puede adjuntar máximo 12 archivos a la vez.');
+      var problema = todos.map(function (x) { return L.problemaArchivo(x.archivo); }).filter(Boolean)[0];
       if (problema) return mensaje(f, problema);
-      b.disabled = true; mensaje(f, archivos.length ? 'Subiendo archivos…' : 'Enviando…', true);
+      b.disabled = true; mensaje(f, todos.length ? 'Subiendo archivos…' : 'Enviando…', true);
       var subidos = [];
       try {
-        for (var i = 0; i < archivos.length; i++) {
-          await L.subirArchivo(archivos[i], { solicitudId: s.id, tipo: conf.archivo });
-          subidos.push(archivos[i].name);
+        for (var i = 0; i < todos.length; i++) {
+          await L.subirArchivo(todos[i].archivo, { solicitudId: s.id, tipo: todos[i].tipo });
+          subidos.push(todos[i].archivo.name + (L.TIPOS_ARCHIVO[todos[i].tipo] ? ' (' + L.TIPOS_ARCHIVO[todos[i].tipo] + ')' : ''));
         }
         if (acc === 'documento') await L.accionCliente(s.id, 'documento', subidos.join(', '));
         else {
@@ -423,6 +464,45 @@
       await avisar(s, conf.titulo, texto, subidos);
       await cargarSolicitudes();
       abrirSolicitud(s.id);
+    });
+  }
+
+  // ---------- Documentos ----------
+  async function pintarDocumentos() {
+    var t = $('tDocumentos');
+    t.innerHTML = '<p class="nada">Cargando…</p>';
+    var docs;
+    try { docs = await L.documentosDe(); } catch (e) { t.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
+    var lista = L.estadoDocumentos(docs);
+    var etiqueta = { al_dia: 'Al día', vencido: 'Vencido', falta: 'Falta' };
+    t.innerHTML = '<div class="tarjeta"><h3>Documentos para emitir sus pólizas</h3>' +
+      '<p class="ayuda">Las aseguradoras los piden para expedir. Los guardamos para no volvérselos a pedir mientras estén al día. El formulario SARLAFT es de cada aseguradora: se lo enviamos cuando elija la opción a emitir.</p>' +
+      '<ul class="docs docs-estado">' + lista.map(function (d) {
+        var detalle = d.estado === 'falta' ? d.nota
+          : (d.vence ? (d.estado === 'al_dia' ? 'Sirve hasta el ' : 'Venció el ') + L.fecha(d.vence.toISOString()) : 'Subido el ' + L.fecha(d.archivo.creado));
+        return '<li><span>' + E(d.nombre) + ' <b class="doc-' + d.estado + '">' + etiqueta[d.estado] + '</b><small>' + E(detalle) + '</small></span>' +
+          '<span class="acciones">' + (d.archivo ? '<button type="button" class="btn btn-s" data-ruta="' + E(d.archivo.ruta) + '">Ver</button>' : '') +
+          '<label class="btn btn-' + (d.estado === 'al_dia' ? 's' : 'p') + '">' + (d.estado === 'al_dia' ? 'Actualizar' : 'Subir') +
+          '<input type="file" hidden multiple accept="' + L.ACEPTA + '" data-tipo="' + d.tipo + '"></label></span></li>';
+      }).join('') + '</ul><div class="msg" role="alert" id="msgDocs"></div></div>';
+    t.querySelectorAll('[data-ruta]').forEach(function (b) { b.addEventListener('click', function () { L.abrirArchivo(b.getAttribute('data-ruta')); }); });
+    t.querySelectorAll('input[data-tipo]').forEach(function (inp) {
+      inp.addEventListener('change', async function () {
+        var fs = Array.prototype.slice.call(inp.files || []);
+        var m = $('msgDocs');
+        if (!fs.length) return;
+        var problema = fs.map(L.problemaArchivo).filter(Boolean)[0] || (fs.length > 4 ? 'Máximo 4 archivos por documento.' : '');
+        if (problema) { m.textContent = problema; m.className = 'msg err'; return; }
+        m.textContent = 'Subiendo…'; m.className = 'msg ok';
+        try {
+          for (var i = 0; i < fs.length; i++) await L.subirArchivo(fs[i], { tipo: inp.getAttribute('data-tipo') });
+          L.avisarAsesor('Documento actualizado — ' + ((perfil && perfil.empresa) || usuario.email), {
+            _replyto: usuario.email, Cliente: ((perfil && perfil.nombre) || '') + ' · ' + usuario.email,
+            Documento: L.TIPOS_ARCHIVO[inp.getAttribute('data-tipo')] + ': ' + fs.map(function (x) { return x.name; }).join(', ')
+          });
+        } catch (e) { m.textContent = L.error(e); m.className = 'msg err'; return; }
+        pintarDocumentos();
+      });
     });
   }
 
