@@ -801,7 +801,7 @@
       body: JSON.stringify({ mensajes: historialIA, contexto: contextoIA() }),
       signal: controlador ? controlador.signal : undefined
     }).then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) { clearTimeout(reloj); alResponder(d && d.respuesta ? d.respuesta : null); })
+      .then(function (d) { clearTimeout(reloj); alResponder(d && d.respuesta ? String(d.respuesta).replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^#{1,4}\s+/gm, '') : null); })
       .catch(function () { clearTimeout(reloj); alResponder(null); });
   }
 
