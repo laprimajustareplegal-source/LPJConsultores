@@ -97,3 +97,8 @@ begin
 end;
 $$;
 grant execute on function public.resumen_admin() to authenticated;
+
+-- Luis Felipe queda como administrador (si su cuenta ya es del equipo, o se agrega si ya existe la cuenta).
+insert into public.asesores (usuario_id, nombre, rol)
+select id, 'Luis Felipe Pinilla Vega', 'admin' from auth.users where lower(email) = 'luis.pinilla@laprimajusta.co'
+on conflict (usuario_id) do update set rol = 'admin';
