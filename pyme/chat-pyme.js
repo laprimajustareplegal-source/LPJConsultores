@@ -203,12 +203,31 @@
     el.cuenta.textContent = usuario ? 'Mi cuenta' : 'Ingresar';
   }
 
+  // Registro de la conversación para el equipo LPJ (se guarda unos segundos después del último mensaje).
+  var chatId = null, registroT = null;
+  function nuevoChatId() {
+    try { return crypto.randomUUID(); } catch (e) {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) { var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+    }
+  }
+  function programarRegistro() {
+    if (!window.LPJ || !LPJ.configurado || !LPJ.registrarChat) return;
+    clearTimeout(registroT);
+    registroT = setTimeout(function () {
+      if (!transcripcion.some(function (m) { return m.rol === 'cliente'; })) return;   // solo si la persona escribió algo
+      if (!chatId) chatId = nuevoChatId();
+      var tema = (estado && (estado.ramo || estado.tipo)) || null;
+      LPJ.registrarChat(chatId, transcripcion.slice(-300).map(function (m) { return { rol: m.rol, texto: String(m.texto).slice(0, 4000) }; }), tema);
+    }, 4000);
+  }
+
   function reiniciar(sinRecargar) {
     estado = { ajustes: [], preguntas: [], archivos: [] };
     pasos = null;
     paso = -1;
     historialIA = [];
     transcripcion = [];
+    chatId = null;
     guardadoHasta = 0;
     ocupado = false;
     clearTimeout(reintento);
@@ -299,6 +318,7 @@
     d.className = 'pc-msg ' + clase;
     d.textContent = texto;
     if (!sinGuardar) transcripcion.push({ rol: clase === 'pc-user' ? 'cliente' : 'asistente', texto: texto });
+    if (!sinGuardar) programarRegistro();
     return agregar(d);
   }
 

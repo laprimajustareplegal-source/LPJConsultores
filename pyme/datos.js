@@ -413,6 +413,27 @@
       var r = await sb.rpc('es_asesor');
       return !r.error && r.data === true;
     },
+    esAdmin: async function () {
+      if (!sb) return false;
+      var r = await sb.rpc('es_admin');
+      return !r.error && r.data === true;
+    },
+    resumenAdmin: async function () { exigir(); var r = await sb.rpc('resumen_admin'); if (r.error) throw r.error; return r.data || {}; },
+    chats: async function (limite) {
+      exigir();
+      return revisar(await sb.from('chat_sesiones').select('*').order('actualizado', { ascending: false }).limit(limite || 60));
+    },
+    equipo: async function () { exigir(); return revisar(await sb.from('asesores').select('*')); },
+    agregarEquipo: async function (usuarioId, nombre, rol) {
+      exigir();
+      return revisar(await sb.from('asesores').upsert({ usuario_id: usuarioId, nombre: nombre || null, rol: rol === 'admin' ? 'admin' : 'empleado' }).select().single());
+    },
+    quitarEquipo: async function (usuarioId) { exigir(); revisar(await sb.from('asesores').delete().eq('usuario_id', usuarioId)); },
+    // Guarda la conversación del chat de la página (con o sin cuenta). Nunca bloquea el chat.
+    registrarChat: async function (id, mensajes, tema) {
+      if (!sb || !id) return;
+      try { await sb.rpc('registrar_chat', { p_id: id, p_mensajes: mensajes, p_pagina: location.pathname, p_tema: tema || null }); } catch (e) { /* sin registro */ }
+    },
     todasSolicitudes: async function () {
       exigir();
       return revisar(await sb.from('solicitudes').select('*').order('actualizado', { ascending: false }).limit(500));

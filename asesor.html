@@ -7,14 +7,17 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="pyme/cuenta.css?v=20261121k">
+<link rel="stylesheet" href="pyme/cuenta.css?v=20261121m">
 </head>
 <body>
 <header class="cab"><div class="cab-in">
   <a href="./"><img src="img/logo.png" alt="LPJ Consultores"></a>
   <span class="cab-tit">Panel del asesor</span>
   <div class="cab-acc">
+    <button class="btn btn-s oculto" id="btnResumen" type="button">Resumen</button>
+    <button class="btn btn-s oculto" id="btnSolicitudes" type="button">Solicitudes</button>
     <button class="btn btn-s oculto" id="btnAliados" type="button">Aliados</button>
+    <button class="btn btn-s oculto" id="btnEquipo" type="button">Equipo</button>
     <button class="btn btn-s oculto" id="btnRecargar" type="button">Actualizar</button>
     <button class="btn btn-t oculto" id="btnSalir" type="button">Salir</button>
   </div>
@@ -37,13 +40,29 @@
 
   <section class="vacio oculto" id="vSinPermiso">Esta cuenta no tiene permisos de asesor.<br><button class="btn btn-s" type="button" id="btnSalir2">Salir</button></section>
 
+  <section class="oculto" id="vResumen">
+    <div class="contadores" id="resumenCifras"></div>
+    <div class="tarjeta"><h3>Conversaciones del chat de la página</h3><p class="ayuda">Todas las conversaciones en las que la persona escribió algo, con o sin cuenta. Las más recientes primero.</p><div id="listaChats"></div></div>
+  </section>
+  <section class="oculto" id="vEquipo">
+    <div class="tarjeta">
+      <h3>Equipo LPJ</h3>
+      <p class="ayuda">Empleado: atiende solicitudes y ve el chat. Administrador: además ve el resumen y maneja equipo y aliados. La persona primero crea su cuenta en laprimajusta.co.</p>
+      <form class="form" id="fNuevoEquipo" novalidate>
+        <div class="fila2"><label>Correo de la cuenta<input type="email" name="correo" maxlength="160"></label><label>Rol<select name="rol"><option value="empleado">Empleado</option><option value="admin">Administrador</option></select></label></div>
+        <div class="acciones"><button class="btn btn-s" type="submit">Agregar al equipo</button></div>
+        <div class="msg"></div>
+      </form>
+    </div>
+    <div id="listaEquipo"></div>
+  </section>
   <section class="oculto" id="vAliados">
     <div class="tarjeta">
       <h3>Aliados</h3>
       <p class="ayuda">Quien se inscribe por el Portal de aliados queda con 60 % de la comisión que paga la aseguradora. Aquí puede cambiar el porcentaje de cualquier aliado.</p>
       <form class="form" id="fNuevoAliado" novalidate>
         <div class="fila2"><label>Correo de la cuenta<input type="email" name="correo" maxlength="160"></label><label>% de comisión<input type="text" name="pct" inputmode="decimal" maxlength="6" value="60"></label></div>
-        <div class="acciones"><button class="btn btn-s" type="submit">Marcar como aliado</button><button class="btn btn-t" type="button" id="btnVolverPanel">Volver a solicitudes</button></div>
+        <div class="acciones"><button class="btn btn-s" type="submit">Marcar como aliado</button></div>
         <div class="msg"></div>
       </form>
     </div>
@@ -62,9 +81,9 @@
   </section>
 </main>
 
-<script src="pyme/config.js?v=20261121k"></script>
+<script src="pyme/config.js?v=20261121m"></script>
 <script src="pyme/lib/supabase-2.119.0.js"></script>
-<script src="pyme/datos.js?v=20261121k"></script>
-<script src="pyme/asesor.js?v=20261121k"></script>
+<script src="pyme/datos.js?v=20261121m"></script>
+<script src="pyme/asesor.js?v=20261121m"></script>
 </body>
 </html>

@@ -34,7 +34,21 @@
     $('btnSalir2').addEventListener('click', salir);
     $('btnRecargar').addEventListener('click', function () { cargar(); });
     $('btnAliados').addEventListener('click', verAliados);
-    $('btnVolverPanel').addEventListener('click', function () { ver('vAliados', false); ver('vPanel', true); });
+    $('btnResumen').addEventListener('click', verResumen);
+    $('btnEquipo').addEventListener('click', verEquipo);
+    $('btnSolicitudes').addEventListener('click', function () { vista('vPanel'); });
+    $('fNuevoEquipo').addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      var f = ev.target, b = f.querySelector('[type=submit]'), correo = f.correo.value.trim().toLowerCase();
+      if (!correo) return mensaje(f, 'Escriba el correo de la cuenta.');
+      b.disabled = true; mensaje(f, '');
+      try {
+        var p = await L.perfilPorCorreo(correo);
+        if (!p) mensaje(f, 'No hay una cuenta con ese correo. Primero debe crearla en laprimajusta.co.');
+        else { await L.agregarEquipo(p.id, p.nombre || correo, f.rol.value); f.reset(); mensaje(f, 'Listo, ya es parte del equipo.', true); await pintarEquipo(); }
+      } catch (e) { mensaje(f, L.error(e)); }
+      b.disabled = false;
+    });
     $('fNuevoAliado').addEventListener('submit', async function (ev) {
       ev.preventDefault();
       var f = ev.target, b = f.querySelector('[type=submit]'), correo = f.correo.value.trim().toLowerCase();
@@ -81,13 +95,20 @@
   async function entrar() {
     ver('vIngreso', false);
     if (!(await L.esAsesor())) { ver('vSinPermiso', true); ver('btnSalir', true); return; }
-    ['vPanel', 'btnSalir', 'btnRecargar', 'btnAliados'].forEach(function (i) { ver(i, true); });
+    ['vPanel', 'btnSalir', 'btnRecargar'].forEach(function (i) { ver(i, true); });
+    try { esAdmin = await L.esAdmin(); } catch (e) { esAdmin = false; }
+    ['btnResumen', 'btnSolicitudes', 'btnAliados', 'btnEquipo'].forEach(function (i) { ver(i, esAdmin); });
     await cargar();
     window.setInterval(refrescarLista, 90000);
   }
 
+  var esAdmin = false;
+  function vista(id) {
+    ['vPanel', 'vAliados', 'vResumen', 'vEquipo'].forEach(function (v) { ver(v, v === id); });
+  }
+
   async function verAliados() {
-    ver('vPanel', false); ver('vAliados', true);
+    vista('vAliados');
     await pintarAliados();
   }
 
@@ -119,6 +140,68 @@
       f.querySelector('[data-quitar]').addEventListener('click', async function () {
         if (!window.confirm('¿Quitar esta cuenta como aliado? Sus clientes y negocios no se borran.')) return;
         try { await L.quitarAliado(id); await pintarAliados(); } catch (e) { mensaje(f, L.error(e)); }
+      });
+    });
+  }
+
+  // ---------- Resumen del administrador ----------
+  async function verResumen() {
+    vista('vResumen');
+    $('resumenCifras').innerHTML = '<p class="nada">Cargando…</p>';
+    var r;
+    try { r = await L.resumenAdmin(); } catch (e) { $('resumenCifras').innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; r = null; }
+    if (r) {
+      var c = function (n, t) { return '<div class="contador"><b>' + E(String(n == null ? 0 : n)) + '</b>' + E(t) + '</div>'; };
+      var pe = r.por_estado || {};
+      $('resumenCifras').innerHTML =
+        c(r.chats_hoy, 'Chats hoy') + c(r.chats_7d, 'Chats 7 días') + c(r.chats, 'Chats en total') +
+        c(r.cuentas_7d, 'Cuentas nuevas 7 días') + c(r.cuentas, 'Cuentas') + c(r.aliados, 'Aliados') +
+        c(r.solicitudes_7d, 'Solicitudes 7 días') + c(r.solicitudes, 'Solicitudes') +
+        Object.keys(pe).map(function (k) { return c(pe[k], L.ESTADOS[k] || k); }).join('') + c(r.equipo, 'Equipo');
+    }
+    var lc = $('listaChats');
+    lc.innerHTML = '<p class="nada">Cargando…</p>';
+    var chats;
+    try { chats = await L.chats(80); } catch (e) { lc.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
+    if (!chats.length) { lc.innerHTML = '<div class="vacio">Todavía no hay conversaciones registradas.</div>'; return; }
+    var ids = chats.map(function (x) { return x.usuario_id; }).filter(function (v, i, a) { return v && a.indexOf(v) === i && !perfiles[v]; });
+    if (ids.length) { try { (await L.perfiles(ids)).forEach(function (p) { perfiles[p.id] = p; }); } catch (e) { /* sin perfiles */ } }
+    lc.innerHTML = chats.map(function (x, i) {
+      var msgs = Array.isArray(x.mensajes) ? x.mensajes : [];
+      var primera = (msgs.filter(function (m) { return m.rol === 'cliente'; })[0] || {}).texto || '';
+      var quien = x.usuario_id ? ((perfiles[x.usuario_id] || {}).nombre || (perfiles[x.usuario_id] || {}).correo || 'Con cuenta') + (aliados[x.usuario_id] ? ' (aliado)' : '') : 'Visitante sin cuenta';
+      return '<details class="chat-reg"><summary><strong>' + E(L.fecha(x.actualizado)) + '</strong> · ' + E(quien) + ' · ' + E(String(x.n_mensajes)) + ' mensajes' + (x.tema ? ' · ' + E(x.tema) : '') +
+        '<br><span class="ayuda">' + E(primera.slice(0, 160)) + '</span></summary><div class="chat-txt">' +
+        msgs.map(function (m) { return '<p><b>' + (m.rol === 'cliente' ? 'Cliente' : 'Asistente') + ':</b> ' + E(m.texto || '') + '</p>'; }).join('') + '</div></details>';
+    }).join('');
+  }
+
+  // ---------- Equipo LPJ ----------
+  async function verEquipo() { vista('vEquipo'); await pintarEquipo(); }
+
+  async function pintarEquipo() {
+    var cont = $('listaEquipo');
+    cont.innerHTML = '<p class="nada">Cargando…</p>';
+    var eq;
+    try { eq = await L.equipo(); } catch (e) { cont.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
+    var faltan = eq.map(function (x) { return x.usuario_id; }).filter(function (id) { return !perfiles[id]; });
+    if (faltan.length) { try { (await L.perfiles(faltan)).forEach(function (p) { perfiles[p.id] = p; }); } catch (e) { /* sin perfiles */ } }
+    cont.innerHTML = eq.map(function (x) {
+      var p = perfiles[x.usuario_id] || {};
+      return '<div class="tarjeta"><form class="form" data-id="' + E(x.usuario_id) + '" novalidate><p class="ayuda">' + E(p.correo || '') + '</p>' +
+        '<div class="fila2"><label>Nombre<input type="text" name="nombre" maxlength="120" value="' + E(x.nombre || p.nombre || '') + '"></label>' +
+        '<label>Rol<select name="rol"><option value="empleado"' + (x.rol !== 'admin' ? ' selected' : '') + '>Empleado</option><option value="admin"' + (x.rol === 'admin' ? ' selected' : '') + '>Administrador</option></select></label></div>' +
+        '<div class="acciones"><button class="btn btn-s" type="submit">Guardar</button><button class="btn btn-t" type="button" data-quitar="1">Quitar del equipo</button></div><div class="msg"></div></form></div>';
+    }).join('') || '<div class="vacio">No hay nadie en el equipo.</div>';
+    cont.querySelectorAll('form').forEach(function (f) {
+      var id = f.getAttribute('data-id');
+      f.addEventListener('submit', async function (ev) {
+        ev.preventDefault();
+        try { await L.agregarEquipo(id, f.nombre.value.trim(), f.rol.value); mensaje(f, 'Guardado.', true); } catch (e) { mensaje(f, L.error(e)); }
+      });
+      f.querySelector('[data-quitar]').addEventListener('click', async function () {
+        if (!window.confirm('¿Quitar a esta persona del equipo? Su cuenta sigue existiendo, pero ya no entra al panel.')) return;
+        try { await L.quitarEquipo(id); await pintarEquipo(); } catch (e) { mensaje(f, L.error(e)); }
       });
     });
   }
