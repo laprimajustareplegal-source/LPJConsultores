@@ -25,8 +25,8 @@
 
   <!-- Ingreso -->
   <section class="ingreso oculto" id="vIngreso">
-    <h1>Mi cuenta</h1>
-    <p>Vea el avance de sus solicitudes, sus pólizas, documentos y conversaciones.</p>
+    <h1 id="ingresoTitulo">Mi cuenta</h1>
+    <p id="ingresoTexto">Vea el avance de sus solicitudes, sus pólizas, documentos y conversaciones.</p>
     <div class="pest" id="pestIngreso">
       <button type="button" class="act" data-p="ingresar">Ingresar</button>
       <button type="button" data-p="crear">Crear cuenta</button>
@@ -125,5 +125,15 @@
 <script src="pyme/lib/supabase-2.119.0.js"></script>
 <script src="pyme/datos.js?v=20261121j"></script>
 <script src="pyme/mi-cuenta.js?v=20261121j"></script>
+<script>
+(function () {
+  // Entrada de aliados: mi-cuenta.html?aliado=1 (misma cuenta; el asesor la activa como aliado)
+  if (!/[?&]aliado=1/.test(location.search)) return;
+  document.title = 'Portal de aliados — LPJ Consultores';
+  var h = document.getElementById('ingresoTitulo'), p = document.getElementById('ingresoTexto');
+  if (h) h.textContent = 'Portal de aliados';
+  if (p) p.innerHTML = 'Cotice para sus clientes, siga cada negocio y vea sus comisiones por póliza. Si es nuevo, cree su cuenta y escríbanos por <a href="https://wa.me/573144220945?text=Hola%2C%20cre%C3%A9%20mi%20cuenta%20y%20quiero%20activarla%20como%20aliado%20de%20LPJ%20Consultores." target="_blank" rel="noopener">WhatsApp</a> para activarla como aliado.';
+})();
+</script>
 </body>
 </html>
