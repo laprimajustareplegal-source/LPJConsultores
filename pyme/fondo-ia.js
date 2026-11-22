@@ -1,4 +1,4 @@
-/* La Prima Justa — fondo animado "red neuronal" detrás de las secciones azules.
+/* LPJ — fondo animado "red neuronal" detrás de las secciones azules.
    Un solo lienzo fijo detrás de toda la página: las secciones blancas lo tapan y las azules lo dejan ver.
    Puntos que flotan, líneas entre los cercanos, pulsos de luz que viajan por las conexiones y dos brillos
    lentos de fondo. Se pausa con la pestaña oculta y queda quieto si la persona pidió menos movimiento. */

@@ -1,4 +1,4 @@
-/* Configuración del portal PYME de La Prima Justa.
+/* Configuración del portal PYME de LPJ.
    Es lo único que hay que llenar después de crear Supabase y Vercel.
    Estos datos son públicos por diseño: la seguridad la ponen las reglas de la base de datos, no estas claves.
    NUNCA pegar aquí la clave secreta (sb_secret_...) ni la service_role. */

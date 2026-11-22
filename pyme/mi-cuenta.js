@@ -1,4 +1,4 @@
-/* Portal del cliente — La Prima Justa */
+/* Portal del cliente — LPJ */
 (function () {
   'use strict';
   var C = window.LPJ_CONFIG || {};

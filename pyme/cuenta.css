@@ -1,4 +1,4 @@
-/* Portal del cliente y panel del asesor — La Prima Justa */
+/* Portal del cliente y panel del asesor — LPJ */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--azul:#1b3a8f;--azul-oscuro:#0f2060;--azul-boton:#1644c8;--gris-fondo:#f2f4f7;--gris-borde:#e0e3ea;--gris-texto:#5a6272;--negro:#0f1923;--blanco:#fff;--verde:#17693a;--rojo:#b42318}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--gris-fondo);color:var(--negro);min-height:100vh}
