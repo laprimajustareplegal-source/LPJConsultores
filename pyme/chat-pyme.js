@@ -819,6 +819,7 @@
     if (estado.ajustes.length) c.ajustesPedidos = estado.ajustes;
     if (estado.archivos.length) c.archivosAdjuntos = estado.archivos.map(function (a) { return a.tipo; });
     if (estado.enviado) c.solicitudEnviada = true;
+    c.sesionIniciada = !!usuario;
     if (misDatosLpj) { c.esAliado = !!esAliado; c.polizasDelCliente = misDatosLpj.polizasDelCliente; c.pagosPendientesDelCliente = misDatosLpj.pagosPendientesDelCliente; }
     return c;
   }
