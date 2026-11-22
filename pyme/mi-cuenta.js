@@ -534,6 +534,9 @@
     var ps, lu = [];
     try { ps = await L.misPolizas(); } catch (e) { t.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
     if (!esEquipo) { try { lu = await L.luPolizas(); } catch (e) { lu = []; } }   // el equipo ve todo en su panel, no aquí
+    // LevelUp a veces tiene la misma póliza registrada dos veces: se muestra una sola.
+    var vistasLu = {};
+    lu = lu.filter(function (p) { var k = [p.numero, p.ramo, p.aseguradora, p.placa, p.desde, p.hasta].join('|'); if (vistasLu[k]) return false; vistasLu[k] = true; return true; });
     if (!ps.length && !lu.length) { t.innerHTML = '<div class="vacio">Aquí aparecerán las pólizas que emita con nosotros.</div>'; return; }
     var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
     var diasA = function (f) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(f || ''); return m ? Math.round((new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) - hoy) / 86400000) : null; };
@@ -580,7 +583,7 @@
     if (!esEquipo) { try { luc = await L.luCartera(); } catch (e) { luc = []; } }
     // Cuotas pendientes en LevelUp: se muestran como cuotas por pagar.
     luc.forEach(function (c) {
-      cs.push({ poliza_id: null, cliente: esAliado ? c.tomador : null, concepto: (c.ramo || '') + ' · ' + (c.aseguradora || '') + (c.numero_poliza ? ' · ' + c.numero_poliza : '') + (c.cuota ? ' · cuota ' + c.cuota : ''),
+      cs.push({ poliza_id: null, cliente: esAliado ? c.tomador : null, concepto: (c.ramo || '') + ' · ' + (c.aseguradora || '') + (c.numero_poliza ? ' · ' + c.numero_poliza : '') + (Number(c.cuota) > 0 ? ' · cuota ' + c.cuota : ''),
         valor: c.saldo != null ? c.saldo : c.total, fecha_limite: c.fecha_max_pago, fecha_pago: null, estado: 'pendiente', medio: null });
     });
     if (!cs.length) { t.innerHTML = '<div class="vacio">Aquí verá las cuotas y pagos de sus pólizas: cuánto debe, hasta cuándo y qué ya está pagado.</div>'; return; }
