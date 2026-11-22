@@ -149,7 +149,7 @@
   ];
 
   var el = {};
-  var estado, pasos, paso, historialIA, transcripcion, guardadoHasta, ocupado, usuario = null, perfil = null;
+  var estado, pasos, paso, historialIA, transcripcion, guardadoHasta, ocupado, usuario = null, perfil = null, misDatosLpj = null;
   var botPendientes = 0, reintento = null;
   var abiertas = [], huellaCuenta = '';      // solicitudes en curso del cliente (se cargan en segundo plano)
   var esAliado = false;   // los aliados cotizan para sus clientes
@@ -187,6 +187,18 @@
     try { perfil = await LPJ.perfil(); } catch (e) { /* se conserva lo que había */ }
     try { esAliado = await LPJ.esAliado(); } catch (e) { esAliado = false; }
     try { await LPJ.enviarPendiente(); } catch (e) { /* no bloquea */ }
+    // Pólizas y pagos del cliente en LPJ (copia de LevelUp): solo los suyos, para que el asesor IA le responda con su información.
+    misDatosLpj = null;
+    try {
+      if (!(await LPJ.esAsesor())) {
+        var pl = await LPJ.luPolizas(), ct = await LPJ.luCartera();
+        misDatosLpj = {
+          polizasDelCliente: pl.slice(0, 25).map(function (p) { return [p.ramo, p.aseguradora, p.numero, 'vence ' + p.hasta, esAliado ? p.tomador : null].filter(Boolean).join(' · '); }),
+          pagosPendientesDelCliente: ct.slice(0, 15).map(function (c) { return [c.ramo, c.aseguradora, c.numero_poliza, 'saldo ' + c.saldo, 'pagar antes de ' + c.fecha_max_pago, esAliado ? c.tomador : null].filter(Boolean).join(' · '); })
+        };
+        if (!misDatosLpj.polizasDelCliente.length && !misDatosLpj.pagosPendientesDelCliente.length) misDatosLpj = null;
+      }
+    } catch (e) { misDatosLpj = null; }
     try {
       abiertas = (await LPJ.misSolicitudes()).filter(function (s) { return s.estado !== 'vigente' && s.estado !== 'cancelada'; });
     } catch (e) { /* se conserva lo que había */ }
@@ -807,6 +819,7 @@
     if (estado.ajustes.length) c.ajustesPedidos = estado.ajustes;
     if (estado.archivos.length) c.archivosAdjuntos = estado.archivos.map(function (a) { return a.tipo; });
     if (estado.enviado) c.solicitudEnviada = true;
+    if (misDatosLpj) { c.esAliado = !!esAliado; c.polizasDelCliente = misDatosLpj.polizasDelCliente; c.pagosPendientesDelCliente = misDatosLpj.pagosPendientesDelCliente; }
     return c;
   }
 

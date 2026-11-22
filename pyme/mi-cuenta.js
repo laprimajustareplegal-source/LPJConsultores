@@ -5,7 +5,7 @@
   var L = window.LPJ;
   var E = L.escapar;
   var usuario = null, perfil = null, solicitudes = [], saliendo = false, errorCarga = '';
-  var esAliado = false, clienteDocs = '';   // aliado: trae negocios de sus clientes; clienteDocs = NIT elegido en Documentos
+  var esAliado = false, esEquipo = false, clienteDocs = '';   // aliado: trae negocios de sus clientes; clienteDocs = NIT elegido en Documentos
 
   function $(id) { return document.getElementById(id); }
   function ver(id, si) { $(id).classList.toggle('oculto', !si); }
@@ -237,6 +237,7 @@
     ['vPortal', 'btnSalir', 'btnNueva'].forEach(function (i) { ver(i, true); });
     try { perfil = await L.perfil(); } catch (e) { perfil = null; }
     try { esAliado = await L.esAliado(); } catch (e) { esAliado = false; }
+    try { esEquipo = await L.esAsesor(); } catch (e) { esEquipo = false; }
     pintarSaludo();
     var pendiente = null;
     try { pendiente = await L.enviarPendiente(); } catch (e) { pendiente = null; }
@@ -530,11 +531,22 @@
   async function pintarPolizas() {
     var t = $('tPolizas');
     t.innerHTML = '<p class="nada">Cargando…</p>';
-    var ps;
+    var ps, lu = [];
     try { ps = await L.misPolizas(); } catch (e) { t.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
-    if (!ps.length) { t.innerHTML = '<div class="vacio">Aquí aparecerán las pólizas que emita con nosotros.</div>'; return; }
+    if (!esEquipo) { try { lu = await L.luPolizas(); } catch (e) { lu = []; } }   // el equipo ve todo en su panel, no aquí
+    if (!ps.length && !lu.length) { t.innerHTML = '<div class="vacio">Aquí aparecerán las pólizas que emita con nosotros.</div>'; return; }
     var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-    t.innerHTML = '<div class="polizas">' + ps.map(function (p) {
+    var diasA = function (f) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(f || ''); return m ? Math.round((new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) - hoy) / 86400000) : null; };
+    var htmlLu = lu.map(function (p) {
+      var dias = diasA(p.hasta);
+      return '<div class="tarjeta poliza"><h4>' + E(p.ramo || '') + (p.placa ? ' ' + E(p.placa) : '') + ' · ' + E(p.aseguradora || '') + '</h4>' +
+        (esAliado && p.tomador ? '<p class="cliente-pol">' + E(p.tomador) + (p.identificacion ? ' · ' + E(p.identificacion) : '') + '</p>' : '') +
+        (dias !== null && dias >= 0 && dias <= 45 ? '<span class="aviso-vence">Vence en ' + dias + ' días</span>' : '') +
+        '<dl class="kv"><dt>Número</dt><dd>' + E(p.numero || '—') + '</dd><dt>Vigencia</dt><dd>' + L.fecha(p.desde) + ' – ' + L.fecha(p.hasta) + '</dd>' +
+        (p.prima ? '<dt>Prima</dt><dd>' + L.pesos(p.prima) + '</dd>' : '') + (esAliado && p.comision ? '<dt>Comisión póliza</dt><dd>' + L.pesos(p.comision) + '</dd>' : '') + '</dl>' +
+        '<div class="acciones"><a class="btn btn-s" href="./#cotizar">Renovar o mejorar</a></div></div>';
+    }).join('');
+    t.innerHTML = (htmlLu ? '<div class="polizas">' + htmlLu + '</div>' : '') + (ps.length ? '<div class="polizas">' + ps.map(function (p) {
       var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(p.vigencia_hasta || '');
       var dias = m ? Math.round((new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) - hoy) / 86400000) : null;
       return '<div class="tarjeta poliza"><h4>' + E(p.ramo) + (p.placa ? ' ' + E(p.placa) : '') + ' · ' + E(p.aseguradora) + '</h4>' +
@@ -544,7 +556,7 @@
         '<dl class="kv"><dt>Número</dt><dd>' + E(p.numero || '—') + '</dd><dt>Vigencia</dt><dd>' + L.fecha(p.vigencia_desde) + ' – ' + L.fecha(p.vigencia_hasta) + '</dd><dt>Prima anual</dt><dd>' + L.pesos(p.prima) + '</dd></dl>' +
         '<div class="acciones">' + (p.archivo_ruta ? '<button type="button" class="btn btn-s" data-ruta="' + E(p.archivo_ruta) + '">Ver póliza</button>' : '') +
         '<a class="btn btn-s" href="./#cotizar">Renovar o mejorar</a></div></div>';
-    }).join('') + '</div>';
+    }).join('') + '</div>' : '');
     t.querySelectorAll('[data-ruta]').forEach(function (b) { b.addEventListener('click', function () { L.abrirArchivo(b.getAttribute('data-ruta')); }); });
   }
 
@@ -563,8 +575,14 @@
   async function pintarCartera() {
     var t = $('tCartera');
     t.innerHTML = '<p class="nada">Cargando…</p>';
-    var cs, ps;
+    var cs, ps, luc = [];
     try { cs = await L.carteraDe(); ps = await L.misPolizas(); } catch (e) { t.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
+    if (!esEquipo) { try { luc = await L.luCartera(); } catch (e) { luc = []; } }
+    // Cuotas pendientes en LevelUp: se muestran como cuotas por pagar.
+    luc.forEach(function (c) {
+      cs.push({ poliza_id: null, cliente: esAliado ? c.tomador : null, concepto: (c.ramo || '') + ' · ' + (c.aseguradora || '') + (c.numero_poliza ? ' · ' + c.numero_poliza : '') + (c.cuota ? ' · cuota ' + c.cuota : ''),
+        valor: c.saldo != null ? c.saldo : c.total, fecha_limite: c.fecha_max_pago, fecha_pago: null, estado: 'pendiente', medio: null });
+    });
     if (!cs.length) { t.innerHTML = '<div class="vacio">Aquí verá las cuotas y pagos de sus pólizas: cuánto debe, hasta cuándo y qué ya está pagado.</div>'; return; }
     var pol = {};
     ps.forEach(function (p) { pol[p.id] = p; });

@@ -413,6 +413,47 @@
       var r = await sb.rpc('es_asesor');
       return !r.error && r.data === true;
     },
+    // ---------- Copia de LevelUp (solo lectura; cada quien ve lo suyo por las reglas de la base) ----------
+    luPolizas: async function () {
+      exigir();
+      try { return revisar(await sb.from('lu_polizas').select('id_poliza,numero,aseguradora,ramo,tomador,asegurado,identificacion,desde,hasta,placa,prima,comision,aliado').eq('vigente_en_levelup', true).order('hasta').limit(2000)); }
+      catch (e) { return []; }
+    },
+    luCartera: async function () {
+      exigir();
+      try { return revisar(await sb.from('lu_cartera').select('id_produccion,numero_poliza,aseguradora,ramo,tomador,cuota,fecha_max_pago,total,pagado,saldo,saldo_comision,aliado').order('fecha_max_pago').limit(2000)); }
+      catch (e) { return []; }
+    },
+    luReclamos: async function () {
+      exigir();
+      try { return revisar(await sb.from('lu_reclamos').select('*').order('fecha_suceso', { ascending: false }).limit(500)); } catch (e) { return []; }
+    },
+    luResumen: async function () { exigir(); var r = await sb.rpc('resumen_levelup'); if (r.error) throw r.error; return r.data || {}; },
+    luBuscarClientes: async function (q) {
+      exigir();
+      var s = String(q || '').replace(/[%,()]/g, ' ').trim();
+      if (s.length < 3) return [];
+      return revisar(await sb.from('lu_clientes').select('id_cliente,identificacion,nombre,aliado,estado').or('nombre.ilike.%' + s + '%,identificacion.ilike.%' + s + '%').limit(15));
+    },
+    luVinculo: async function (usuarioId) {
+      exigir();
+      var r = revisar(await sb.from('cuentas_levelup').select('id_cliente').eq('usuario_id', usuarioId).limit(1));
+      if (!r[0]) return null;
+      var c = revisar(await sb.from('lu_clientes').select('id_cliente,identificacion,nombre').eq('id_cliente', r[0].id_cliente).limit(1));
+      return c[0] || { id_cliente: r[0].id_cliente };
+    },
+    luVincular: async function (usuarioId, idCliente) {
+      exigir();
+      var u = await LPJ.usuario();
+      return revisar(await sb.from('cuentas_levelup').upsert({ usuario_id: usuarioId, id_cliente: idCliente, vinculado_por: u ? u.id : null }).select().single());
+    },
+    luDesvincular: async function (usuarioId) { exigir(); revisar(await sb.from('cuentas_levelup').delete().eq('usuario_id', usuarioId)); },
+    aliadoLevelup: async function (usuarioId, nombre) { exigir(); revisar(await sb.from('aliados').update({ levelup_nombre: nombre || null }).eq('usuario_id', usuarioId)); },
+    luAliadosNombres: async function () {
+      exigir();
+      try { var r = revisar(await sb.from('lu_clientes').select('aliado').not('aliado', 'is', null).limit(5000)); return r.map(function (x) { return x.aliado; }).filter(function (v, i, a) { return v && a.indexOf(v) === i; }).sort(); }
+      catch (e) { return []; }
+    },
     esAdmin: async function () {
       if (!sb) return false;
       var r = await sb.rpc('es_admin');

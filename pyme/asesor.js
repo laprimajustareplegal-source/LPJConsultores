@@ -119,6 +119,8 @@
     var ids = Object.keys(aliados), faltan = ids.filter(function (id) { return !perfiles[id]; });
     if (faltan.length) { try { (await L.perfiles(faltan)).forEach(function (p) { perfiles[p.id] = p; }); } catch (e) { /* sin perfiles */ } }
     if (!ids.length) { cont.innerHTML = '<div class="vacio">Todavía no hay aliados.</div>'; return; }
+    var nombresLu = [];
+    try { nombresLu = await L.luAliadosNombres(); } catch (e) { nombresLu = []; }
     ids.sort(function (a, b) { return String(aliados[a].nombre || '').localeCompare(String(aliados[b].nombre || '')); });
     cont.innerHTML = ids.map(function (id) {
       var a = aliados[id], p = perfiles[id] || {};
@@ -126,21 +128,59 @@
         '<p class="ayuda">' + E(p.correo || '') + (p.celular ? ' · ' + E(p.celular) : '') + ' · desde ' + E(L.fecha(a.creado)) + '</p>' +
         '<div class="fila2"><label>Nombre del aliado<input type="text" name="nombre" maxlength="120" value="' + E(a.nombre || p.nombre || '') + '"></label>' +
         '<label>% de comisión<input type="text" name="porcentaje" inputmode="decimal" maxlength="6" value="' + E(a.porcentaje == null ? '' : String(a.porcentaje)) + '"></label></div>' +
+        '<label>Nombre del aliado en LevelUp<input type="text" name="levelup" maxlength="160" list="luAliadosLista" value="' + E(a.levelup_nombre || '') + '"></label>' +
         '<div class="acciones"><button class="btn btn-s" type="submit">Guardar</button><button class="btn btn-t" type="button" data-quitar="1">Ya no es aliado</button></div><div class="msg"></div></form></div>';
     }).join('');
+    cont.insertAdjacentHTML('beforeend', '<datalist id="luAliadosLista">' + nombresLu.map(function (n) { return '<option value="' + E(n) + '">'; }).join('') + '</datalist>');
     cont.querySelectorAll('form').forEach(function (f) {
       var id = f.getAttribute('data-id');
       f.addEventListener('submit', async function (ev) {
         ev.preventDefault();
         var pct = f.porcentaje.value.replace(',', '.').trim();
         if (!(Number(pct) > 0 && Number(pct) <= 100)) return mensaje(f, 'El porcentaje va de 1 a 100.');
-        try { await L.hacerAliado(id, f.nombre.value.trim(), Number(pct)); aliados[id].porcentaje = Number(pct); mensaje(f, 'Guardado.', true); }
+        try { await L.hacerAliado(id, f.nombre.value.trim(), Number(pct)); await L.aliadoLevelup(id, f.levelup.value.trim()); aliados[id].porcentaje = Number(pct); aliados[id].levelup_nombre = f.levelup.value.trim(); mensaje(f, 'Guardado.', true); }
         catch (e) { mensaje(f, L.error(e)); }
       });
       f.querySelector('[data-quitar]').addEventListener('click', async function () {
         if (!window.confirm('¿Quitar esta cuenta como aliado? Sus clientes y negocios no se borran.')) return;
         try { await L.quitarAliado(id); await pintarAliados(); } catch (e) { mensaje(f, L.error(e)); }
       });
+    });
+  }
+
+  // ---------- Vínculo cuenta ↔ cliente de LevelUp ----------
+  // Solo el equipo vincula: así el cliente ve sus pólizas, pagos y reclamos de LevelUp en Mi cuenta.
+  async function pintarVinculo(usuarioId) {
+    var z = $('luVinculo');
+    if (!z) return;
+    var v = null;
+    try { v = await L.luVinculo(usuarioId); } catch (e) { z.innerHTML = '<p class="ayuda">' + E(L.error(e)) + '</p>'; return; }
+    if (v) {
+      z.innerHTML = '<p>Vinculada con <b>' + E(v.nombre || ('cliente ' + v.id_cliente)) + '</b>' + (v.identificacion ? ' · ' + E(v.identificacion) : '') + '. El cliente ve en Mi cuenta sus pólizas, pagos pendientes y reclamos de LevelUp.</p>' +
+        '<div class="acciones"><button class="btn btn-t" type="button" id="btnDesvincular">Quitar vínculo</button></div>';
+      $('btnDesvincular').addEventListener('click', async function () {
+        try { await L.luDesvincular(usuarioId); pintarVinculo(usuarioId); } catch (e) { window.alert(L.error(e)); }
+      });
+      return;
+    }
+    z.innerHTML = '<p class="ayuda">Busque al cliente por nombre o NIT/cédula y confirme que es la misma persona o empresa antes de vincular: después verá sus pólizas y pagos.</p>' +
+      '<input class="buscar" type="search" id="luBuscar" placeholder="Nombre o NIT/cédula en LevelUp"><div id="luResultados"></div>';
+    var temp = null;
+    $('luBuscar').addEventListener('input', function () {
+      clearTimeout(temp);
+      var q = this.value;
+      temp = setTimeout(async function () {
+        var r = [];
+        try { r = await L.luBuscarClientes(q); } catch (e) { $('luResultados').innerHTML = '<p class="ayuda">' + E(L.error(e)) + '</p>'; return; }
+        $('luResultados').innerHTML = r.map(function (c) {
+          return '<div class="lu-res"><span><b>' + E(c.nombre || '') + '</b> · ' + E(c.identificacion || '') + (c.aliado ? ' · aliado ' + E(c.aliado) : '') + ' · ' + E(c.estado || '') + '</span><button class="btn btn-s" type="button" data-id="' + E(String(c.id_cliente)) + '">Vincular</button></div>';
+        }).join('') || (q.trim().length >= 3 ? '<p class="ayuda">Sin resultados.</p>' : '');
+        $('luResultados').querySelectorAll('[data-id]').forEach(function (b) {
+          b.addEventListener('click', async function () {
+            try { await L.luVincular(usuarioId, Number(b.getAttribute('data-id'))); pintarVinculo(usuarioId); } catch (e) { window.alert(L.error(e)); }
+          });
+        });
+      }, 350);
     });
   }
 
@@ -159,6 +199,13 @@
         c(r.solicitudes_7d, 'Solicitudes 7 días') + c(r.solicitudes, 'Solicitudes') +
         Object.keys(pe).map(function (k) { return c(pe[k], L.ESTADOS[k] || k); }).join('') + c(r.equipo, 'Equipo');
     }
+    try {
+      var lu = await L.luResumen();
+      var c2 = function (n, tx) { return '<div class="contador"><b>' + E(String(n == null ? 0 : n)) + '</b>' + E(tx) + '</div>'; };
+      $('resumenCifras').innerHTML += '<div class="contador contador-sep"><b>LevelUp</b>' + (lu.ultima_sync ? 'Actualizado ' + E(L.fecha(lu.ultima_sync, true)) : 'Sin sincronizar aún') + '</div>' +
+        c2(lu.clientes, 'Clientes') + c2(lu.polizas, 'Pólizas vigentes') + c2(lu.vencen_30, 'Vencen en 30 días') + c2(lu.vencen_60, 'Vencen en 60 días') +
+        c2(L.pesos(lu.cartera_saldo), 'Cartera pendiente') + c2(L.pesos(lu.cartera_vencida), 'Cartera vencida') + c2(lu.reclamos_abiertos, 'Reclamos abiertos');
+    } catch (e) { /* sin copia de LevelUp todavía */ }
     var lc = $('listaChats');
     lc.innerHTML = '<p class="nada">Cargando…</p>';
     var chats;
@@ -367,6 +414,7 @@
         ? '<p class="ayuda">Esta cuenta es de aliado.</p><div class="fila2"><label>Nombre del aliado<input type="text" name="nombre" maxlength="120" value="' + E(ali.nombre || '') + '"></label><label>% de comisión para el aliado<input type="text" name="porcentaje" inputmode="decimal" maxlength="6" value="' + E(ali.porcentaje == null ? '' : String(ali.porcentaje)) + '"></label></div><div class="acciones"><button class="btn btn-s" type="submit">Guardar aliado</button><button class="btn btn-s" type="button" id="btnQuitarAliado">Ya no es aliado</button></div>'
         : '<button class="btn btn-s" type="submit">Marcar esta cuenta como aliado</button>') +
       '<div class="msg" role="alert"></div></form></div>' +
+      (ali ? '' : '<div class="tarjeta"><h3>Cliente en LevelUp</h3><div id="luVinculo"><p class="nada">Cargando…</p></div></div>') +
 
       '<div class="tarjeta"><h3>Responder y actualizar</h3><form class="form" id="fActualizar" novalidate>' +
       '<label>Estado<select name="estado">' + Object.keys(L.ESTADOS).map(function (k) { return '<option value="' + k + '"' + (k === s.estado ? ' selected' : '') + '>' + E(L.ESTADOS[k]) + '</option>'; }).join('') + '</select></label>' +
@@ -411,6 +459,7 @@
     if (charlaEl) charlaEl.scrollTop = charlaEl.scrollHeight;
 
     enlazarPagos(s, polizas, ali);
+    if (!ali) pintarVinculo(s.usuario_id);
     $('fAliado').addEventListener('submit', async function (ev) {
       ev.preventDefault();
       var f = ev.target, b = f.querySelector('[type=submit]');
