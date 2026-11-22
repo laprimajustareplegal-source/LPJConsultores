@@ -129,6 +129,7 @@
   var estado, pasos, paso, historialIA, transcripcion, guardadoHasta, ocupado, usuario = null, perfil = null;
   var botPendientes = 0, reintento = null;
   var abiertas = [], huellaCuenta = '';      // solicitudes en curso del cliente (se cargan en segundo plano)
+  var esAliado = false;   // los aliados cotizan para sus clientes
 
   function $(id) { return document.getElementById(id); }
 
@@ -148,7 +149,7 @@
       sesion.then(function (u) { if (u && !usuario) { usuario = u; pintarCuenta(); cargarCuenta(); } });
       LPJ.alCambiarSesion(function (u) {
         usuario = u;
-        if (!u) { perfil = null; abiertas = []; huellaCuenta = ''; }
+        if (!u) { perfil = null; abiertas = []; huellaCuenta = ''; esAliado = false; }
         pintarCuenta();
       });
     }
@@ -161,6 +162,7 @@
   async function cargarCuenta() {
     if (!LPJ.configurado || !usuario) return;
     try { perfil = await LPJ.perfil(); } catch (e) { /* se conserva lo que había */ }
+    try { esAliado = await LPJ.esAliado(); } catch (e) { esAliado = false; }
     try { await LPJ.enviarPendiente(); } catch (e) { /* no bloquea */ }
     try {
       abiertas = (await LPJ.misSolicitudes()).filter(function (s) { return s.estado !== 'vigente' && s.estado !== 'cancelada'; });
@@ -490,7 +492,14 @@
     f.noValidate = true;
     var autoriza = '<label class="pc-check"><input type="checkbox" name="autoriza"> Autorizo a La Prima Justa Ltda. a tratar mis datos para cotizar y contactarme, según la Ley 1581 de 2012.</label>';
     var html = '';
-    if (modo === 'sesion') {
+    if (modo === 'sesion' && esAliado) {
+      html = '<p class="pc-form-titulo">Cuenta de aliado (' + LPJ.escapar(usuario.email) + '). Escriba los datos de su cliente.</p>' +
+        campo('Empresa o nombre del cliente', 'empresa', 'text', { ancho: true }) +
+        campo('NIT o cédula del cliente', 'nit', 'text', { max: 40 }) +
+        campo('Su nombre', 'nombre', 'text', { auto: 'name' }) +
+        campo('Su celular', 'celular', 'tel', { auto: 'tel', modo: 'tel', max: 20 }) +
+        (perfil && perfil.autoriza_datos ? '' : autoriza);
+    } else if (modo === 'sesion') {
       html = '<p class="pc-form-titulo">Enviaremos la solicitud desde su cuenta (' + LPJ.escapar(usuario.email) + ').</p>' +
         campo('Empresa a asegurar', 'empresa', 'text', { ancho: true, auto: 'organization' }) +
         campo('Su nombre', 'nombre', 'text', { auto: 'name' }) +
@@ -516,7 +525,7 @@
     f.innerHTML = html;
 
     if (modo === 'sesion' && perfil) {
-      f.elements.empresa.value = perfil.empresa || '';
+      if (!esAliado) f.elements.empresa.value = perfil.empresa || '';
       f.elements.nombre.value = perfil.nombre || '';
       f.elements.celular.value = perfil.celular || '';
     }
@@ -542,10 +551,11 @@
         usuario = await LPJ.ingresar(d.correo, v('clave'));
       } catch (err) { listo(); boton.disabled = false; return falla(LPJ.error(err)); }
       try { perfil = await LPJ.perfil(); } catch (err) { perfil = null; }
+      try { esAliado = await LPJ.esAliado(); } catch (err) { esAliado = false; }
       listo();
       pintarCuenta();
       var empresa = d.empresa || (perfil && perfil.empresa) || '';
-      if (!perfil || !empresa || !perfil.nombre || !perfil.celular || !perfil.autoriza_datos) return mostrarContacto();
+      if (esAliado || !perfil || !empresa || !perfil.nombre || !perfil.celular || !perfil.autoriza_datos) return mostrarContacto();
       estado.contacto = { empresa: empresa, nit: perfil.nit || '', nombre: perfil.nombre, celular: perfil.celular, correo: usuario.email };
       f.remove();
       usuarioDice('Ingresé como ' + usuario.email);
@@ -557,14 +567,16 @@
 
     if (modo === 'sesion') {
       d.correo = usuario.email;
-      d.nit = (perfil && perfil.nit) || '';
+      if (esAliado) {
+        if (d.nit.replace(/\D/g, '').length < 5) return falla('Escriba el NIT o la cédula de su cliente.');
+      } else d.nit = (perfil && perfil.nit) || '';
       var casilla = f.elements.autoriza;
       if (casilla && !casilla.checked) return falla('Para continuar debe autorizar el tratamiento de datos.');
       f.remove();
       usuarioDice(d.empresa + ' · ' + d.nombre + ' · ' + d.celular);
       estado.contacto = d;
       var cambios = { nombre: d.nombre, celular: d.celular };
-      if (!perfil || !perfil.empresa) cambios.empresa = d.empresa;
+      if (!esAliado && (!perfil || !perfil.empresa)) cambios.empresa = d.empresa;
       LPJ.guardarPerfil(cambios).then(function () { return casilla ? LPJ.autorizarDatos() : LPJ.perfil(); })
         .then(function (p) { if (p) perfil = p; }).catch(function () { /* no bloquea */ });
       return siguiente();
@@ -891,6 +903,7 @@
     var o = filasResumen().map(function (r) { return [r[0], r[1] || '—']; });
     if (estado.precio) o.push(['Precio orientativo mostrado', estado.precio]);
     if (estado.preguntas.length) o.push(['Preguntas pendientes', estado.preguntas.join(' | ')]);
+    if (esAliado) o.push(['Traído por aliado', (estado.contacto.nombre || '') + ' · ' + (usuario ? usuario.email : '')]);
     o.push(['Contacto', estado.contacto.nombre + ' · ' + estado.contacto.celular + ' · ' + estado.contacto.correo]);
     if (estado.contacto.nit) o.push(['NIT', estado.contacto.nit]);
     return o;
@@ -997,12 +1010,12 @@
 
     if (conCuenta) {
       try {
-        var s = await LPJ.crearSolicitud(estado.tipo, c.empresa, datosParaGuardar(), estado.ajustes);
+        var s = await LPJ.crearSolicitud(estado.tipo, c.empresa, datosParaGuardar(), estado.ajustes, esAliado ? c.nit : null);
         estado.solicitudId = s.id;
         estado.numero = s.numero;
         guardada = true;
         for (var i = 0; i < n; i++) {
-          try { await LPJ.subirArchivo(estado.archivos[i].archivo, { solicitudId: s.id, tipo: estado.archivos[i].tipo }); }
+          try { await LPJ.subirArchivo(estado.archivos[i].archivo, { solicitudId: s.id, tipo: estado.archivos[i].tipo, clienteNit: esAliado ? c.nit : null }); }
           catch (err) { errorArchivos.push(estado.archivos[i].archivo.name); }
         }
         try { await LPJ.guardarMensajes(transcripcion.slice(guardadoHasta), s.id); guardadoHasta = transcripcion.length; } catch (err) { /* no bloquea */ }
@@ -1063,7 +1076,7 @@
 
   async function ofrecerDocumentos() {
     var lista;
-    try { lista = LPJ.estadoDocumentos(await LPJ.documentosDe()); }
+    try { lista = LPJ.estadoDocumentos(await LPJ.documentosDe(null, esAliado ? estado.contacto.nit : null)); }
     catch (e) { opcionesFinales(); return; }
     var tiene = lista.filter(function (d) { return d.estado === 'al_dia'; });
     var faltan = lista.filter(function (d) { return d.estado !== 'al_dia'; });
@@ -1107,7 +1120,7 @@
         var libre = ocupar();
         var fallo = false;
         for (var k = 0; k < archivos.length; k++) {
-          try { await LPJ.subirArchivo(archivos[k], { solicitudId: estado.solicitudId, tipo: d.tipo }); subidos.push(d.nombre); }
+          try { await LPJ.subirArchivo(archivos[k], { solicitudId: estado.solicitudId, tipo: d.tipo, clienteNit: esAliado ? estado.contacto.nit : null }); subidos.push(d.nombre); }
           catch (e) { fallo = true; }
         }
         libre();

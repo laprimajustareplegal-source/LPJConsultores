@@ -5,6 +5,7 @@
   var L = window.LPJ;
   var E = L.escapar;
   var usuario = null, perfil = null, solicitudes = [], saliendo = false, errorCarga = '';
+  var esAliado = false, clienteDocs = '';   // aliado: trae negocios de sus clientes; clienteDocs = NIT elegido en Documentos
 
   function $(id) { return document.getElementById(id); }
   function ver(id, si) { $(id).classList.toggle('oculto', !si); }
@@ -87,8 +88,8 @@
   }
 
   function limpiarPortal() {
-    usuario = null; perfil = null; solicitudes = [];
-    ['tSolicitudes', 'tPolizas', 'tDocumentos', 'tConversaciones'].forEach(function (i) { $(i).innerHTML = ''; });
+    usuario = null; perfil = null; solicitudes = []; esAliado = false; clienteDocs = '';
+    ['tSolicitudes', 'tPolizas', 'tCartera', 'tComisiones', 'tDocumentos', 'tConversaciones'].forEach(function (i) { $(i).innerHTML = ''; });
     ['fDatos', 'fClave'].forEach(function (i) { $(i).reset(); });
   }
 
@@ -210,6 +211,9 @@
   function pestanaPortal(t) {
     document.querySelectorAll('.tabs button').forEach(function (b) { b.classList.toggle('act', b.getAttribute('data-t') === t); });
     ver('tSolicitudes', t === 'solicitudes'); ver('tPolizas', t === 'polizas'); ver('tDocumentos', t === 'documentos');
+    ver('tCartera', t === 'cartera'); ver('tComisiones', t === 'comisiones');
+    if (t === 'cartera') pintarCartera();
+    if (t === 'comisiones') pintarComisiones();
     ver('tConversaciones', t === 'conversaciones'); ver('tDatos', t === 'datos');
     if (t === 'polizas') pintarPolizas();
     if (t === 'documentos') pintarDocumentos();
@@ -220,13 +224,15 @@
   function pintarSaludo() {
     var nombre = perfil && perfil.nombre ? perfil.nombre.split(' ')[0] : '';
     $('hola').textContent = 'Hola' + (nombre ? ', ' + nombre : '');
-    $('holaSub').textContent = (perfil && perfil.empresa ? perfil.empresa + ' · ' : '') + usuario.email;
+    $('holaSub').textContent = (esAliado ? 'Cuenta de aliado · ' : '') + (perfil && perfil.empresa ? perfil.empresa + ' · ' : '') + usuario.email;
+    ver('tabComisiones', esAliado);
   }
 
   async function mostrarPortal() {
     ['vIngreso', 'vNuevaClave'].forEach(function (i) { ver(i, false); });
     ['vPortal', 'btnSalir', 'btnNueva'].forEach(function (i) { ver(i, true); });
     try { perfil = await L.perfil(); } catch (e) { perfil = null; }
+    try { esAliado = await L.esAliado(); } catch (e) { esAliado = false; }
     pintarSaludo();
     var pendiente = null;
     try { pendiente = await L.enviarPendiente(); } catch (e) { pendiente = null; }
@@ -386,8 +392,8 @@
   }
 
   // Documentos para emitir que faltan o vencieron (sin el SARLAFT, que llega después por la aseguradora).
-  async function documentosFaltantes() {
-    var lista = L.estadoDocumentos(await L.documentosDe());
+  async function documentosFaltantes(clienteNit) {
+    var lista = L.estadoDocumentos(await L.documentosDe(null, esAliado ? clienteNit : null));
     return lista.filter(function (d) { return d.estado !== 'al_dia'; });
   }
   var PUEDE_NO_APLICAR = ['camara_comercio', 'estados_financieros', 'declaracion_renta'];
@@ -404,7 +410,7 @@
     var faltan = [];
     if (acc === 'emision') {
       z.innerHTML = '<p class="nada">Revisando sus documentos…</p>';
-      try { faltan = await documentosFaltantes(); } catch (e) { faltan = []; }
+      try { faltan = await documentosFaltantes(s.cliente_nit); } catch (e) { faltan = []; }
     }
     var bloqueDocs = '';
     if (faltan.length) {
@@ -452,7 +458,7 @@
       var subidos = [];
       try {
         for (var i = 0; i < todos.length; i++) {
-          await L.subirArchivo(todos[i].archivo, { solicitudId: s.id, tipo: todos[i].tipo });
+          await L.subirArchivo(todos[i].archivo, { solicitudId: s.id, tipo: todos[i].tipo, clienteNit: s.cliente_nit || null });
           subidos.push(todos[i].archivo.name + (L.TIPOS_ARCHIVO[todos[i].tipo] ? ' (' + L.TIPOS_ARCHIVO[todos[i].tipo] + ')' : ''));
         }
         if (acc === 'documento') await L.accionCliente(s.id, 'documento', subidos.join(', '));
@@ -471,11 +477,20 @@
   async function pintarDocumentos() {
     var t = $('tDocumentos');
     t.innerHTML = '<p class="nada">Cargando…</p>';
+    var selector = '';
+    if (esAliado) {
+      var clientes = clientesAliado();
+      if (!clientes.length) { t.innerHTML = '<div class="vacio">Aquí verá los documentos de cada cliente cuando nos envíe su primera solicitud.<br><a class="btn btn-p" href="./#cotizar">Cotizar para un cliente</a></div>'; return; }
+      if (!clientes.some(function (c) { return c.nit === clienteDocs; })) clienteDocs = clientes[0].nit;
+      selector = '<label class="sel-cliente">Cliente<select id="selClienteDocs">' + clientes.map(function (c) {
+        return '<option value="' + E(c.nit) + '"' + (c.nit === clienteDocs ? ' selected' : '') + '>' + E(c.nombre + ' · ' + c.nit) + '</option>';
+      }).join('') + '</select></label>';
+    }
     var docs;
-    try { docs = await L.documentosDe(); } catch (e) { t.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
+    try { docs = await L.documentosDe(null, esAliado ? clienteDocs : null); } catch (e) { t.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
     var lista = L.estadoDocumentos(docs);
     var etiqueta = { al_dia: 'Al día', vencido: 'Vencido', falta: 'Falta' };
-    t.innerHTML = '<div class="tarjeta"><h3>Documentos para emitir sus pólizas</h3>' +
+    t.innerHTML = '<div class="tarjeta"><h3>' + (esAliado ? 'Documentos de su cliente para emitir' : 'Documentos para emitir sus pólizas') + '</h3>' + selector +
       '<p class="ayuda">Las aseguradoras los piden para expedir. Los guardamos para no volvérselos a pedir mientras estén al día. El formulario SARLAFT es de cada aseguradora: se lo enviamos cuando elija la opción a emitir.</p>' +
       '<ul class="docs docs-estado">' + lista.map(function (d) {
         var detalle = d.estado === 'falta' ? d.nota
@@ -486,6 +501,7 @@
           '<input type="file" hidden multiple accept="' + L.ACEPTA + '" data-tipo="' + d.tipo + '"></label></span></li>';
       }).join('') + '</ul><div class="msg" role="alert" id="msgDocs"></div></div>';
     t.querySelectorAll('[data-ruta]').forEach(function (b) { b.addEventListener('click', function () { L.abrirArchivo(b.getAttribute('data-ruta')); }); });
+    if ($('selClienteDocs')) $('selClienteDocs').addEventListener('change', function () { clienteDocs = this.value; pintarDocumentos(); });
     t.querySelectorAll('input[data-tipo]').forEach(function (inp) {
       inp.addEventListener('change', async function () {
         var fs = Array.prototype.slice.call(inp.files || []);
@@ -495,8 +511,8 @@
         if (problema) { m.textContent = problema; m.className = 'msg err'; return; }
         m.textContent = 'Subiendo…'; m.className = 'msg ok';
         try {
-          for (var i = 0; i < fs.length; i++) await L.subirArchivo(fs[i], { tipo: inp.getAttribute('data-tipo') });
-          L.avisarAsesor('Documento actualizado — ' + ((perfil && perfil.empresa) || usuario.email), {
+          for (var i = 0; i < fs.length; i++) await L.subirArchivo(fs[i], { tipo: inp.getAttribute('data-tipo'), clienteNit: esAliado ? clienteDocs : null });
+          L.avisarAsesor('Documento actualizado — ' + (esAliado ? 'aliado, cliente NIT ' + clienteDocs : ((perfil && perfil.empresa) || usuario.email)), {
             _replyto: usuario.email, Cliente: ((perfil && perfil.nombre) || '') + ' · ' + usuario.email,
             Documento: L.TIPOS_ARCHIVO[inp.getAttribute('data-tipo')] + ': ' + fs.map(function (x) { return x.name; }).join(', ')
           });
@@ -518,6 +534,7 @@
       var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(p.vigencia_hasta || '');
       var dias = m ? Math.round((new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) - hoy) / 86400000) : null;
       return '<div class="tarjeta poliza"><h4>' + E(p.ramo) + ' · ' + E(p.aseguradora) + '</h4>' +
+        (esAliado && p.cliente ? '<p class="cliente-pol">' + E(p.cliente) + (p.cliente_nit ? ' · NIT ' + E(p.cliente_nit) : '') + '</p>' : '') +
         (dias !== null && dias >= 0 && dias <= 45 ? '<span class="aviso-vence">Vence en ' + dias + ' días</span>' : '') +
         (dias !== null && dias < 0 ? '<span class="aviso-vence">Vencida</span>' : '') +
         '<dl class="kv"><dt>Número</dt><dd>' + E(p.numero || '—') + '</dd><dt>Vigencia</dt><dd>' + L.fecha(p.vigencia_desde) + ' – ' + L.fecha(p.vigencia_hasta) + '</dd><dt>Prima anual</dt><dd>' + L.pesos(p.prima) + '</dd></dl>' +
@@ -525,6 +542,76 @@
         '<a class="btn btn-s" href="./#cotizar">Renovar o mejorar</a></div></div>';
     }).join('') + '</div>';
     t.querySelectorAll('[data-ruta]').forEach(function (b) { b.addEventListener('click', function () { L.abrirArchivo(b.getAttribute('data-ruta')); }); });
+  }
+
+  // Clientes del aliado: salen de sus solicitudes (empresa + NIT).
+  function clientesAliado() {
+    var vistos = {}, lista = [];
+    solicitudes.forEach(function (s) {
+      if (!s.cliente_nit || vistos[s.cliente_nit]) return;
+      vistos[s.cliente_nit] = true;
+      lista.push({ nit: s.cliente_nit, nombre: s.empresa || 'Cliente' });
+    });
+    return lista;
+  }
+
+  // ---------- Pagos (cartera) ----------
+  async function pintarCartera() {
+    var t = $('tCartera');
+    t.innerHTML = '<p class="nada">Cargando…</p>';
+    var cs, ps;
+    try { cs = await L.carteraDe(); ps = await L.misPolizas(); } catch (e) { t.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
+    if (!cs.length) { t.innerHTML = '<div class="vacio">Aquí verá las cuotas y pagos de sus pólizas: cuánto debe, hasta cuándo y qué ya está pagado.</div>'; return; }
+    var pol = {};
+    ps.forEach(function (p) { pol[p.id] = p; });
+    var etiqueta = { pagada: 'Pagada', vencida: 'Vencida', por_vencer: 'Por vencer', pendiente: 'Pendiente' };
+    var debe = 0, vencido = 0;
+    cs.forEach(function (c) {
+      var e = L.estadoCuota(c);
+      if (e !== 'pagada') debe += Number(c.valor) || 0;
+      if (e === 'vencida') vencido += Number(c.valor) || 0;
+    });
+    var filas = cs.map(function (c) {
+      var p = pol[c.poliza_id];
+      var e = L.estadoCuota(c);
+      var que = p ? p.ramo + ' · ' + p.aseguradora + (p.numero ? ' · ' + p.numero : '') : '';
+      var cliente = esAliado ? (c.cliente || (p && p.cliente) || '') : '';
+      return '<tr class="cuota-' + e + '"><td>' + (cliente ? '<b>' + E(cliente) + '</b><br>' : '') + E(que) + '<br><small>' + E(c.concepto) + '</small></td>' +
+        '<td class="num">' + L.pesos(c.valor) + '</td>' +
+        '<td>' + (c.fecha_limite ? L.fecha(c.fecha_limite) : '—') + '</td>' +
+        '<td><span class="badge cuota-b-' + e + '">' + etiqueta[e] + '</span>' + (e === 'pagada' && c.fecha_pago ? '<small>el ' + L.fecha(c.fecha_pago) + '</small>' : '') +
+        (e !== 'pagada' && c.medio ? '<small>' + E(c.medio) + '</small>' : '') + '</td></tr>';
+    }).join('');
+    t.innerHTML = '<div class="tarjeta"><h3>' + (esAliado ? 'Pagos de sus clientes' : 'Pagos de sus pólizas') + '</h3>' +
+      '<div class="resumen-cartera"><div><span>Por pagar</span><strong>' + L.pesos(debe) + '</strong></div>' +
+      '<div class="' + (vencido ? 'alerta' : '') + '"><span>Vencido</span><strong>' + L.pesos(vencido) + '</strong></div></div>' +
+      '<div class="tabla-scroll"><table class="tabla"><thead><tr><th>Póliza y cuota</th><th class="num">Valor</th><th>Pagar antes de</th><th>Estado</th></tr></thead><tbody>' + filas + '</tbody></table></div>' +
+      '<p class="ayuda">Si una póliza no se paga a tiempo, la aseguradora puede cancelarla. ¿Necesita el link de pago o financiar? Escríbanos por WhatsApp al ' + E(C.whatsappVisible || '') + '.</p></div>';
+  }
+
+  // ---------- Comisiones (aliados) ----------
+  async function pintarComisiones() {
+    var t = $('tComisiones');
+    if (!esAliado) { t.innerHTML = ''; return; }
+    t.innerHTML = '<p class="nada">Cargando…</p>';
+    var cs;
+    try { cs = await L.comisionesDe(); } catch (e) { t.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
+    if (!cs.length) { t.innerHTML = '<div class="vacio">Aquí verá la comisión de cada póliza que nos traiga: el valor, si la aseguradora ya la pagó y si ya se la giramos.</div>'; return; }
+    var etiqueta = { causada: 'Esperando pago de la aseguradora', recibida: 'Recibida, por girarle', girada: 'Girada a usted' };
+    var tot = { causada: 0, recibida: 0, girada: 0 };
+    cs.forEach(function (c) { tot[c.estado] = (tot[c.estado] || 0) + (Number(c.valor) || 0); });
+    t.innerHTML = '<div class="tarjeta"><h3>Sus comisiones</h3>' +
+      '<div class="resumen-cartera"><div><span>Por cobrar a la aseguradora</span><strong>' + L.pesos(tot.causada) + '</strong></div>' +
+      '<div><span>Lista para girarle</span><strong>' + L.pesos(tot.recibida) + '</strong></div>' +
+      '<div><span>Ya girada</span><strong>' + L.pesos(tot.girada) + '</strong></div></div>' +
+      '<div class="tabla-scroll"><table class="tabla"><thead><tr><th>Cliente y póliza</th><th class="num">Prima</th><th class="num">%</th><th class="num">Comisión</th><th>Estado</th></tr></thead><tbody>' +
+      cs.map(function (c) {
+        return '<tr><td><b>' + E(c.cliente || '—') + '</b><br><small>' + E(c.aseguradora || '') + (c.nota ? ' · ' + E(c.nota) : '') + '</small></td>' +
+          '<td class="num">' + (c.prima ? L.pesos(c.prima) : '—') + '</td><td class="num">' + (c.porcentaje ? E(String(c.porcentaje)) + '%' : '—') + '</td>' +
+          '<td class="num">' + L.pesos(c.valor) + '</td><td><span class="badge com-' + E(c.estado) + '">' + etiqueta[c.estado] + '</span>' +
+          (c.estado === 'girada' && c.fecha_girada ? '<small>el ' + L.fecha(c.fecha_girada) + '</small>' : '') + '</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<p class="ayuda">La comisión se gira cuando la aseguradora nos la paga, y la aseguradora la paga cuando el cliente paga la prima.</p></div>';
   }
 
   // ---------- Conversaciones ----------

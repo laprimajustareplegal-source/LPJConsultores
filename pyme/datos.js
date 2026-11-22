@@ -211,14 +211,16 @@
     },
 
     // ---------- Solicitudes ----------
-    crearSolicitud: async function (tipo, empresa, datos, ajustes) {
+    crearSolicitud: async function (tipo, empresa, datos, ajustes, clienteNit) {
       exigir();
       var u = await LPJ.usuario();
       if (!u) throw new Error('Su sesión venció. Ingrese de nuevo.');
-      return revisar(await sb.from('solicitudes').insert({
+      var fila = {
         usuario_id: u.id, tipo: tipo, empresa: String(empresa || '').slice(0, 200), datos: datos || [],
         ajustes: (ajustes || []).map(function (t) { return { texto: String(t).slice(0, 2000), fecha: new Date().toISOString() }; })
-      }).select().single());
+      };
+      if (clienteNit) fila.cliente_nit = String(clienteNit).slice(0, 40);
+      return revisar(await sb.from('solicitudes').insert(fila).select().single());
     },
     misSolicitudes: async function () {
       exigir();
@@ -253,18 +255,20 @@
       var cuerpo = archivo.type === tipoMime ? archivo : new Blob([archivo], { type: tipoMime });
       var ruta = duenio + '/' + (opciones.solicitudId || 'general') + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 6) + '-' + limpiarNombre(archivo.name);
       revisar(await sb.storage.from('documentos').upload(ruta, cuerpo, { contentType: tipoMime, upsert: false }));
-      return revisar(await sb.from('archivos').insert({
+      return revisar(await sb.from('archivos').insert(Object.assign({
         usuario_id: duenio, solicitud_id: opciones.solicitudId || null, ruta: ruta,
         nombre: String(archivo.name).slice(0, 300), tipo: opciones.tipo || 'otro', subido_por: opciones.subidoPor || 'cliente'
-      }).select().single());
+      }, opciones.clienteNit ? { cliente_nit: String(opciones.clienteNit).slice(0, 40) } : {})).select().single());
     },
     // Documentos para emitir que el cliente ya tiene en su cuenta (de cualquier solicitud).
-    documentosDe: async function (usuarioId) {
+    // Con clienteNit (aliados) solo cuenta lo de ese cliente.
+    documentosDe: async function (usuarioId, clienteNit) {
       exigir();
       var id = usuarioId || (await LPJ.usuario() || {}).id;
       if (!id) return [];
-      return revisar(await sb.from('archivos').select('*').eq('usuario_id', id)
-        .in('tipo', DOCUMENTOS.map(function (d) { return d.tipo; })).order('creado', { ascending: false }));
+      var q = sb.from('archivos').select('*').eq('usuario_id', id).in('tipo', DOCUMENTOS.map(function (d) { return d.tipo; }));
+      if (clienteNit) q = q.eq('cliente_nit', String(clienteNit));
+      return revisar(await q.order('creado', { ascending: false }));
     },
     // Estado de cada documento: 'al_dia', 'vencido' o 'falta'. Con solicitudId, el SARLAFT cuenta solo si es de esa solicitud.
     estadoDocumentos: function (archivos, opciones) {
@@ -353,6 +357,51 @@
         devolver();
         return null;
       }
+    },
+
+    // ---------- Aliados, cartera y comisiones ----------
+    esAliado: async function () {
+      if (!sb) return false;
+      var r = await sb.rpc('es_aliado');
+      return !r.error && r.data === true;
+    },
+    carteraDe: async function (usuarioId) {
+      exigir();
+      var id = usuarioId || (await LPJ.usuario() || {}).id;
+      if (!id) return [];
+      return revisar(await sb.from('cartera').select('*').eq('usuario_id', id).neq('estado', 'anulada').order('fecha_limite', { ascending: true, nullsFirst: false }));
+    },
+    comisionesDe: async function (aliadoId) {
+      exigir();
+      var id = aliadoId || (await LPJ.usuario() || {}).id;
+      if (!id) return [];
+      return revisar(await sb.from('comisiones').select('*').eq('aliado_id', id).order('creado', { ascending: false }));
+    },
+    // Solo asesor
+    aliados: async function () { exigir(); return revisar(await sb.from('aliados').select('*')); },
+    hacerAliado: async function (usuarioId, nombre, porcentaje) {
+      exigir();
+      return revisar(await sb.from('aliados').upsert({ usuario_id: usuarioId, nombre: nombre || null, porcentaje: porcentaje || null }).select().single());
+    },
+    quitarAliado: async function (usuarioId) { exigir(); revisar(await sb.from('aliados').delete().eq('usuario_id', usuarioId)); },
+    guardarCartera: async function (fila) {
+      exigir();
+      if (fila.id) { var id = fila.id; delete fila.id; return revisar(await sb.from('cartera').update(fila).eq('id', id).select().single()); }
+      return revisar(await sb.from('cartera').insert(fila).select().single());
+    },
+    guardarComision: async function (fila) {
+      exigir();
+      if (fila.id) { var id = fila.id; delete fila.id; return revisar(await sb.from('comisiones').update(fila).eq('id', id).select().single()); }
+      return revisar(await sb.from('comisiones').insert(fila).select().single());
+    },
+    // Estado de una cuota: 'pagada', 'vencida' (pasó la fecha), 'por_vencer' (7 días o menos) o 'pendiente'.
+    estadoCuota: function (c) {
+      if (c.estado === 'pagada') return 'pagada';
+      var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(c.fecha_limite || '');
+      if (!m) return 'pendiente';
+      var hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+      var dias = Math.round((new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) - hoy) / 86400000);
+      return dias < 0 ? 'vencida' : dias <= 7 ? 'por_vencer' : 'pendiente';
     },
 
     // ---------- Asesor ----------
