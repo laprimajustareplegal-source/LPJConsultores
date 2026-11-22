@@ -490,7 +490,7 @@
     var f = document.createElement('form');
     f.className = 'pc-form';
     f.noValidate = true;
-    var autoriza = '<label class="pc-check"><input type="checkbox" name="autoriza"> Autorizo a LPJ Consultores (La Prima Justa Ltda., NIT 901.585.790-9) a tratar mis datos para cotizar y contactarme, según la Ley 1581 de 2012.</label>';
+    var autoriza = '<label class="pc-check"><input type="checkbox" name="autoriza"> Autorizo a LPJ Consultores (NIT 901.585.790-9) a tratar mis datos para cotizar y contactarme, según la Ley 1581 de 2012.</label>';
     var html = '';
     if (modo === 'sesion' && esAliado) {
       html = '<p class="pc-form-titulo">Cuenta de aliado (' + LPJ.escapar(usuario.email) + '). Escriba los datos de su cliente.</p>' +

@@ -1,6 +1,6 @@
 # laprimajusta.co
 
-Sitio de La Prima Justa Ltda. (LPJ Consultores), agencia de seguros. Se publica solo con GitHub Pages cada vez que cambia la rama `main`.
+Sitio de LPJ Consultores, agencia de seguros. Se publica solo con GitHub Pages cada vez que cambia la rama `main`.
 
 ## Páginas
 

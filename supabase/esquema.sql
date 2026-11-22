@@ -1,5 +1,5 @@
 -- =====================================================================
--- La Prima Justa — Portal PYME
+-- LPJ Consultores — Portal PYME
 -- Base de datos para Supabase.
 -- Cómo usarlo: Supabase > SQL Editor > New query > pegar TODO este archivo > Run.
 -- Se puede volver a ejecutar sin perder datos.
