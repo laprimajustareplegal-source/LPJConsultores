@@ -33,6 +33,22 @@
     $('btnSalir').addEventListener('click', salir);
     $('btnSalir2').addEventListener('click', salir);
     $('btnRecargar').addEventListener('click', function () { cargar(); });
+    $('btnAliados').addEventListener('click', verAliados);
+    $('btnVolverPanel').addEventListener('click', function () { ver('vAliados', false); ver('vPanel', true); });
+    $('fNuevoAliado').addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      var f = ev.target, b = f.querySelector('[type=submit]'), correo = f.correo.value.trim().toLowerCase();
+      var pct = f.pct.value.replace(',', '.').trim();
+      if (!correo) return mensaje(f, 'Escriba el correo de la cuenta.');
+      if (!(Number(pct) > 0 && Number(pct) <= 100)) return mensaje(f, 'El porcentaje va de 1 a 100.');
+      b.disabled = true; mensaje(f, '');
+      try {
+        var p = await L.perfilPorCorreo(correo);
+        if (!p) { mensaje(f, 'No hay una cuenta con ese correo. Primero debe crearla en laprimajusta.co.'); }
+        else { await L.hacerAliado(p.id, p.empresa || p.nombre || '', Number(pct)); f.correo.value = ''; f.pct.value = '60'; mensaje(f, 'Listo, quedó como aliado.', true); await pintarAliados(); }
+      } catch (e) { mensaje(f, L.error(e)); }
+      b.disabled = false;
+    });
     $('buscar').addEventListener('input', pintarLista);
     window.addEventListener('hashchange', abrirDesdeHash);
     // Si la sesión se cierra en otra pestaña o vence, el panel vuelve al ingreso.
@@ -65,9 +81,46 @@
   async function entrar() {
     ver('vIngreso', false);
     if (!(await L.esAsesor())) { ver('vSinPermiso', true); ver('btnSalir', true); return; }
-    ['vPanel', 'btnSalir', 'btnRecargar'].forEach(function (i) { ver(i, true); });
+    ['vPanel', 'btnSalir', 'btnRecargar', 'btnAliados'].forEach(function (i) { ver(i, true); });
     await cargar();
     window.setInterval(refrescarLista, 90000);
+  }
+
+  async function verAliados() {
+    ver('vPanel', false); ver('vAliados', true);
+    await pintarAliados();
+  }
+
+  async function pintarAliados() {
+    var cont = $('listaAliados');
+    cont.innerHTML = '<p class="nada">Cargando…</p>';
+    await cargarAliados();
+    var ids = Object.keys(aliados), faltan = ids.filter(function (id) { return !perfiles[id]; });
+    if (faltan.length) { try { (await L.perfiles(faltan)).forEach(function (p) { perfiles[p.id] = p; }); } catch (e) { /* sin perfiles */ } }
+    if (!ids.length) { cont.innerHTML = '<div class="vacio">Todavía no hay aliados.</div>'; return; }
+    ids.sort(function (a, b) { return String(aliados[a].nombre || '').localeCompare(String(aliados[b].nombre || '')); });
+    cont.innerHTML = ids.map(function (id) {
+      var a = aliados[id], p = perfiles[id] || {};
+      return '<div class="tarjeta"><form class="form" data-id="' + E(id) + '" novalidate>' +
+        '<p class="ayuda">' + E(p.correo || '') + (p.celular ? ' · ' + E(p.celular) : '') + ' · desde ' + E(L.fecha(a.creado)) + '</p>' +
+        '<div class="fila2"><label>Nombre del aliado<input type="text" name="nombre" maxlength="120" value="' + E(a.nombre || p.nombre || '') + '"></label>' +
+        '<label>% de comisión<input type="text" name="porcentaje" inputmode="decimal" maxlength="6" value="' + E(a.porcentaje == null ? '' : String(a.porcentaje)) + '"></label></div>' +
+        '<div class="acciones"><button class="btn btn-s" type="submit">Guardar</button><button class="btn btn-t" type="button" data-quitar="1">Ya no es aliado</button></div><div class="msg"></div></form></div>';
+    }).join('');
+    cont.querySelectorAll('form').forEach(function (f) {
+      var id = f.getAttribute('data-id');
+      f.addEventListener('submit', async function (ev) {
+        ev.preventDefault();
+        var pct = f.porcentaje.value.replace(',', '.').trim();
+        if (!(Number(pct) > 0 && Number(pct) <= 100)) return mensaje(f, 'El porcentaje va de 1 a 100.');
+        try { await L.hacerAliado(id, f.nombre.value.trim(), Number(pct)); aliados[id].porcentaje = Number(pct); mensaje(f, 'Guardado.', true); }
+        catch (e) { mensaje(f, L.error(e)); }
+      });
+      f.querySelector('[data-quitar]').addEventListener('click', async function () {
+        if (!window.confirm('¿Quitar esta cuenta como aliado? Sus clientes y negocios no se borran.')) return;
+        try { await L.quitarAliado(id); await pintarAliados(); } catch (e) { mensaje(f, L.error(e)); }
+      });
+    });
   }
 
   async function cargarAliados() {

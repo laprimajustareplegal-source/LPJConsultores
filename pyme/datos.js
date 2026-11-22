@@ -383,6 +383,9 @@
       exigir();
       return revisar(await sb.from('aliados').upsert({ usuario_id: usuarioId, nombre: nombre || null, porcentaje: porcentaje || null }).select().single());
     },
+    // Inscripción desde el Portal de aliados: queda como aliado con 60 % (lo hace la base de datos).
+    registrarmeAliado: async function () { exigir(); var r = await sb.rpc('registrarme_aliado'); if (r.error) throw r.error; return true; },
+    perfilPorCorreo: async function (correo) { exigir(); var r = revisar(await sb.from('perfiles').select('*').ilike('correo', correo).limit(1)); return r[0] || null; },
     quitarAliado: async function (usuarioId) { exigir(); revisar(await sb.from('aliados').delete().eq('usuario_id', usuarioId)); },
     guardarCartera: async function (fila) {
       exigir();

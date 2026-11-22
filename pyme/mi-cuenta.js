@@ -132,6 +132,10 @@
         else {
           usuario = r.usuario;
           try { await L.completarPerfil({ nombre: d.nombre, celular: d.celular }); } catch (e) { /* se completa después en Mis datos */ }
+          if (/[?&]aliado=1/.test(location.search)) {
+            try { await L.registrarmeAliado(); } catch (e) { /* el asesor lo activa en su panel */ }
+            L.avisarAsesor('Nuevo aliado inscrito — ' + d.nombre, { Nombre: d.nombre, Correo: d.correo, Celular: d.celular, Comision: '60 %' });
+          }
           f.reset();
           await mostrarPortal();
         }
