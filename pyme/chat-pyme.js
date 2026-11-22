@@ -192,6 +192,8 @@
     try {
       if (!(await LPJ.esAsesor())) {
         var pl = await LPJ.luPolizas(), ct = await LPJ.luCartera();
+        var vistas = {};   // LevelUp a veces repite la misma póliza
+        pl = pl.filter(function (p) { var k = [p.numero, p.ramo, p.aseguradora, p.placa, p.desde, p.hasta].join('|'); if (vistas[k]) return false; vistas[k] = true; return true; });
         misDatosLpj = {
           polizasDelCliente: pl.slice(0, 25).map(function (p) { return [p.ramo, p.aseguradora, p.numero, 'vence ' + p.hasta, esAliado ? p.tomador : null].filter(Boolean).join(' · '); }),
           pagosPendientesDelCliente: ct.slice(0, 15).map(function (c) { return [c.ramo, c.aseguradora, c.numero_poliza, 'saldo ' + c.saldo, 'pagar antes de ' + c.fecha_max_pago, esAliado ? c.tomador : null].filter(Boolean).join(' · '); })
