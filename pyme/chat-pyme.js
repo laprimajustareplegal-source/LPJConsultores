@@ -114,6 +114,29 @@
     { id: 'contacto', texto: 'Ya casi. ¿A quién le enviamos la cotización?', tipo: 'contacto' }
   ];
 
+  // Vida grupo: flujo propio con precio orientativo mensual (tarifas reales 2026 de AXA Colpatria y La Equidad).
+  var VIDA_VALORES = { '$10 millones': [2000, 5400], '$20 millones': [4000, 9800], '$30 millones': [7500, 14300], '$40 millones': [13200, 16500], '$50 millones': [10000, 23000], '$100 millones': [20000, 45900] };
+  var PASOS_VIDA = [
+    { id: 'empresaQue', texto: '¿A qué se dedica su empresa?', tipo: 'texto', opciones: Object.keys(ACTIVIDADES) },
+    { id: 'ciudad', texto: '¿En qué ciudad está la empresa?', tipo: 'texto', opciones: ['Bogotá', 'Medellín', 'Cali', 'Barranquilla'] },
+    { id: 'vidaPersonas', texto: '¿Cuántas personas quiere asegurar? Escriba el número.', tipo: 'texto', opciones: ['10', '25', '50', '100'] },
+    { id: 'vidaValor', texto: '¿Qué valor asegurado por persona busca? Si cambia por cargo, elija el más común y lo detallamos después.', tipo: 'opciones', opciones: Object.keys(VIDA_VALORES).concat(['Otro valor o varios planes']) },
+    { id: 'vidaEdades', texto: '¿Hay personas mayores de 64 años en el grupo?', tipo: 'opciones', opciones: ['No, todos tienen 64 o menos', 'Sí, algunas', 'No sé'] },
+    { id: 'vidaPaga', texto: '¿Quién pagaría el seguro?', tipo: 'opciones', opciones: ['La empresa (no contributivo)', 'Los empleados (contributivo)', 'Se comparte'] },
+    { id: 'vidaFamilia', texto: '¿Quiere incluir a cónyuges, hijos o padres?', tipo: 'opciones', opciones: ['Solo empleados', 'Sí, con familia'] },
+    { id: 'polizaActual', texto: '¿Hoy tienen vida grupo con alguna aseguradora?', tipo: 'opciones', opciones: ['No, sería nuevo', 'Sí, quiero mejorarlo'] },
+    { id: 'contacto', texto: 'Ya casi. ¿A quién le enviamos la cotización?', tipo: 'contacto' }
+  ];
+
+  function precioVida() {
+    var r = VIDA_VALORES[estado.vidaValor];
+    var n = parseInt(String(estado.vidaPersonas || '').replace(/[^0-9]/g, ''), 10);
+    if (!r || !n) return null;
+    var f = estado.vidaEdades === 'Sí, algunas' ? 1.25 : 1;
+    var redondo = function (v) { return Math.round(v / 1000) * 1000; };
+    return { desde: redondo(r[0] * n), hasta: redondo(r[1] * n * f), porDesde: r[0], porHasta: r[1], personas: n };
+  }
+
   var PASOS_MEJORA = [
     { id: 'polizaArchivo', texto: 'Adjunte su póliza actual: el PDF o fotos de la carátula y las condiciones. Su asesor la revisa y busca bajarle la prima o mejorar las coberturas con otras aseguradoras.', textoSinArchivos: 'Cuénteme de su póliza actual: ¿con qué aseguradora la tiene, cuánto paga al año y cuándo vence? Al final podrá enviarnos el PDF por WhatsApp.', tipo: 'archivo', tipoArchivo: 'poliza_actual', opciones: ['No la tengo a mano'] },
     { id: 'polizaDetalle', texto: 'No hay problema. ¿Con qué aseguradora la tiene, cuánto paga al año y cuándo vence? Lo que sepa.', tipo: 'texto', opciones: ['No lo sé'], si: function (e) { return !e.archivos.some(function (a) { return a.tipo === 'poliza_actual'; }) && !e.polizaArchivoTexto; } },
@@ -230,7 +253,7 @@
         if (v === RAMO_PYME) return empezar('cotizacion');
         estado.tipo = 'cotizacion';
         PASOS_RAMO[3].texto = RAMOS[v];
-        pasos = PASOS_RAMO;
+        pasos = v === 'Vida grupo' ? PASOS_VIDA : PASOS_RAMO;
         paso = -1;
         siguiente();
       });
@@ -757,7 +780,7 @@
 
   function contextoIA() {
     var c = {};
-    ['tipo', 'actividad', 'actividadOtra', 'ciudad', 'inmueble', 'valorEdificio', 'valorContenidos', 'valorMercancias', 'valorElectronico', 'empleados', 'limiteRC', 'objetivo'].forEach(function (k) {
+    ['tipo', 'actividad', 'actividadOtra', 'ciudad', 'inmueble', 'valorEdificio', 'valorContenidos', 'valorMercancias', 'valorElectronico', 'empleados', 'limiteRC', 'objetivo', 'ramo', 'vidaPersonas', 'vidaValor', 'vidaEdades', 'vidaPaga', 'vidaFamilia'].forEach(function (k) {
       if (estado[k] !== undefined) c[k] = estado[k];
     });
     if (estado.coberturas) c.coberturas = estado.coberturas.map(function (k) { return COBERTURAS[k]; });
@@ -872,6 +895,10 @@
   function filasResumen() {
     var e = estado;
     var f = [['Solicitud', e.tipo === 'mejora' ? 'Mejorar póliza actual' : 'Cotización nueva']];
+    if (esRamo() && e.ramo === 'Vida grupo') {
+      f.push(['Seguro', e.ramo], ['Actividad', e.empresaQue], ['Ciudad', e.ciudad], ['Personas a asegurar', e.vidaPersonas], ['Valor por persona', e.vidaValor], ['Mayores de 64', e.vidaEdades], ['Quién paga', e.vidaPaga], ['Familia', e.vidaFamilia], ['Tiene el seguro hoy', e.polizaActual]);
+      return f;
+    }
     if (esRamo()) {
       f.push(['Seguro', e.ramo], ['Actividad', e.empresaQue], ['Ciudad', e.ciudad], ['Empleados', e.empleados], ['Detalle', e.detalle], ['Tiene el seguro hoy', e.polizaActual]);
       return f;
@@ -933,7 +960,13 @@
       var pr = document.createElement('div');
       pr.className = 'pc-precio';
       var po = precioOrientativo();
-      if (po) {
+      var pv = estado.ramo === 'Vida grupo' && estado.tipo === 'cotizacion' ? precioVida() : null;
+      if (pv) {
+        estado.precio = pesos(pv.desde) + ' a ' + pesos(pv.hasta) + ' al mes';
+        pr.innerHTML = 'Precio orientativo mensual del grupo<strong></strong>';
+        pr.querySelector('strong').textContent = estado.precio;
+        pr.appendChild(document.createTextNode('Entre ' + pesos(pv.porDesde) + ' y ' + pesos(pv.porHasta) + ' por persona al mes, según la aseguradora y las coberturas' + (estado.vidaEdades === 'Sí, algunas' ? '; los mayores de 64 pagan más' : '') + (estado.vidaFamilia === 'Sí, con familia' ? '; la familia se cotiza aparte' : '') + (pv.personas < 10 ? '. Algunas aseguradoras piden mínimo 10 personas' : '') + '. Su asesor le envía el precio exacto de cada aseguradora.'));
+      } else if (po) {
         estado.precio = pesos(po.desde) + ' a ' + pesos(po.hasta);
         pr.innerHTML = 'Precio orientativo anual<strong></strong>Valor de referencia. Su asesor le envía el precio exacto de cada aseguradora.';
         pr.querySelector('strong').textContent = estado.precio;

@@ -533,7 +533,7 @@
     t.innerHTML = '<div class="polizas">' + ps.map(function (p) {
       var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(p.vigencia_hasta || '');
       var dias = m ? Math.round((new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) - hoy) / 86400000) : null;
-      return '<div class="tarjeta poliza"><h4>' + E(p.ramo) + ' · ' + E(p.aseguradora) + '</h4>' +
+      return '<div class="tarjeta poliza"><h4>' + E(p.ramo) + (p.placa ? ' ' + E(p.placa) : '') + ' · ' + E(p.aseguradora) + '</h4>' +
         (esAliado && p.cliente ? '<p class="cliente-pol">' + E(p.cliente) + (p.cliente_nit ? ' · NIT ' + E(p.cliente_nit) : '') + '</p>' : '') +
         (dias !== null && dias >= 0 && dias <= 45 ? '<span class="aviso-vence">Vence en ' + dias + ' días</span>' : '') +
         (dias !== null && dias < 0 ? '<span class="aviso-vence">Vencida</span>' : '') +

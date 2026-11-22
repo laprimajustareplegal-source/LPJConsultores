@@ -20,6 +20,9 @@ window.LPJ_CONFIG = {
   whatsappVisible: '314 422 0945',
   sitio: 'https://laprimajusta.co',
 
+  // Después de cotizar, el chat ofrece subir los documentos para emitir (opcional para el cliente).
+  pedirDocumentos: true,
+
   // Tarifas para el precio orientativo del chat. Mientras sea null, no se muestra precio.
   tarifas: null
 };
