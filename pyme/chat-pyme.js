@@ -54,7 +54,7 @@
     { p: ['se demora', 'demoran', 'tarda', 'me responde', 'me contesta', 'tiempo de respuesta', 'cuando llega la cotizacion', 'cuando tengo la cotizacion', 'cuanto tiempo', 'el tramite'], r: 'Su asesor le responde en máximo 24 horas hábiles después de recibir su solicitud. Si es urgente, escríbale por WhatsApp al ' + CONFIG.whatsappVisible + '.' },
     { p: ['hablar con', 'un asesor', 'mi asesor', 'el asesor', 'con asesor', 'con una persona', 'persona real', 'un humano', 'me llamen', 'me pueden llamar', 'llamenme', 'llamar'], r: 'Claro. Su asesor es ' + CONFIG.nombreAsesor + ': puede escribirle por WhatsApp o llamarlo al ' + CONFIG.whatsappVisible + '. Si antes deja aquí los datos de su empresa, él llega con la cotización adelantada.' },
     { p: ['aseguradora', 'compania', 'con quien', 'trabajan con', ' sura ', ' axa ', 'allianz', 'mapfre', 'bolivar', 'liberty', ' hdi ', 'equidad', 'seguros del estado'], r: 'Trabajamos con más de 15 aseguradoras, entre ellas SURA, AXA Colpatria, Allianz, Mapfre, HDI, Liberty, Seguros Bolívar, Seguros del Estado y La Equidad. Cotizamos con las que mejor se ajustan a su actividad.' },
-    { p: ['corredor', 'agencia', 'quienes son', 'la prima justa', ' lpj ', 'confiable'], r: 'LPJ es una agencia de seguros con sede en Bogotá que atiende empresas en toda Colombia. Analizamos los riesgos de su negocio, comparamos entre más de 15 aseguradoras y lo acompañamos en la contratación y en los siniestros.' },
+    { p: ['corredor', 'agencia', 'quienes son', 'la prima justa', ' lpj ', 'confiable'], r: 'LPJ Consultores es una agencia de seguros con sede en Bogotá que atiende empresas en toda Colombia. Analizamos los riesgos de su negocio, comparamos entre más de 15 aseguradoras y lo acompañamos en la contratación y en los siniestros.' },
     { p: ['valor asegurado', 'por cuanto aseguro', 'infraseguro'], r: 'Cada bien debe asegurarse por su valor de reposición, es decir, lo que cuesta reponerlo nuevo. Si se asegura por menos, en un siniestro la indemnización puede reducirse en proporción (infraseguro).' },
     { p: ['electr', 'computador', ' pos ', 'datafono'], r: 'La cobertura de equipo electrónico protege computadores, datáfonos, impresoras y equipos de comunicación frente a daños internos y accidentales.' },
     { p: ['maquinaria', 'maquina', 'nevera', 'horno'], r: 'La rotura de maquinaria cubre el daño súbito e imprevisto de máquinas en funcionamiento, por falla eléctrica o mecánica o por error de operación.' },
@@ -192,7 +192,7 @@
     el.enviar.disabled = false;
     el.mensajes.innerHTML = '';
     var nombre = perfil && perfil.nombre ? ', ' + perfil.nombre.split(' ')[0] : '';
-    var saludo = 'Hola' + nombre + '. ' + (window.LPJ_SALUDO || 'Soy el asistente PYME de LPJ. Le ayudo a cotizar o mejorar el seguro de su empresa y resuelvo sus dudas.');
+    var saludo = 'Hola' + nombre + '. ' + (window.LPJ_SALUDO || 'Soy el asistente PYME de LPJ Consultores. Le ayudo a cotizar o mejorar el seguro de su empresa y resuelvo sus dudas.');
     var mias = usuario ? abiertas : [];
     bot(saludo, function () {
       if (!mias.length) return menuInicio();
@@ -490,7 +490,7 @@
     var f = document.createElement('form');
     f.className = 'pc-form';
     f.noValidate = true;
-    var autoriza = '<label class="pc-check"><input type="checkbox" name="autoriza"> Autorizo a LPJ (La Prima Justa Ltda., NIT 901.585.790-9) a tratar mis datos para cotizar y contactarme, según la Ley 1581 de 2012.</label>';
+    var autoriza = '<label class="pc-check"><input type="checkbox" name="autoriza"> Autorizo a LPJ Consultores (La Prima Justa Ltda., NIT 901.585.790-9) a tratar mis datos para cotizar y contactarme, según la Ley 1581 de 2012.</label>';
     var html = '';
     if (modo === 'sesion' && esAliado) {
       html = '<p class="pc-form-titulo">Cuenta de aliado (' + LPJ.escapar(usuario.email) + '). Escriba los datos de su cliente.</p>' +

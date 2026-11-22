@@ -173,7 +173,7 @@
       if (s.link_pago) l.push('Link de pago: ' + s.link_pago);
       if (s.referencia_pago) l.push('Referencia: ' + s.referencia_pago);
     }
-    l.push('', 'Puede ver el detalle y los documentos en: ' + C.sitio + '/mi-cuenta.html#s=' + s.id, '', 'Cordial saludo,', C.nombreAsesor, 'LPJ · ' + C.whatsappVisible);
+    l.push('', 'Puede ver el detalle y los documentos en: ' + C.sitio + '/mi-cuenta.html#s=' + s.id, '', 'Cordial saludo,', C.nombreAsesor, 'LPJ Consultores · ' + C.whatsappVisible);
     return l.join('\n');
   }
 
