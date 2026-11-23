@@ -175,6 +175,15 @@
       exigir();
       return revisar(await sb.auth.signInWithPassword({ email: correo, password: clave })).user;
     },
+    // Ingreso sin contraseña: llega un código de 6 dígitos al correo. Si el correo no tiene cuenta, se crea.
+    enviarCodigo: async function (correo, datos) {
+      exigir();
+      revisar(await sb.auth.signInWithOtp({ email: correo, options: { shouldCreateUser: true, data: datos || {}, emailRedirectTo: C.sitio + '/mi-cuenta.html' } }));
+    },
+    verificarCodigo: async function (correo, codigo) {
+      exigir();
+      return revisar(await sb.auth.verifyOtp({ email: correo, token: codigo, type: 'email' })).user;
+    },
     salir: async function () { if (sb) { try { await sb.auth.signOut(); } catch (e) { /* la sesión local se borra igual */ } } },
     recuperarClave: async function (correo) {
       exigir();

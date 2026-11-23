@@ -176,6 +176,11 @@
         pintarCuenta();
       });
     }
+    if (el.cuenta) el.cuenta.addEventListener('click', function (ev) {
+      if (usuario || !LPJ.configurado || !LPJ.enviarCodigo) return;   // con sesión, va a Mi cuenta
+      ev.preventDefault();
+      mostrarIngresoCodigo(null);
+    });
     pintarCuenta();
     reiniciar();
   }
@@ -766,7 +771,75 @@
       }
     }
     usuarioDice(texto);
+    if (!usuario && LPJ.configurado && LPJ.enviarCodigo && pideSusDatos(texto)) {
+      return bot('Para mostrarle sus pólizas y pagos necesito confirmar quién es. Escriba su correo y le envío un código para entrar; no necesita contraseña.', function () { mostrarIngresoCodigo(texto); });
+    }
     responderPregunta(texto);
+  }
+
+  // ¿Pregunta por SUS pólizas, pagos o solicitudes? (requiere cuenta)
+  function pideSusDatos(texto) {
+    var t = normalizar(texto);
+    return /\b(mis|mi)\s+(poliza|polizas|seguro|seguros|pago|pagos|cuota|cuotas|cartera|vencimiento|vencimientos|solicitud|solicitudes|renovacion|renovaciones|comision|comisiones|clientes)\b/.test(t) ||
+      /\b(que|cuales|cuantas)\s+(polizas|seguros)\s+(tengo|tenemos)\b/.test(t) || /\b(cuanto|que)\s+debo\b|\bdebo algo\b|\btengo (algo )?pendiente\b|\bcuando (me )?vence\b/.test(t);
+  }
+
+  // Ingreso dentro del chat con código al correo (como ChatGPT o Claude). Al entrar, sigue la conversación.
+  function mostrarIngresoCodigo(pendiente) {
+    quitarOpciones();
+    var viejo = el.mensajes.querySelector('.pc-form');
+    if (viejo) viejo.remove();
+    var f = document.createElement('form');
+    f.className = 'pc-form pc-ingreso';
+    f.noValidate = true;
+    var correo = '';
+    function pasoCorreo() {
+      f.innerHTML = '<p class="pc-form-titulo">Ingrese o cree su cuenta</p>' +
+        campo('Correo', 'correo', 'email', { auto: 'email', ancho: true }) +
+        '<label class="pc-check"><input type="checkbox" name="autoriza"> <span>Autorizo a LPJ Consultores (NIT 901.585.790-9) a tratar mis datos según la Ley 1581 de 2012 y la <a href="politica-datos.html" target="_blank" rel="noopener">política de datos</a>.</span></label>' +
+        '<div class="pc-error" role="alert"></div><button type="submit" class="pc-chip principal">Enviarme el código</button>';
+      if (correo) f.elements.correo.value = correo;
+      setTimeout(function () { f.elements.correo.focus(); }, 30);
+      f.onsubmit = async function (ev) {
+        ev.preventDefault();
+        var e = f.querySelector('.pc-error'), boton = f.querySelector('button[type=submit]');
+        function falla(m) { e.textContent = m; e.style.display = 'block'; bajar(); }
+        correo = f.elements.correo.value.trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return falla('Escriba un correo válido.');
+        if (!f.elements.autoriza.checked) return falla('Para continuar, autorice el tratamiento de sus datos.');
+        boton.disabled = true; boton.textContent = 'Enviando…';
+        try { await LPJ.enviarCodigo(correo, { autoriza_datos: true }); }
+        catch (err) { boton.disabled = false; boton.textContent = 'Enviarme el código'; return falla(/rate|limit|seconds|too many/i.test(String(err && err.message)) ? 'Ya le enviamos un código hace poco. Espere un minuto e inténtelo de nuevo.' : LPJ.error(err)); }
+        pasoCodigo();
+      };
+    }
+    function pasoCodigo() {
+      f.innerHTML = '<p class="pc-form-titulo">Le enviamos un código a ' + LPJ.escapar(correo) + '. Revise también la carpeta de spam.</p>' +
+        campo('Código de 6 dígitos', 'codigo', 'text', { auto: 'one-time-code', modo: 'numeric', max: 10, ancho: true }) +
+        '<div class="pc-error" role="alert"></div><button type="submit" class="pc-chip principal">Entrar</button>' +
+        '<button type="button" class="pc-link" data-a="otro">Usar otro correo</button>';
+      setTimeout(function () { f.elements.codigo.focus(); }, 30);
+      f.querySelector('[data-a=otro]').onclick = pasoCorreo;
+      f.onsubmit = async function (ev) {
+        ev.preventDefault();
+        var e = f.querySelector('.pc-error'), boton = f.querySelector('button[type=submit]');
+        function falla(m) { e.textContent = m; e.style.display = 'block'; bajar(); }
+        var codigo = f.elements.codigo.value.replace(/\D/g, '');
+        if (codigo.length < 6) return falla('Escriba el código que le llegó al correo.');
+        boton.disabled = true; boton.textContent = 'Verificando…';
+        try { usuario = await LPJ.verificarCodigo(correo, codigo); }
+        catch (err) { boton.disabled = false; boton.textContent = 'Entrar'; return falla('Ese código no sirve o ya venció. Revíselo o pida uno nuevo con "Usar otro correo".'); }
+        try { perfil = await LPJ.perfil(); if (perfil && !perfil.autoriza_datos) perfil = await LPJ.autorizarDatos(); } catch (err) { /* no bloquea */ }
+        f.remove();
+        pintarCuenta();
+        burbuja('Listo, entró como ' + correo + '.', 'pc-bot', true);
+        await cargarCuenta();
+        if (pendiente) responderPregunta(pendiente);
+        else bot('¿En qué le ayudo? Puede preguntarme por sus pólizas, vencimientos o pagos.');
+      };
+    }
+    pasoCorreo();
+    agregarArriba(f);
   }
 
   function respuestaRapida(texto) {
