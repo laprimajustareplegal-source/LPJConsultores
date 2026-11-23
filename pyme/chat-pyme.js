@@ -792,7 +792,7 @@
     var f = document.createElement('form');
     f.className = 'pc-form pc-ingreso';
     f.noValidate = true;
-    var correo = '';
+    var correo = '', terminado = false;
     function pasoCorreo() {
       f.innerHTML = '<p class="pc-form-titulo">Ingrese o cree su cuenta</p>' +
         campo('Correo', 'correo', 'email', { auto: 'email', ancho: true }) +
@@ -814,12 +814,18 @@
       };
     }
     function pasoCodigo() {
-      f.innerHTML = '<p class="pc-form-titulo">Le enviamos un código a ' + LPJ.escapar(correo) + '. Revise también la carpeta de spam.</p>' +
+      f.innerHTML = '<p class="pc-form-titulo">Le enviamos un correo a ' + LPJ.escapar(correo) + ' (revise también spam). Escriba el código que trae, o abra el enlace del correo en este mismo navegador y aquí seguimos.</p>' +
         campo('Código de 6 dígitos', 'codigo', 'text', { auto: 'one-time-code', modo: 'numeric', max: 10, ancho: true }) +
         '<div class="pc-error" role="alert"></div><button type="submit" class="pc-chip principal">Entrar</button>' +
         '<button type="button" class="pc-link" data-a="otro">Usar otro correo</button>';
       setTimeout(function () { f.elements.codigo.focus(); }, 30);
-      f.querySelector('[data-a=otro]').onclick = pasoCorreo;
+      f.querySelector('[data-a=otro]').onclick = function () { clearInterval(vigia); pasoCorreo(); };
+      // Si entra por el enlace del correo (en otra pestaña), la sesión llega aquí y la conversación sigue sola.
+      var vigia = setInterval(async function () {
+        if (!document.body.contains(f)) return clearInterval(vigia);
+        var u = await LPJ.usuario();
+        if (u) { clearInterval(vigia); usuario = u; terminar(); }
+      }, 3000);
       f.onsubmit = async function (ev) {
         ev.preventDefault();
         var e = f.querySelector('.pc-error'), boton = f.querySelector('button[type=submit]');
@@ -829,14 +835,19 @@
         boton.disabled = true; boton.textContent = 'Verificando…';
         try { usuario = await LPJ.verificarCodigo(correo, codigo); }
         catch (err) { boton.disabled = false; boton.textContent = 'Entrar'; return falla('Ese código no sirve o ya venció. Revíselo o pida uno nuevo con "Usar otro correo".'); }
+        clearInterval(vigia);
+        terminar();
+      };
+      async function terminar() {
+        if (terminado) return; terminado = true;
         try { perfil = await LPJ.perfil(); if (perfil && !perfil.autoriza_datos) perfil = await LPJ.autorizarDatos(); } catch (err) { /* no bloquea */ }
         f.remove();
         pintarCuenta();
-        burbuja('Listo, entró como ' + correo + '.', 'pc-bot', true);
+        burbuja('Listo, entró como ' + (usuario && usuario.email || correo) + '.', 'pc-bot', true);
         await cargarCuenta();
         if (pendiente) responderPregunta(pendiente);
         else bot('¿En qué le ayudo? Puede preguntarme por sus pólizas, vencimientos o pagos.');
-      };
+      }
     }
     pasoCorreo();
     agregarArriba(f);
