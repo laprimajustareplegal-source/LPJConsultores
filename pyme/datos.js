@@ -148,6 +148,10 @@
         return r.data && r.data.session ? r.data.session.user : null;
       } catch (e) { return null; }
     },
+    token: async function () {
+      if (!sb) return null;
+      try { var r = await sb.auth.getSession(); return r.data && r.data.session ? r.data.session.access_token : null; } catch (e) { return null; }
+    },
     alCambiarSesion: function (fn) { if (sb) sb.auth.onAuthStateChange(function (ev, s) { fn(s ? s.user : null, ev); }); },
     // Si falla por algo que el cliente puede corregir (correo repetido, contraseña débil) lanza un error normal.
     // Si falla porque el servicio de cuentas no responde, el error lleva noDisponible = true para que la

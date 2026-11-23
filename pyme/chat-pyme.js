@@ -914,12 +914,18 @@
     historialIA.push({ role: 'user', content: texto });
     if (!CONFIG.apiChat) return alResponder(null);
     var controlador = window.AbortController ? new AbortController() : null;
-    var reloj = setTimeout(function () { if (controlador) controlador.abort(); }, 20000);
-    fetch(CONFIG.apiChat, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mensajes: historialIA, contexto: contextoIA() }),
-      signal: controlador ? controlador.signal : undefined
+    var reloj;
+    // Con sesión, el asesor consulta los datos de la persona (con sus propios permisos): puede tardar más.
+    (usuario && LPJ.token ? LPJ.token() : Promise.resolve(null)).then(function (token) {
+      reloj = setTimeout(function () { if (controlador) controlador.abort(); }, token ? 55000 : 20000);
+      var cab = { 'Content-Type': 'application/json' };
+      if (token) cab.Authorization = 'Bearer ' + token;
+      return fetch(CONFIG.apiChat, {
+        method: 'POST',
+        headers: cab,
+        body: JSON.stringify({ mensajes: historialIA, contexto: contextoIA() }),
+        signal: controlador ? controlador.signal : undefined
+      });
     }).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { clearTimeout(reloj); alResponder(d && d.respuesta ? String(d.respuesta).replace(/\*\*([^*]+)\*\*/g, '$1').replace(/^#{1,4}\s+/gm, '') : null); })
       .catch(function () { clearTimeout(reloj); alResponder(null); });
