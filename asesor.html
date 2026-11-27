@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="pyme/cuenta.css?v=20261122a">
-<link rel="stylesheet" href="pyme/chat-pyme.css?v=20261122c">
+<link rel="stylesheet" href="pyme/chat-pyme.css?v=20261126a">
 <link rel="stylesheet" href="pyme/chat-flotante.css?v=20261122c">
 </head>
 <body>
@@ -19,6 +19,7 @@
     <button class="btn btn-s oculto" id="btnResumen" type="button">Resumen</button>
     <button class="btn btn-s oculto" id="btnSolicitudes" type="button">Solicitudes</button>
     <button class="btn btn-s oculto" id="btnAliados" type="button">Aliados</button>
+    <button class="btn btn-s oculto" id="btnFormularios" type="button">Formularios</button>
     <button class="btn btn-s oculto" id="btnEquipo" type="button">Equipo</button>
     <button class="btn btn-s oculto" id="btnRecargar" type="button">Actualizar</button>
     <button class="btn btn-t oculto" id="btnSalir" type="button">Salir</button>
@@ -80,6 +81,20 @@
       </form>
     </div>
   </section>
+  <section class="oculto" id="vFormularios">
+    <div class="tarjeta">
+      <h3>Formularios para descargar</h3>
+      <p class="ayuda">Los formularios que suba aquí (en blanco, sin datos de clientes) quedan publicados en laprimajusta.co/formularios.html y el asesor IA se los envía a clientes y aliados cuando los necesitan para cotizar o emitir. PDF, Word o Excel, hasta 15 MB.</p>
+      <form class="form" id="fNuevoFormulario" novalidate>
+        <div class="fila2"><label>Nombre del formulario<input type="text" name="nombre" maxlength="160" placeholder="Ej. SARLAFT persona jurídica"></label><label>Aseguradora<input type="text" name="aseguradora" maxlength="80" placeholder="Ej. AXA Colpatria, o Todas"></label></div>
+        <div class="fila2"><label>Ramo o producto<input type="text" name="ramo" maxlength="120" placeholder="Ej. Vida grupo, PYME, Todos"></label><label>Para qué sirve<input type="text" name="para" maxlength="400" placeholder="Ej. Obligatorio para emitir; firma y huella"></label></div>
+        <label>Archivo<input type="file" name="archivo" accept=".pdf,.doc,.docx,.xls,.xlsx"></label>
+        <div class="acciones"><button class="btn btn-s" type="submit">Subir formulario</button></div>
+        <div class="msg"></div>
+      </form>
+    </div>
+    <div id="listaFormularios"></div>
+  </section>
   <section class="oculto" id="vPanel">
     <div class="contadores" id="contadores"></div>
     <div class="panel">
@@ -95,9 +110,9 @@
 
 <script src="pyme/config.js?v=20261122a"></script>
 <script src="pyme/lib/supabase-2.119.0.js"></script>
-<script src="pyme/datos.js?v=20261122f"></script>
-<script src="pyme/asesor.js?v=20261122a"></script>
+<script src="pyme/datos.js?v=20261126a"></script>
+<script src="pyme/asesor.js?v=20261126a"></script>
 <script src="pyme/chat-flotante.js?v=20261122c"></script>
-<script src="pyme/chat-pyme.js?v=20261122f"></script>
+<script src="pyme/chat-pyme.js?v=20261126a"></script>
 </body>
 </html>

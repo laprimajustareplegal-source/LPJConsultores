@@ -102,3 +102,6 @@ a.pc-chip{text-decoration:none;display:inline-block}
 .est-ajustes_solicitados,.est-emision_solicitada,.est-pago_reportado{background:#f1ecff;color:#5b3fb5}
 .est-vigente{background:#e7f6ec;color:#17693a}
 .est-cancelada{background:#f2f4f7;color:#5a6272}
+
+.pc-entrada .pc-clip{width:40px;background:none;color:var(--gris-texto)}
+.pc-entrada .pc-clip:hover{background:var(--gris-fondo);color:var(--azul-boton)}

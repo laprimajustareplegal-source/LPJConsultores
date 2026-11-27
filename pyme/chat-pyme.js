@@ -153,6 +153,7 @@
   var botPendientes = 0, reintento = null;
   var abiertas = [], huellaCuenta = '';      // solicitudes en curso del cliente (se cargan en segundo plano)
   var esAliado = false;   // los aliados cotizan para sus clientes
+  var adjuntosChat = [];  // archivos que la persona cargó con el clip: se envían con la solicitud que registre el asesor IA
 
   function $(id) { return document.getElementById(id); }
 
@@ -164,6 +165,7 @@
     if (CONFIG.apiChat && !window.LPJ_MULTIRAMO && $('pcNota')) $('pcNota').textContent = 'Asistente con IA. La cotización formal la confirma su asesor.';
     if (!el.mensajes) return;
     $('pcForm').addEventListener('submit', function (ev) { ev.preventDefault(); alEscribir(); });
+    ponerClip();
     $('pcReiniciar').addEventListener('click', reiniciar);
     if (LPJ.configurado) {
       // La sesión se lee del navegador; si hubiera que renovarla y el servidor tarda, el chat no espera.
@@ -247,6 +249,7 @@
     historialIA = [];
     transcripcion = [];
     chatId = null;
+    adjuntosChat = [];
     guardadoHasta = 0;
     ocupado = false;
     clearTimeout(reintento);
@@ -896,6 +899,66 @@
     return null;
   }
 
+  function idChat() { if (!chatId) chatId = nuevoChatId(); return chatId; }
+
+  // Clip para cargar archivos en la conversación libre (formularios llenos, RUT, cédula, pólizas, fotos).
+  var ACEPTA_CLIP = '.pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,.doc,.docx,.xls,.xlsx';
+  var MAX_CLIP = 3 * 1024 * 1024;
+  function ponerClip() {
+    var form = $('pcForm');
+    if (!form || !CONFIG.apiChat || $('pcClip')) return;
+    var inp = document.createElement('input');
+    inp.type = 'file'; inp.multiple = true; inp.accept = ACEPTA_CLIP; inp.hidden = true; inp.id = 'pcClipArchivo';
+    var b = document.createElement('button');
+    b.type = 'button'; b.id = 'pcClip'; b.className = 'pc-clip'; b.setAttribute('aria-label', 'Adjuntar archivo'); b.title = 'Adjuntar archivo (PDF, foto, Word o Excel)';
+    b.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    b.addEventListener('click', function () { if (!ocupado) inp.click(); });
+    inp.addEventListener('change', function () { var l = Array.prototype.slice.call(inp.files || []); inp.value = ''; if (l.length) subirClip(l); });
+    form.insertBefore(b, form.firstChild);
+    form.appendChild(inp);
+  }
+  function comprimir(f) {
+    // Fotos pesadas: se reducen a JPEG para que pasen el límite.
+    return new Promise(function (ok) {
+      if (!/^image\/(jpeg|png|webp)$/.test(f.type) || f.size <= MAX_CLIP) return ok(f);
+      var img = new Image(), url = URL.createObjectURL(f);
+      img.onload = function () {
+        var k = Math.min(1, 2200 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (bl) { ok(bl ? new File([bl], f.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' }) : f); }, 'image/jpeg', 0.8);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); ok(f); };
+      img.src = url;
+    });
+  }
+  function aBase64(f) {
+    return new Promise(function (ok, mal) { var r = new FileReader(); r.onload = function () { ok(String(r.result).split(',')[1] || ''); }; r.onerror = mal; r.readAsDataURL(f); });
+  }
+  async function subirClip(lista) {
+    if (ocupado) return;
+    ocupado = true; el.enviar.disabled = true;
+    var t = escribiendo(), bien = [], mal = [];
+    var url = CONFIG.apiChat.replace(/\/chat$/, '/adjunto');
+    for (var i = 0; i < lista.length && adjuntosChat.length + bien.length < 10; i++) {
+      var f = await comprimir(lista[i]);
+      if (f.size > MAX_CLIP) { mal.push(f.name + ' (pesa más de 3 MB)'); continue; }
+      try {
+        var r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat: idChat(), nombre: f.name, tipo: f.type || '', contenido: await aBase64(f) }) });
+        var d = await r.json().catch(function () { return {}; });
+        if (r.ok && d.ref) bien.push({ ref: d.ref, nombre: d.nombre || f.name }); else mal.push(f.name + (d.error ? ' (' + d.error + ')' : ''));
+      } catch (e) { mal.push(f.name); }
+    }
+    t.remove(); ocupado = false; el.enviar.disabled = false;
+    if (bien.length) {
+      adjuntosChat = adjuntosChat.concat(bien);
+      usuarioDice('Adjunté: ' + bien.map(function (a) { return a.nombre; }).join(', '));
+    }
+    if (mal.length) burbuja('No pude cargar: ' + mal.join('; ') + '. Puede enviarlo por WhatsApp al ' + CONFIG.whatsappVisible + '.', 'pc-bot');
+    if (bien.length) responderPregunta('Adjunté estos archivos: ' + bien.map(function (a) { return a.nombre; }).join(', ') + '.');
+  }
+
   function contextoIA() {
     var c = {};
     ['tipo', 'actividad', 'actividadOtra', 'ciudad', 'inmueble', 'valorEdificio', 'valorContenidos', 'valorMercancias', 'valorElectronico', 'empleados', 'limiteRC', 'objetivo', 'ramo', 'vidaPersonas', 'vidaValor', 'vidaEdades', 'vidaPaga', 'vidaFamilia'].forEach(function (k) {
@@ -923,7 +986,7 @@
       return fetch(CONFIG.apiChat, {
         method: 'POST',
         headers: cab,
-        body: JSON.stringify({ mensajes: historialIA, contexto: contextoIA() }),
+        body: JSON.stringify({ mensajes: historialIA, contexto: contextoIA(), chat: idChat(), adjuntos: adjuntosChat }),
         signal: controlador ? controlador.signal : undefined
       });
     }).then(function (r) { return r.ok ? r.json() : null; })

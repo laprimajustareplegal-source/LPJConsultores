@@ -188,3 +188,5 @@ html:has(body.sobrio){background:#0b1222;scrollbar-color:rgba(255,255,255,.3) #0
 .sobrio .hero-aliado-btn:hover{color:#fff}
 .sobrio .hero-aliado-btn:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
 .sobrio .pyme-sec.conversando .hero-aliado{display:none}
+.sobrio .pc-entrada .pc-clip{background:none;color:rgba(255,255,255,.7)}
+.sobrio .pc-entrada .pc-clip:hover{background:rgba(255,255,255,.1);color:#fff}

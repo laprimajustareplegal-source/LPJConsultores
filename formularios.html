@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formularios y documentos — LPJ Consultores</title>
+<meta name="description" content="Formularios de las aseguradoras para cotizar y emitir sus pólizas con LPJ Consultores: SARLAFT, solicitudes, cuestionarios y declaraciones.">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pyme/cuenta.css?v=20261121m">
+<style>
+.forms{max-width:820px;margin:0 auto;background:#fff;border:1px solid var(--gris-borde);border-radius:16px;padding:32px 36px;color:#1d2533}
+.forms h1{font-family:'Playfair Display',serif;font-size:1.9rem;color:#0f2060;margin-bottom:8px}
+.forms .intro{font-size:.93rem;line-height:1.6;color:var(--gris-texto);margin-bottom:20px}
+.forms input[type=search]{width:100%;font:inherit;font-size:.95rem;padding:12px 14px;border:1.5px solid var(--gris-borde);border-radius:12px;margin-bottom:18px}
+.forms input[type=search]:focus{outline:none;border-color:#1644c8}
+.forms h2{font-size:1rem;color:#0f2060;margin:22px 0 8px}
+.forms ul{list-style:none;padding:0;margin:0}
+.forms li{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--gris-borde)}
+.forms li b{display:block;font-size:.95rem;font-weight:600}
+.forms li span{display:block;font-size:.84rem;color:var(--gris-texto);margin-top:2px}
+.forms li a{flex-shrink:0;font-size:.86rem;font-weight:600;color:#fff;background:#1644c8;border-radius:10px;padding:9px 16px;text-decoration:none}
+.forms li a:hover{background:#0f2060}
+.forms li a:focus-visible{outline:2px solid #0f2060;outline-offset:2px}
+.forms .nota{font-size:.88rem;line-height:1.6;color:var(--gris-texto);margin-top:22px}
+.forms .nota a{color:#1644c8}
+@media(max-width:560px){.forms{padding:22px 18px}.forms li{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header class="cab"><div class="cab-in">
+  <a href="./"><img src="img/logo.png" alt="LPJ Consultores"></a>
+  <span class="cab-tit">Formularios y documentos</span>
+</div></header>
+
+<main class="cont">
+<section class="forms">
+  <h1>Formularios y documentos</h1>
+  <p class="intro">Descargue el formulario que le pide la aseguradora, llénelo y fírmelo. Después cárguelo en el chat de laprimajusta.co con el clip, o envíelo a su asesor. Si no encuentra el que necesita, pregúntele al asesor IA.</p>
+  <label class="oculto" for="buscarForm">Buscar formulario</label>
+  <input type="search" id="buscarForm" placeholder="Buscar por aseguradora, producto o nombre (por ejemplo SARLAFT, vida grupo, SURA)">
+  <div id="listaForms"><p class="intro">Cargando…</p></div>
+  <p class="nota">Llene los formularios con letra clara, sin tachones ni enmendaduras, y fírmelos (con huella cuando lo pida el formato). Sus datos se tratan según nuestra <a href="politica-datos.html">política de datos</a>.</p>
+</section>
+</main>
+<script src="pyme/config.js?v=20261121j"></script>
+<script>
+(function () {
+  'use strict';
+  var C = window.LPJ_CONFIG || {}, cont = document.getElementById('listaForms'), buscar = document.getElementById('buscarForm'), filas = [];
+  function E(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function N(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  function url(r) { return C.supabaseUrl + '/storage/v1/object/public/formularios/' + encodeURI(r.ruta); }
+  function pintar() {
+    var q = N(buscar.value).trim();
+    var l = filas.filter(function (r) { return !q || N([r.nombre, r.aseguradora, r.ramo, r.para].join(' ')).indexOf(q) >= 0; });
+    if (!filas.length) { cont.innerHTML = '<p class="intro">Todavía no hay formularios publicados. Su asesor se los envía por correo con la cotización.</p>'; return; }
+    if (!l.length) { cont.innerHTML = '<p class="intro">No hay formularios con esa búsqueda.</p>'; return; }
+    var grupos = {};
+    l.forEach(function (r) { var g = r.aseguradora || 'Generales'; (grupos[g] = grupos[g] || []).push(r); });
+    cont.innerHTML = Object.keys(grupos).sort().map(function (g) {
+      return '<h2>' + E(g) + '</h2><ul>' + grupos[g].map(function (r) {
+        return '<li><div><b>' + E(r.nombre) + '</b><span>' + E([r.ramo, r.para].filter(Boolean).join(' · ')) + '</span></div><a href="' + E(url(r)) + '" target="_blank" rel="noopener" download>Descargar</a></li>';
+      }).join('') + '</ul>';
+    }).join('');
+  }
+  buscar.addEventListener('input', pintar);
+  fetch(C.supabaseUrl + '/rest/v1/formularios?select=nombre,aseguradora,ramo,para,ruta&publico=eq.true&order=orden,nombre', { headers: { apikey: C.supabaseKey, authorization: 'Bearer ' + C.supabaseKey } })
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (d) { filas = Array.isArray(d) ? d : []; pintar(); })
+    .catch(function () { cont.innerHTML = '<p class="intro">No se pudieron cargar los formularios. Intente de nuevo o pídaselos a su asesor por WhatsApp al 314 422 0945.</p>'; });
+})();
+</script>
+</body>
+</html>
