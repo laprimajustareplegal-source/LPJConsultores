@@ -476,9 +476,10 @@
     quitarComisionGenerica: async function (ramo) { exigir(); revisar(await sb.from('comisiones_genericas').delete().eq('ramo', ramo)); },
     // Formularios descargables (bucket público "formularios").
     formularios: async function () { exigir(); return revisar(await sb.from('formularios').select('*').order('orden').order('nombre')); },
-    urlFormulario: function (ruta) { return sb ? sb.storage.from('formularios').getPublicUrl(ruta).data.publicUrl : ''; },
+    urlFormulario: function (f) { if (f && f.url) return f.url; var ruta = f && f.ruta ? f.ruta : f; return sb && ruta ? sb.storage.from('formularios').getPublicUrl(ruta).data.publicUrl : ''; },
     subirFormulario: async function (archivo, datos) {
       exigir();
+      if (!archivo && datos.url) return revisar(await sb.from('formularios').insert({ nombre: datos.nombre, aseguradora: datos.aseguradora || null, ramo: datos.ramo || null, para: datos.para || null, url: datos.url }).select().single());
       var ext = (archivo.name.match(/\.([a-z0-9]{2,5})$/i) || [])[1] || 'pdf';
       var base = (datos.nombre || archivo.name).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').slice(0, 70) || 'formulario';
       var ruta = base + '-' + Date.now().toString(36) + '.' + ext.toLowerCase();
@@ -486,7 +487,7 @@
       return revisar(await sb.from('formularios').insert({ nombre: datos.nombre, aseguradora: datos.aseguradora || null, ramo: datos.ramo || null, para: datos.para || null, ruta: ruta }).select().single());
     },
     cambiarFormulario: async function (id, cambios) { exigir(); revisar(await sb.from('formularios').update(cambios).eq('id', id)); },
-    quitarFormulario: async function (f) { exigir(); revisar(await sb.from('formularios').delete().eq('id', f.id)); try { await sb.storage.from('formularios').remove([f.ruta]); } catch (e) { /* queda el archivo */ } },
+    quitarFormulario: async function (f) { exigir(); revisar(await sb.from('formularios').delete().eq('id', f.id)); if (f.ruta) { try { await sb.storage.from('formularios').remove([f.ruta]); } catch (e) { /* queda el archivo */ } } },
     esAdmin: async function () {
       if (!sb) return false;
       var r = await sb.rpc('es_admin');

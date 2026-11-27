@@ -39,10 +39,12 @@
       ev.preventDefault();
       var f = ev.target, a = f.archivo.files && f.archivo.files[0], b = f.querySelector('[type=submit]');
       if (!f.nombre.value.trim()) return mensaje(f, 'Escriba el nombre del formulario.');
-      if (!a) return mensaje(f, 'Elija el archivo.');
-      if (a.size > 15 * 1024 * 1024) return mensaje(f, 'El archivo pesa más de 15 MB.');
+      var enlace = f.url.value.trim();
+      if (!a && !enlace) return mensaje(f, 'Elija el archivo o escriba el enlace.');
+      if (!a && !/^https:\/\//.test(enlace)) return mensaje(f, 'El enlace debe empezar por https://');
+      if (a && a.size > 15 * 1024 * 1024) return mensaje(f, 'El archivo pesa más de 15 MB.');
       b.disabled = true; mensaje(f, 'Subiendo…', true);
-      try { await L.subirFormulario(a, { nombre: f.nombre.value.trim(), aseguradora: f.aseguradora.value.trim(), ramo: f.ramo.value.trim(), para: f.para.value.trim() }); f.reset(); mensaje(f, 'Listo, quedó publicado.', true); await pintarFormularios(); }
+      try { await L.subirFormulario(a || null, { url: a ? '' : enlace, nombre: f.nombre.value.trim(), aseguradora: f.aseguradora.value.trim(), ramo: f.ramo.value.trim(), para: f.para.value.trim() }); f.reset(); mensaje(f, 'Listo, quedó publicado.', true); await pintarFormularios(); }
       catch (e) { mensaje(f, L.error(e)); }
       b.disabled = false;
     });
@@ -175,7 +177,7 @@
       return '<form class="tarjeta form" data-id="' + E(r.id) + '" novalidate>' +
         '<div class="fila2"><label>Nombre<input type="text" name="nombre" maxlength="160" value="' + E(r.nombre) + '"></label><label>Aseguradora<input type="text" name="aseguradora" maxlength="80" value="' + E(r.aseguradora || '') + '"></label></div>' +
         '<div class="fila2"><label>Ramo<input type="text" name="ramo" maxlength="120" value="' + E(r.ramo || '') + '"></label><label>Para qué sirve<input type="text" name="para" maxlength="400" value="' + E(r.para || '') + '"></label></div>' +
-        '<div class="acciones"><a class="btn btn-t" href="' + E(L.urlFormulario(r.ruta)) + '" target="_blank" rel="noopener">Ver archivo</a><label class="ayuda"><input type="checkbox" name="publico"' + (r.publico ? ' checked' : '') + '> Publicado</label><button class="btn btn-s" type="submit">Guardar</button><button class="btn btn-t" type="button" data-quitar>Quitar</button></div><div class="msg"></div></form>';
+        '<div class="acciones"><a class="btn btn-t" href="' + E(L.urlFormulario(r)) + '" target="_blank" rel="noopener">' + (r.url ? 'Abrir enlace' : 'Ver archivo') + '</a><label class="ayuda"><input type="checkbox" name="publico"' + (r.publico ? ' checked' : '') + '> Publicado</label><button class="btn btn-s" type="submit">Guardar</button><button class="btn btn-t" type="button" data-quitar>Quitar</button></div><div class="msg"></div></form>';
     }).join('');
     cont.querySelectorAll('form').forEach(function (f) {
       var r = filas.filter(function (x) { return x.id === f.getAttribute('data-id'); })[0];

@@ -50,7 +50,7 @@
   var C = window.LPJ_CONFIG || {}, cont = document.getElementById('listaForms'), buscar = document.getElementById('buscarForm'), filas = [];
   function E(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function N(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
-  function url(r) { return C.supabaseUrl + '/storage/v1/object/public/formularios/' + encodeURI(r.ruta); }
+  function url(r) { if (r.url) return r.url; return C.supabaseUrl + '/storage/v1/object/public/formularios/' + encodeURI(r.ruta); }
   function pintar() {
     var q = N(buscar.value).trim();
     var l = filas.filter(function (r) { return !q || N([r.nombre, r.aseguradora, r.ramo, r.para].join(' ')).indexOf(q) >= 0; });
@@ -60,12 +60,12 @@
     l.forEach(function (r) { var g = r.aseguradora || 'Generales'; (grupos[g] = grupos[g] || []).push(r); });
     cont.innerHTML = Object.keys(grupos).sort().map(function (g) {
       return '<h2>' + E(g) + '</h2><ul>' + grupos[g].map(function (r) {
-        return '<li><div><b>' + E(r.nombre) + '</b><span>' + E([r.ramo, r.para].filter(Boolean).join(' · ')) + '</span></div><a href="' + E(url(r)) + '" target="_blank" rel="noopener" download>Descargar</a></li>';
+        return '<li><div><b>' + E(r.nombre) + '</b><span>' + E([r.ramo, r.para].filter(Boolean).join(' · ')) + '</span></div><a href="' + E(url(r)) + '" target="_blank" rel="noopener">' + (r.url && r.url.indexOf('.pdf') < 0 ? 'Abrir' : 'Descargar') + '</a></li>';
       }).join('') + '</ul>';
     }).join('');
   }
   buscar.addEventListener('input', pintar);
-  fetch(C.supabaseUrl + '/rest/v1/formularios?select=nombre,aseguradora,ramo,para,ruta&publico=eq.true&order=orden,nombre', { headers: { apikey: C.supabaseKey, authorization: 'Bearer ' + C.supabaseKey } })
+  fetch(C.supabaseUrl + '/rest/v1/formularios?select=nombre,aseguradora,ramo,para,ruta,url&publico=eq.true&order=orden,nombre', { headers: { apikey: C.supabaseKey, authorization: 'Bearer ' + C.supabaseKey } })
     .then(function (r) { return r.ok ? r.json() : []; })
     .then(function (d) { filas = Array.isArray(d) ? d : []; pintar(); })
     .catch(function () { cont.innerHTML = '<p class="intro">No se pudieron cargar los formularios. Intente de nuevo o pídaselos a su asesor por WhatsApp al 314 422 0945.</p>'; });

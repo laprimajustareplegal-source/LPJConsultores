@@ -84,11 +84,11 @@
   <section class="oculto" id="vFormularios">
     <div class="tarjeta">
       <h3>Formularios para descargar</h3>
-      <p class="ayuda">Los formularios que suba aquí (en blanco, sin datos de clientes) quedan publicados en laprimajusta.co/formularios.html y el asesor IA se los envía a clientes y aliados cuando los necesitan para cotizar o emitir. PDF, Word o Excel, hasta 15 MB.</p>
+      <p class="ayuda">Los formularios que suba aquí (en blanco, sin datos de clientes) o los enlaces que agregue quedan publicados en laprimajusta.co/formularios.html y el asesor IA se los envía a clientes y aliados cuando los necesitan para cotizar o emitir. PDF, Word o Excel, hasta 15 MB.</p>
       <form class="form" id="fNuevoFormulario" novalidate>
         <div class="fila2"><label>Nombre del formulario<input type="text" name="nombre" maxlength="160" placeholder="Ej. SARLAFT persona jurídica"></label><label>Aseguradora<input type="text" name="aseguradora" maxlength="80" placeholder="Ej. AXA Colpatria, o Todas"></label></div>
         <div class="fila2"><label>Ramo o producto<input type="text" name="ramo" maxlength="120" placeholder="Ej. Vida grupo, PYME, Todos"></label><label>Para qué sirve<input type="text" name="para" maxlength="400" placeholder="Ej. Obligatorio para emitir; firma y huella"></label></div>
-        <label>Archivo<input type="file" name="archivo" accept=".pdf,.doc,.docx,.xls,.xlsx"></label>
+        <div class="fila2"><label>Archivo<input type="file" name="archivo" accept=".pdf,.doc,.docx,.xls,.xlsx"></label><label>O enlace (formato de Fasecolda o enlace web de la aseguradora)<input type="url" name="url" maxlength="500" placeholder="https://…"></label></div>
         <div class="acciones"><button class="btn btn-s" type="submit">Subir formulario</button></div>
         <div class="msg"></div>
       </form>
@@ -110,8 +110,8 @@
 
 <script src="pyme/config.js?v=20261122a"></script>
 <script src="pyme/lib/supabase-2.119.0.js"></script>
-<script src="pyme/datos.js?v=20261126a"></script>
-<script src="pyme/asesor.js?v=20261126a"></script>
+<script src="pyme/datos.js?v=20261126b"></script>
+<script src="pyme/asesor.js?v=20261126b"></script>
 <script src="pyme/chat-flotante.js?v=20261122c"></script>
 <script src="pyme/chat-pyme.js?v=20261126a"></script>
 </body>
