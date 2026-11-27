@@ -54,3 +54,9 @@ on conflict (id) do update
   set public = false, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
 
 notify pgrst, 'reload schema';
+
+-- Corrección: anon no puede llamar es_asesor(), así que la lectura pública va en su propia política.
+drop policy if exists formularios_leer on public.formularios;
+create policy formularios_leer on public.formularios for select to anon using (publico);
+drop policy if exists formularios_leer_equipo on public.formularios;
+create policy formularios_leer_equipo on public.formularios for select to authenticated using (publico or public.es_asesor());
