@@ -467,6 +467,13 @@
       try { var r = revisar(await sb.from('lu_clientes').select('aliado').not('aliado', 'is', null).limit(5000)); return r.map(function (x) { return x.aliado; }).filter(function (v, i, a) { return v && a.indexOf(v) === i; }).sort(); }
       catch (e) { return []; }
     },
+    // Comisión genérica por ramo que ve quien quiere ser aliado (la fijan los administradores).
+    comisionesGenericas: async function () { exigir(); return revisar(await sb.from('comisiones_genericas').select('*').order('orden').order('ramo')); },
+    guardarComisionGenerica: async function (ramo, porcentaje, nota, orden) {
+      exigir();
+      return revisar(await sb.from('comisiones_genericas').upsert({ ramo: ramo, porcentaje: porcentaje, nota: nota || null, orden: orden == null ? 100 : orden, actualizado: new Date().toISOString() }).select().single());
+    },
+    quitarComisionGenerica: async function (ramo) { exigir(); revisar(await sb.from('comisiones_genericas').delete().eq('ramo', ramo)); },
     esAdmin: async function () {
       if (!sb) return false;
       var r = await sb.rpc('es_admin');

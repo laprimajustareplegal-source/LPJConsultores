@@ -69,6 +69,16 @@
       </form>
     </div>
     <div id="listaAliados"></div>
+    <div class="tarjeta" id="tComGen">
+      <h3>Comisión genérica por ramo (la que ve quien quiere ser aliado)</h3>
+      <p class="ayuda">El asesor IA de la página usa esta tabla para decirle a un interesado cuánto ganaría como aliado: le muestra el 60 % de este porcentaje. No son las comisiones reales de cada aseguradora. Deje vacío el porcentaje si no quiere que el chat dé cifra en ese ramo.</p>
+      <div id="listaComGen"></div>
+      <form class="form" id="fNuevaComGen" novalidate>
+        <div class="fila2"><label>Ramo nuevo<input type="text" name="ramo" maxlength="80"></label><label>% genérico de la agencia<input type="text" name="pct" inputmode="decimal" maxlength="6"></label></div>
+        <div class="acciones"><button class="btn btn-s" type="submit">Agregar ramo</button></div>
+        <div class="msg"></div>
+      </form>
+    </div>
   </section>
   <section class="oculto" id="vPanel">
     <div class="contadores" id="contadores"></div>

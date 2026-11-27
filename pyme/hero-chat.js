@@ -26,4 +26,16 @@
     input.value = b.getAttribute('data-q');
     if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event('submit', { cancelable: true }));
   });
+
+  // Invitación a asesores: botón bajo el chat y enlace directo (laprimajusta.co/?aliado o #aliados).
+  function preguntar(q) {
+    if (!input || !form || !q) return;
+    input.value = q;
+    if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event('submit', { cancelable: true }));
+  }
+  var ali = document.querySelector('.hero-aliado-btn');
+  if (ali) ali.addEventListener('click', function () { preguntar(ali.getAttribute('data-q')); });
+  if (ali && (/[?&]aliados?\b/.test(location.search) || /^#aliados?$/.test(location.hash))) {
+    window.addEventListener('load', function () { setTimeout(function () { if (!msgs.querySelector('.pc-user')) preguntar(ali.getAttribute('data-q')); }, 700); });
+  }
 })();

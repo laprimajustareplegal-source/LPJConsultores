@@ -34,6 +34,14 @@
     $('btnSalir2').addEventListener('click', salir);
     $('btnRecargar').addEventListener('click', function () { cargar(); });
     $('btnAliados').addEventListener('click', verAliados);
+    if ($('fNuevaComGen')) $('fNuevaComGen').addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      var f = ev.target, ramo = f.ramo.value.trim(), pct = numPct(f.pct.value);
+      if (!ramo) return mensaje(f, 'Escriba el ramo.');
+      if (Number.isNaN(pct)) return mensaje(f, 'El porcentaje va de 0 a 100.');
+      try { await L.guardarComisionGenerica(ramo, pct, '', 200); f.ramo.value = ''; f.pct.value = ''; mensaje(f, 'Agregado.', true); await pintarComGen(); }
+      catch (e) { mensaje(f, L.error(e)); }
+    });
     $('btnResumen').addEventListener('click', verResumen);
     $('btnEquipo').addEventListener('click', verEquipo);
     $('btnSolicitudes').addEventListener('click', function () { vista('vPanel'); });
@@ -109,7 +117,38 @@
 
   async function verAliados() {
     vista('vAliados');
+    pintarComGen();
     await pintarAliados();
+  }
+
+  function numPct(v) { v = String(v || '').replace(',', '.').replace('%', '').trim(); if (!v) return null; var n = Number(v); return n >= 0 && n <= 100 ? n : NaN; }
+  async function pintarComGen() {
+    var cont = $('listaComGen'); if (!cont) return;
+    cont.innerHTML = '<p class="nada">Cargando…</p>';
+    var filas;
+    try { filas = await L.comisionesGenericas(); } catch (e) { cont.innerHTML = '<div class="vacio">' + E(L.error(e)) + '</div>'; return; }
+    if (!filas.length) { cont.innerHTML = '<div class="vacio">Todavía no hay ramos.</div>'; return; }
+    cont.innerHTML = filas.map(function (r) {
+      var ali = r.porcentaje == null ? '' : (Math.round(r.porcentaje * 60) / 100).toString().replace('.', ',') + ' % para el aliado';
+      return '<form class="form" data-ramo="' + E(r.ramo) + '" data-orden="' + E(r.orden) + '" novalidate>' +
+        '<div class="fila2"><label>' + E(r.ramo) + '<input type="text" name="pct" inputmode="decimal" maxlength="6" placeholder="Sin cifra" value="' + E(r.porcentaje == null ? '' : String(r.porcentaje).replace('.', ',')) + '"></label>' +
+        '<label>Nota para el chat (opcional)<input type="text" name="nota" maxlength="200" value="' + E(r.nota || '') + '"></label></div>' +
+        '<div class="acciones"><span class="ayuda">' + E(ali) + '</span><button class="btn btn-s" type="submit">Guardar</button><button class="btn btn-t" type="button" data-quitar>Quitar</button></div><div class="msg"></div></form>';
+    }).join('');
+    cont.querySelectorAll('form').forEach(function (f) {
+      var ramo = f.getAttribute('data-ramo'), orden = Number(f.getAttribute('data-orden'));
+      f.addEventListener('submit', async function (ev) {
+        ev.preventDefault();
+        var pct = numPct(f.pct.value);
+        if (Number.isNaN(pct)) return mensaje(f, 'El porcentaje va de 0 a 100.');
+        try { await L.guardarComisionGenerica(ramo, pct, f.nota.value.trim(), orden); mensaje(f, 'Guardado.', true); var s = f.querySelector('.acciones .ayuda'); if (s) s.textContent = pct == null ? '' : (Math.round(pct * 60) / 100).toString().replace('.', ',') + ' % para el aliado'; }
+        catch (e) { mensaje(f, L.error(e)); }
+      });
+      f.querySelector('[data-quitar]').addEventListener('click', async function () {
+        if (!window.confirm('¿Quitar el ramo ' + ramo + ' de la tabla?')) return;
+        try { await L.quitarComisionGenerica(ramo); await pintarComGen(); } catch (e) { mensaje(f, L.error(e)); }
+      });
+    });
   }
 
   async function pintarAliados() {

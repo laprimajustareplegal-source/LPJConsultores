@@ -181,3 +181,10 @@ html:has(body.sobrio){background:#0b1222;scrollbar-color:rgba(255,255,255,.3) #0
 .sobrio .hero-sub{max-width:660px}
 .sobrio .pyme-sec:not(.conversando) .pc-mensajes{height:clamp(160px,21vh,260px)}
 .sobrio .pyme-intro>p.hero-sub{max-width:680px}
+
+/* Invitación a asesores y agentes: abre el chat en la conversación de la alianza */
+.sobrio .hero-aliado{order:5;position:relative;z-index:1;margin:16px 0 0;text-align:center}
+.sobrio .hero-aliado-btn{font:inherit;font-size:.86rem;color:#a9bfff;background:none;border:0;padding:4px 2px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.sobrio .hero-aliado-btn:hover{color:#fff}
+.sobrio .hero-aliado-btn:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:4px}
+.sobrio .pyme-sec.conversando .hero-aliado{display:none}
